@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-个人中心</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        #nav {
+            height: 0.88rem;
+            line-height: 0.84rem;
+            margin-bottom: 0.2rem;
+        }
+
+        #nav a {
+            display: block;
+            float: left;
+            width: 20%;
+            height: 0.84rem;
+            text-align: center;;
+            font-size: 0.28rem;
+            color: rgba(51, 51, 51, 1);
+            background: #fff;
+            border-bottom: 0.04rem solid #fff;
+        }
+
+        #nav .active {
+            color: rgba(255, 49, 74, 1);
+            border-bottom: 0.04rem solid rgba(255, 49, 74, 1);
+        }
+    </style>
+</head>
+<body>
+
+<header class="m-navbar" id="header">
+    <a class="navbar-item" onclick="goback();">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">我的订单</span>
+    </div>
+</header>
+<div id="app">
+    <div id="nav">
+        <a :class="types==0?'active':''" data-types="0" @click="checkTypes">全部</a>
+        <a :class="types==1?'active':''" data-types="1" @click="checkTypes">待付款</a>
+        <a :class="types==2?'active':''" data-types="2" @click="checkTypes">待发货</a>
+        <a :class="types==3?'active':''" data-types="3" @click="checkTypes">待收货</a>
+        <a :class="types==4?'active':''" data-types="4" @click="checkTypes">待评价</a>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            types: 0,
+            name: ['allorder', 'waitpay', 'waitsend', 'waitreceive']
+        },
+        methods: {
+            checkTypes: function (e) {
+                var data = e.currentTarget.dataset.types;
+                if (data < 4) {
+                    this.types = data;
+                    var param = {
+                        name: 'orderlistgroup',
+                        index: vm.types,
+                        scroll: true
+                    };
+                    api.setFrameGroupIndex(param);
+                } else {
+                    api.openWin({
+                        name: 'comment',
+                        url: '../center/comment.html',
+                        pageParam: {
+                            status: 0
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    function openFrames() {
+        api.openFrameGroup({
+            name: 'orderlistgroup',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: $api.dom('#app').offsetHeight + $api.dom('header').offsetHeight,
+                w: 'auto',
+                h: 'auto'
+            },
+            index: 0,
+            preload: 0,
+            frames: [
+                {
+                    name: vm.name[0],
+                    url: './order_frame0.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: true
+                },
+                {
+                    name: vm.name[1],
+                    url: './order_frame1.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                },
+                {
+                    name: vm.name[2],
+                    url: './order_frame2.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                },
+                {
+                    name: vm.name[3],
+                    url: './order_frame3.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                }
+            ]
+        }, function (ret, err) {
+            var index = ret.index;
+        });
+    }
+
+    var from;
+    apiready = function () {
+        from = api.pageParam.from;
+        openFrames();
+    };
+
+    function goback() {
+        if (from = 'order_detail') {
+            api.closeWin({
+                animation: {
+                    subType: 'from_left'
+                }
+            });
+            toIndex(3);
+        }
+    }
+</script>
+
+</body>
+</html>

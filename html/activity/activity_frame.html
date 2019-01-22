@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-优惠券</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        /* 头部广告图 */
+        .banner, .banner img {
+            width: 100%;
+        }
+
+        /* 优惠券列表 */
+
+        .coupon {
+            width: 7.5rem;
+            height: 2.85rem;
+            margin: 0 auto;
+            background-img: url("../../image/couponList.png") no-repeat;
+            background-size: cover;
+            padding: 0.18rem 0.32rem;
+            position: relative;
+        }
+
+        .coupon .couponList {
+            float: left;
+            width: 100%;
+            white-space: nowrap;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .coupon .couponList::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            display: none;
+        }
+
+        .couponList .coupon-item {
+            display: inline-block;
+            width: 1.69rem;
+            height: 2.28rem;
+            margin-right: 0.03rem;
+            background: url("../../image/coupon.png") no-repeat;
+            background-size: 100% 100%;
+            padding: 0 0.05rem;
+        }
+
+        .coupon-item strong {
+            width: 100%;
+            height: 0.98rem;
+            text-align: center;
+            display: inline-block;
+            text-shadow: 0.08px 0.06px 0.15px #401295;
+            overflow: hidden;
+            font-size: 0.64rem;
+            font-family: Bebas;
+            color: #fff;
+            line-height: 0.9rem;
+        }
+
+        .coupon-item .coupon-condition {
+            width: 100%;
+            line-height: 0.22rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+            font-size: 0.2rem;
+            font-family: SourceHanSansCN-Regular;
+            color: #fff;
+            margin-bottom: 0.29rem;
+        }
+
+        .coupon-item button {
+            display: block;
+            width: 1.08rem;
+            height: 0.3rem;
+            border-radius: 0.15rem;
+            -webkit-border-radius: 0.15rem;
+            -moz-border-radius: 0.15rem;
+            -ms-border-radius: 0.15rem;
+            -o-border-radius: 0.15rem;
+            margin: 0 auto;
+            color: #fff;
+            font-size: 0.18rem;
+            overflow: hidden;
+            background: transparent;
+            line-height: 0.3rem;
+            border: 0;
+        }
+
+        /* 活动商品列表 */
+
+        .content {
+            width: 100%;
+            padding-top: 0.14rem;
+        }
+
+        .activity_title {
+            width: 6.38rem;
+            height: 0.82rem;
+            background: url("../../image/title.png") no-repeat;
+            background-size: 6.38rem 0.82rem;
+            text-align: center;
+            line-height: 0.82rem;
+            margin: 0 auto;
+        }
+
+        .activity_title span {
+            color: #fff;
+            font-size: 0.38rem;
+            font-weight: bolder;
+            background-image: -webkit-linear-gradient(top, #fff, #563594);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .activity_list {
+            padding: 0 0.2rem;
+            margin-top: 0.47rem;
+        }
+        .activity_list ul{
+            padding-bottom: .4rem;
+        }
+        .goods-item {
+            width: 100%;
+            height: 2.48rem;
+            background: #fff;
+            margin-bottom: 0.15rem;
+            overflow: hidden;
+            border-radius: 0.2rem;
+            -webkit-border-radius: 0.2rem;
+            -moz-border-radius: 0.2rem;
+            -ms-border-radius: 0.2rem;
+            -o-border-radius: 0.2rem;
+            position: relative;
+        }
+        .goods-item:last-child{
+            margin-bottom:0;
+        }
+
+        .goods-item .goodsImg {
+            width: 3.23rem;
+            height: 100%;
+            padding: 0.2rem 0.63rem 0.2rem 0.4rem;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .goods-item .goodsImg > img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .goods-item .goodsContent {
+            width: 100%;
+            height: 100%;
+            padding: 0.32rem 0 0.32rem 3.23rem;
+            position: relative;
+        }
+
+        .goodsContent .goodsName {
+            line-height: 0.32rem;
+            height: 0.32rem;
+        }
+
+        .goodsContent .goodsName a,
+        .goodsContent .goodsDesc a {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #333;
+        }
+
+        .goodsContent .goodsName a {
+            font-size: 0.32rem;
+            width: 2.5rem;
+            font-family: PingFang-SC-Heavy;
+            font-weight: 800;
+        }
+
+        .goodsContent .goodsDesc {
+            /* line-height: 0.26rem; */
+            height: 0.26rem;
+            margin-top: 0.09rem;
+        }
+
+        .goodsContent .goodsDesc a {
+            width: 3.5rem;
+            font-size: 0.26rem;
+            font-family: PingFang-SC-Regular;
+        }
+
+        .goodsContent .goodsSpec {
+            margin-top: 0.14rem;
+            white-space: nowrap;
+            color: #FE3640;
+        }
+
+        .goodsContent .goodsSpec span {
+            font-size: 0.3rem;
+        }
+
+        .goodsContent .goodsSpec strong {
+            display: inline-block;
+            font-size: 0.46rem;
+            line-height: 0.46rem;
+            height: 0.46rem;
+        }
+
+        .goodsContent .buy-now {
+            margin-top: 0.18rem;
+            width: 1.4rem;
+            height: 0.48rem;
+            background: #FE3640;
+            border-radius: 0.04rem;
+            -webkit-border-radius: 0.04rem;
+            -moz-border-radius: 0.04rem;
+            -ms-border-radius: 0.04rem;
+            -o-border-radius: 0.04rem;
+        }
+
+        .goodsContent .buy-now a {
+            display: block;
+            text-align: center;
+            line-height: 0.48rem;
+            font-size: 0.24rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .saleout {
+            position: absolute;
+            width: 3.23rem;
+            height: 2.48rem;
+            background: rgba(255, 255, 255, .5);
+            z-index: 1;
+            top: 0;
+            left: 0;
+        }
+
+        .saleout img {
+            width: 2.2rem;
+            position: absolute;
+            left: 0.4rem;
+            top: 50%;
+            transform: translateY(-50%);
+            -webkit-transform: translateY(-50%);
+            -moz-transform: translateY(-50%);
+            -ms-transform: translateY(-50%);
+            -o-transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+    <!-- 活动图片 -->
+    <div class="banner">
+        <img :src="venue.poster || 'https://oss-pub.scsj.net.cn/Image/default.png'" alt="活动图片">
+    </div>
+    <!-- 活动图片 end -->
+
+    <!-- 优惠券列表 start -->
+    <div class="coupon" v-show="coupon.length>0">
+        <ul class="couponList">
+            <template v-for="item in coupon">
+                <li class="coupon-item">
+                    <strong>{{item.money | toNum}}</strong>
+                    <div class="coupon-condition">满{{item.condition | toNum}}元可用</div>
+                    <button @click="freeCoupon(item.id)">立即领取</button>
+                </li>
+            </template>
+        </ul>
+    </div>
+    <!-- 商品列表 end -->
+
+    <!-- 商品列表 start -->
+    <div class="content">
+        <div class="activity_title" id="activity_title">
+            <span>{{venue.title}}</span>
+        </div>
+        <div class="activity_list">
+            <ul>
+                <li class="goods-item open-win" v-for="(item,index) in list" data-name="goodsInfo" data-url="../goods/goodsInfo.html" :data-id="item.goods_id">
+                    <div class="goodsImg">
+                        <img :src="item.active_img || item.goods_image || 'https://oss-pub.scsj.net.cn/Image/default.png'">
+                        <div class="saleout" v-if="item.store_count<1">
+                            <img src="../../image/saleout.png">
+                        </div>
+                        <saleout v-if="item.store_count < 1" flag="false"></saleout>
+                    </div>
+                    <div class="goodsContent">
+                        <h4 class="goodsName">
+                            <a>{{item.goods_name}}</a>
+                        </h4>
+                        <div class="goodsDesc">
+                            <a>{{item.goods_name}}</a>
+                        </div>
+                        <div class="goodsSpec">
+                            <span>活动价:¥</span>
+                            <strong>{{item.shop_price}}</strong>
+                            <!-- <span>/箱</span> -->
+                        </div>
+                        <div class="buy-now">
+                            <a>立即抢购</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 商品列表 end -->
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            venue: {},
+            coupon: [],
+            list: [],
+            page: 1
+        },
+        methods: {
+            init: function (refreash) {
+                if (refreash) {
+                    vm.page = 1;
+                } else if (vm.page == false) {
+                    refreash && api.refreshHeaderLoadDone();
+                    return;
+                } else {
+                    loading();
+                }
+
+                ajax_post('/index/venue_goods', {id: vm.venue.venue_id, p: vm.page}, function (res) {
+                    if (refreash) {
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        api.hideProgress();
+                    }
+                    if (res.length) {
+                        if (vm.page == 1) {
+                            vm.list = res;
+                        } else {
+                            vm.list = vm.list.concat(res);
+                        }
+                        vm.page++;
+                    } else {
+                        api.toast({
+                            msg: '没有更多了',
+                            duration: 1500,
+                            location: 'middle'
+                        });
+                        vm.page = false;
+                    }
+                });
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+    apiready = function () {
+        var data = api.pageParam;
+        vm.venue = data.venue;
+        vm.coupon = data.coupon;
+//        document.getElementById('activity_title').style.backgroundImage=data.venue.title_bg;//标题背景图片，暂时写死
+        document.getElementById('app').style.backgroundColor = data.venue.background_color;
+        document.getElementById('activity_title').firstChild.style.backgroundImage = "-webkit-linear-gradient(top, #fff, '+data.venue.background_color+')')";
+        vm.init();
+
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.init(true);
+        });
+
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.init();
+        });
+    };
+</script>
+</body>
+</html>

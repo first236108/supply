@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/public.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+
+    <link rel="stylesheet" type="text/css" href="../../css/swiper.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/animate.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        #app {
+            height: 100%;
+            overflow: auto;
+        }
+
+        .swiper-container {
+            height: 375px;
+        }
+
+        .product_info {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .product_info .info_dottm {
+            height: 50px;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            background: #f2f2f2;
+        }
+
+        .info_dottm .name {
+            width: 76%;
+            float: left;
+            height: 50px;
+            font-size: 16px;
+            line-height: 25px;
+            color: #333;
+            padding-left: 3%;
+            padding-right: 3%;
+            overflow: hidden;
+            font-weight: normal;
+        }
+
+        .info_dottm .right {
+            width: 18%;
+            float: left;
+            height: 50px;
+            font-size: 16px;
+            color: #333;
+            border-left: 1px solid #e2dfdf;
+            margin-left: -1px;
+            text-align: center;
+        }
+
+        .info_dottm .right .share {
+            width: 40px;
+            height: 50px;
+            margin: auto;
+            background: url(../../image/pub_goods.png) no-repeat;
+            background-size: auto 350px;
+            background-position: 0 -150px;
+        }
+
+        .goods_price {
+            width: 95%;
+            margin: auto;
+            overflow: hidden;
+            padding-top: 10px;
+        }
+
+        .goods_price dt {
+            width: 100%;
+            overflow: hidden;
+            height: auto;
+        }
+
+        .price_dottm {
+            width: 95%;
+            height: 30px;
+            margin: auto;
+        }
+
+        .price_dottm li {
+            width: 33.3%;
+            float: left;
+            height: 30px;
+            font-size: 13px;
+            line-height: 30px;
+            text-align: center;
+            color: #666;
+        }
+
+        .ui-sx {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .subNavBox {
+            overflow: hidden;
+            margin-left: 10px;
+            padding-bottom: 0px;
+            margin-right: 10px;
+        }
+
+        .subNav {
+            background: url(../../image/arrow_down_off.png) no-repeat right center;
+            background-size: auto 13px;
+        }
+
+        .subNav.on {
+            background: url(../../image/arrow_down_on.png) no-repeat right center;
+            background-size: auto 14px;
+        }
+
+        .subNav strong {
+            display: block;
+            width: 100%;
+            height: 40px;
+            border-bottom: 1px solid #eeeeee;
+            color: #666;
+            font-weight: normal;
+            font-size: 16px;
+            line-height: 40px;
+        }
+
+        .navContent li {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .navContent li .item1 {
+            width: 100%;
+            height: 50px;
+            overflow: hidden;
+            padding-bottom: 5px;
+        }
+
+        .navContent li .item1 .ui-number {
+            overflow: hidden;
+            height: 30px;
+            display: block;
+            /*width: 100px;*/
+            margin-top: 10px;
+        }
+
+        .navContent li .item1 .ui-number img {
+            width: 30px;
+            height: 30px;
+        }
+
+        #store_count {
+            font-size: 10px;
+            float: left;
+            line-height: 50px;
+            color: #666;
+            margin-left: 20px;
+        }
+
+        .navContent li .item1 .ui-number .num {
+            display: inline-block;
+            border: 0;
+            width: 1.5rem;
+            height: 30px;
+            float: left;
+            text-align: center;
+            line-height: 30px;
+            color: #666;
+            font-size: 20px;
+        }
+
+        #store_count {
+            font-size: 10px;
+            float: left;
+            line-height: 50px;
+            color: #666;
+            margin-left: 20px;
+        }
+
+        .rzs_info {
+            width: 100%;
+            margin-top: 10px;
+            overflow: hidden;
+            background: #FFF;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .rzs_info dl {
+            width: 95%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .rzs_info dl dt {
+            width: 50px;
+            float: left;
+            height: 50px;
+            overflow: hidden;
+        }
+
+        .rzs_info dl dt img {
+            height: 48px;
+            width: 48px;
+        }
+
+        .rzs_info dl dd {
+            width: 80%;
+            float: left;
+        }
+
+        .rzs_info dl dd strong {
+            display: block;
+            width: 100%;
+            font-size: 14px;
+            line-height: 30px;
+            color: #999;
+            text-indent: 10px;
+            font-weight: normal;
+        }
+
+        .rzs_info dl dd em {
+            display: block;
+            width: 100%;
+            font-size: 14px;
+            line-height: 20px;
+            color: #999;
+            font-style: normal;
+            text-indent: 10px;
+        }
+
+        .rzs_info ul {
+            width: 95%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        .rzs_info ul li {
+            width: 33.3%;
+            float: left;
+            height: 40px;
+            text-align: center;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .rzs_info ul li span {
+            display: inline-block;
+            font-size: 12px;
+            line-height: 40px;
+            color: #999;
+        }
+
+        .rzs_info ul li strong {
+            display: inline-block;
+            font-size: 12px;
+            line-height: 40px;
+            color: #DD2726;
+            font-weight: normal;
+        }
+
+        .rzs_info ul li em {
+            display: inline-block;
+            width: 13px;
+            height: 13px;
+            font-size: 10px;
+            line-height: 14px;
+            color: #fff;
+            border-radius: 2px;
+            background: #DD2726;
+            text-align: center;
+            margin-left: 3px;
+        }
+
+        .s_dianpu {
+            width: 100%;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .s_dianpu span {
+            display: block;
+            float: left;
+            width: 50%;
+            height: 50px;
+        }
+
+        .s_dianpu span a {
+            display: block;
+            width: 90%;
+            height: 40px;
+            border: 1px solid #a0a0a0;
+            border-radius: 3px;
+            font-size: 14px;
+            line-height: 40px;
+            text-align: center;
+            line-height: 40px;
+            position: relative;
+            color: #333;
+        }
+
+        .bg1 {
+            display: block;
+            width: 25px;
+            height: 25px;
+            position: absolute;
+            background: url(../../image/rzs.png) no-repeat;
+            background-size: auto 50px;
+            background-position: 0 0;
+            margin-top: 5px;
+            left: 15%;
+        }
+
+        .huodong {
+            background: #F2F2F2;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .subNav.on {
+            background: url(../../image/arrow_down_on.png) no-repeat right center;
+            background-size: auto 14px;
+        }
+
+        .huodong .subNav {
+            margin-right: 10px;
+        }
+
+        .att_title {
+            width: 100%;
+            height: 40px;
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .att_title span {
+            margin-top: 8px;
+            margin-left: 12px;
+            float: left;
+            font-size: 12px;
+            line-height: 23px;
+            color: #fff;
+            width: 23px;
+            height: 23px;
+            background: #dd0303;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .att_title p {
+            height: 30px;
+            padding-left: 10px;
+            float: left;
+            font-size: 14px;
+            line-height: 40px;
+            color: #666;
+        }
+
+        .youhui_list1 {
+            overflow: hidden;
+        }
+
+        .youhui_list1 li {
+            float: left;
+            font-size: 14px;
+            line-height: 30px;
+            color: #666;
+        }
+
+        .youhui_list1 li img {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            margin-right: 7px;
+            /*margin-left: 12px;*/
+        }
+
+        .navContent li p {
+            width: 95%;
+            overflow: hidden;
+            height: 25px;
+            line-height: 25px;
+            margin: auto;
+        }
+
+        .huodong .navContent li {
+            margin: 0 .4rem .1rem;
+        }
+
+        .huodong .navContent li .prom-title, .huodong .navContent li .prom-time {
+            padding: 0 25px;
+        }
+
+        .huodong .navContent li .prom-title {
+            color: #ff5000;
+            font-weight: bold;
+        }
+
+        .huodong .navContent li .prom-time {
+            border-bottom: 1px solid #ccc;
+        }
+
+        .huodong .navContent li .prom-goods, .huodong .navContent li .prom-order {
+            margin: 3px .2rem;
+            float: left;
+            font-size: 12px;
+            line-height: 23px;
+            color: #fff;
+            width: 23px;
+            height: 23px;
+            background: #FF9800;
+            border-radius: 50%;
+            text-align: center;
+        }
+
+        .huodong .navContent li .prom-goods {
+            background-color: #ff5000;
+        }
+
+        .blank10 {
+            height: 10px;
+            line-height: 10px;
+            clear: both;
+        }
+
+        #price-table {
+            width: 100%;
+        }
+
+        .red-price {
+            font-size: 16px;
+            line-height: 30px;
+            color: #dd2726;
+        }
+
+        .navContent li .title {
+            height: 30px;
+            width: 100%;
+            font-size: 16px;
+            line-height: 30px;
+            color: #666;
+            margin-top: 5px;
+            border-bottom: none;
+        }
+
+        .navContent li .item {
+            overflow: hidden;
+            border-bottom: 1px solid #eeeeee;
+            padding-bottom: 5px;
+        }
+
+        .navContent li .item a {
+            padding-left: 10px;
+            padding-right: 10px;
+            border: 1px solid #CCC;
+            line-height: 30px;
+            display: inline-block;
+            -moz-border-radius: 4px;
+            -webkit-border-radius: 4px;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .navContent li .item a.hover {
+            background: #dd2726;
+            color: #FFF;
+            border: 1px solid #dd2726;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app" v-cloak>
+    <!-- swiper -->
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="item in imgs" :key="item.img_id">
+                <img title="" width="100%" :src="item.image_url">
+            </div>
+        </div>
+        <!-- 如果需要分页器 -->
+        <div class="swiper-pagination"></div>
+    </div>
+
+    <!-- 商品信息 -->
+    <div class="product_info">
+        <div class="info_dottm">
+            <h3 class="name">
+                {{goods.goods_name}}
+                <div style="font-size: 8px;">{{goods.goods_sn}}</div>
+            </h3>
+            <div class="right">
+                <div id="pro_share" class="share"></div>
+            </div>
+        </div>
+
+        <dl class="goods_price">
+            <dt v-if="interval_price.length">
+                <table id="price-table">
+                    <tr>
+                        <td>价格</td>
+                        <td class="red-price" v-for="vo in interval_price">￥{{vo.price}}</td>
+                    </tr>
+                    <tr>
+                        <td>起批量</td>
+                        <td v-for="vt in interval_price">{{vt.text}}</td>
+                    </tr>
+                </table>
+            </dt>
+            <dt v-else><span id="goods_price">￥ {{shop_price}} 元</span></dt>
+        </dl>
+
+        <ul class="price_dottm">
+            <li style="text-align:left">折扣： {{goods.discount}} 折</li>
+            <li>{{goods.comment_count}}人评价</li>
+            <li style="text-align:right">{{goods.sale_num}}人已付款</li>
+        </ul>
+        <ul class="price_dottm">
+            <li style="text-decoration: line-through;width: auto;">建议零售价：￥{{goods.market_price}}元</li>
+        </ul>
+    </div>
+
+    <!-- 商品活动 -->
+    <section class="huodong" v-if="showActivity">
+        <div :class="['subNav',isShowActivity?'on':'']" @click="handle('isShowActivity')">
+            <div class="att_title"><span>惠</span>
+                <p>促销活动</p>
+            </div>
+        </div>
+
+        <div class="navContent" v-show="isShowActivity">
+            <ul class="youhui_list1" style="margin-top:0;">
+                <li v-if="prom_goods">
+                    <span class="prom-goods">惠</span>
+                    <span class="tag">商品促销</span>
+                    <p class="prom-title">{{prom_goods.title}}</p>
+                    <p class="prom-time">{{moment.unix(prom_goods.start_time).format('YYYY-MM-DD HH:mm:ss') +' - '+ moment.unix(prom_goods.end_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
+                </li>
+                <li v-for="(prom,index) in prom_order">
+                    <span class="prom-order">订</span>
+                    <span class="tag">订单活动</span>
+                    <p class="prom-title">{{prom.title}}</p>
+                    <p class="prom-time">{{moment.unix(prom.start_time).format('YYYY-MM-DD HH:mm:ss') +' - '+ moment.unix(prom.end_time).format('YYYY-MM-DD HH:mm:ss')}}</p>
+                </li>
+            </ul>
+
+            <div class="blank10"></div>
+        </div>
+    </section>
+
+    <!-- 规格 -->
+    <section class="search_ka" v-if="Object.keys(filter_spec).length">
+        <div class="ui-sx bian1">
+            <div class="subNavBox">
+                <div :class="['subNav', isShowSpec?'on':'']" @click="handle('isShowSpec')"><strong>选择商品属性</strong></div>
+                <ul class="navContent" v-show="isShowSpec">
+                    <li v-for="(specs,spec_name) in filter_spec">
+                        <div class="title">{{spec_name}}</div>
+                        <div class="item">
+                            <a v-for="(spec,index) in specs" :data-item-id="spec.item_id" :class="{hover:index==0}" @click="choseSpec">{{spec.item}}</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 购买数量 -->
+    <section class="search_ka">
+        <div class="ui-sx bian1">
+            <div class="subNavBox">
+                <div :class="['subNav',isShowCart?'on':'']" @click="handle('isShowCart')"><strong>购买数量</strong></div>
+                <ul class="navContent" v-show="isShowCart">
+                    <li style=" border-bottom:1px solid #eee">
+                        <div class="item1 clearfix">
+                            <span class="ui-number" style="display:block; float: right;">
+                                <img src="../../image/-.png" height="100%" width="30%" style="float:left" @click="cutNum"/>
+                                <input type="number" class="num" id="number" value="1" min="1" v-model="goodsNum">
+                                <img src="../../image/+.png" height="100%" width="30%" style="float:left" @click="addNum"/>
+                            </span>
+                            <span id="store_count" style="display:block;float: right;margin-right: 20px;">库存：{{store_count}}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- line -->
+    <div style=" height:8px; background:#eee; margin-top:-1px;"></div>
+
+    <!--店铺信息-->
+    <div class="is_scroll">
+        <section class="rzs_info">
+            <div class="top_info">
+                <dl class="clearfix">
+                    <dt>
+                        <a class="open-win" data-name="store" data-url="../store/store_index" :data-id="store.store_id">
+                            <img :src="store.store_logo">
+                        </a>
+                    </dt>
+                    <dd><strong>卖家: <span style="color:#333; font-size:18px;">{{store.store_name}}</span></strong><em>{{store.grade}}</em></dd>
+                </dl>
+                <ul class="clearfix">
+                    <li><span>宝贝描述</span><strong>{{store.store_desccredit}}</strong><em>高</em></li>
+                    <li><span>卖家服务</span><strong>{{store.store_servicecredit}}</strong><em>高</em></li>
+                    <li><span>物流服务</span><strong>{{store.store_deliverycredit}}</strong><em>高</em></li>
+                </ul>
+            </div>
+            <div class="s_dianpu"><span><a @click="callphone(store.store_phone)" style=" margin-left:7%;"><i class="icon-phone2"></i> 联系客服</a></span>
+                <span><a class="open-win" data-name="store" data-url="../store/store_index" :data-id="store.store_id" style="margin-left:3%;"><i class="icon-home-outline"></i> 进入店铺</a></span></div>
+        </section>
+    </div>
+
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/swiper.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/moment.min.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            spec: 0,
+            shop_price: 0,
+            store_count: 0,
+            goods: {},
+            spec_goods_price: {},
+            filter_spec: {},
+            imgs: [],
+            prom_goods: {},
+            interval_price: [],
+            interval_min: 5,
+            prom_order: [],
+            store: {},
+            showActivity: false,
+            isShowActivity: true,
+            isShowCart: true,
+            isShowSpec: true,
+            goodsNum: 1
+        },
+        methods: {
+            //初始化swiper
+            renderSwiper: function () {
+                new Swiper('.swiper-container', {
+                    direction: 'horizontal', // 垂直切换选项
+                    loop: true, // 循环模式选项
+                    autoplay: false,
+                    pagination: {
+                        el: '.swiper-pagination'// 分页器
+                    }
+                });
+            },
+            //初始化 获取商品信息
+            init: function () {
+                vm.goods = api.pageParam.goods;
+                vm.shop_price = vm.goods.shop_price;
+                vm.store_count = vm.store_count ? vm.store_count : vm.goods.store_count;
+                vm.spec_goods_price = api.pageParam.spec_goods_price;
+                vm.filter_spec = api.pageParam.filter_spec;
+                vm.imgs = api.pageParam.goods_images_list;
+                vm.prom_goods = api.pageParam.prom_goods;
+                vm.interval_price = api.pageParam.interval_price;
+                vm.interval_min = api.pageParam.interval_min;
+                vm.store = api.pageParam.store;
+                setTimeout(function () {
+                    vm.renderSwiper();
+                }, 50);
+                if (vm.prom_goods || vm.prom_order.length) {
+                    vm.showActivity = true;
+                }
+            },
+            //选择规格
+            choseSpec: function () {
+                var a = event.target, nodes;
+                a.parentNode.childNodes.forEach(function (node) {
+                    node.classList.remove('hover');
+                });
+                a.classList.add('hover');
+                this.showSpecPrice();
+            },
+            //展示规格价
+            showSpecPrice: function (flag) {
+                var specs = [], _this;
+                _this = vm;
+                if (!Object.keys(_this.spec_goods_price).length)
+                    return;
+                if (flag == true) {
+                    Object.keys(_this.filter_spec).forEach(function (t) {
+                        specs.push(_this.filter_spec[t][0]['item_id']);
+                    });
+                } else {
+                    var nodes = document.querySelectorAll('.navContent li .item a.hover');
+                    nodes.forEach(function (node) {
+                        specs.push(node.dataset.itemId);
+                    });
+                }
+
+                _this.spec = specs.sort(sortdesc).join('_');
+                api.sendEvent({
+                    name: 'cartparam',
+                    extra: {goods_spec: _this.spec}
+                });
+
+                if (_this.spec && _this.spec_goods_price[_this.spec].price) {
+                    _this.shop_price = _this.spec_goods_price[_this.spec].price;
+                    _this.store_count = _this.spec_goods_price[_this.spec].store_count;
+                    if (_this.interval_min > 1 && _this.goodsNum < _this.interval_min)
+                        _this.goodsNum = this.interval_min;
+                    if (_this.store_count > 1 && _this.goodsNum > _this.store_count)
+                        _this.goodsNum = _this.store_count;
+                }
+            },
+            //展开收缩
+            handle: function (name) {
+                this[name] = !this[name];
+            },
+            //添加
+            addNum: function () {
+                if (this.goodsNum > this.store_count) {
+                    toast('库存仅剩余: ' + this.store_count);
+                    this.goodsNum = this.store_count;
+                    return;
+                }
+                this.goodsNum++;
+                this.selectPrice();
+            },
+            //减少
+            cutNum: function () {
+                if (this.goodsNum == 1) {
+                    return false;
+                }
+                if (this.interval_min > 1 && this.goodsNum <= this.interval_min) {
+                    toast('本商品最小起批量为: ' + this.interval_min);
+                    this.goodsNum = this.interval_min;
+                    return;
+                }
+                this.goodsNum--;
+                this.selectPrice();
+            },
+            //动态高亮阶梯价
+            selectPrice: function () {
+                api.sendEvent({
+                    name: 'cartparam',
+                    extra: {goods_num: this.goodsNum}
+                });
+                if (this.interval_price.length) {
+                    var show = 0;
+                    vm.interval_price.forEach(function (interval, index) {
+                        if (interval.num <= vm.goodsNum)
+                            show = index;
+                    });
+                    var obj = document.querySelectorAll('#price-table td');
+                    obj.forEach(function (td, index) {
+                        td.classList.remove('bold');
+                        if (index == show + 1 || index == show + 5)
+                            td.classList.add('bold');
+                    });
+                }
+            }
+        }
+    });
+
+    function sortdesc(a, b) {
+        return a - b;
+    }
+
+    apiready = function () {
+        vm.init();
+        vm.showSpecPrice(true);
+        openWin();
+    };
+</script>
+</body>
+
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-选择优惠券</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        #app {
+            width: 94%;
+            margin: .2rem 3%;
+        }
+
+        .info {
+            text-align: center;
+        }
+
+        .info .condition {
+            color: #999;
+            font-size: .18rem;
+        }
+
+        .info .red {
+            color: #ff0035;
+            font-size: .2rem;
+        }
+
+        .info .price {
+            font-size: .28rem;
+            color: #ff0035;
+            font-weight: bold;
+        }
+
+        .cell-right {
+            position: relative;
+        }
+
+        .cell-right .body {
+            display: block;
+            position: absolute;
+            left: 20%;
+            text-align: center;
+        }
+
+        .cell-right .body span {
+            display: block;
+        }
+
+        .body .name {
+            font-size: .24rem;
+            font-weight: bold;
+        }
+
+        .body .time {
+            color: #999;
+            font-size: .18rem;
+        }
+
+        .cell-right input[type=radio]:checked + .cell-checkbox-icon:after {
+            color: #4CD864;
+        }
+
+        .text, .m-celltitle {
+            font-size: .24rem;
+        }
+
+        #cover {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: #fff;
+            z-index: 9999;
+            opacity: .5;
+        }
+
+        .m-cell:after {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+<section class="g-flexview">
+    <header class="m-navbar" id="header">
+        <a href="#" class="navbar-item event-back">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">选择优惠券</span>
+        </div>
+    </header>
+    <div id="app">
+        <div class="m-cell">
+            <div class="cell-item">
+                <span class="cell-left text">不使用优惠券</span>
+                <div class="cell-right" @click="select(0)">
+                    <input type="radio" value="0" name="coupon" v-model="selected">
+                    <i class="cell-checkbox-icon"></i>
+                </div>
+            </div>
+            <div class="cell-item" v-for="(coupon,index) in list.valid">
+                <div class="cell-left">
+                    <div class="info">
+                        <span class="red">￥</span>
+                        <span class="price">{{coupon.money}}</span>
+                        <div class="condition">满{{parseFloat(coupon.condition)}}元可用</div>
+                    </div>
+                </div>
+                <div class="cell-right" @click="select(coupon.id)">
+                    <span class="body">
+                        <span class="name">{{storename}}&nbsp;{{coupon.name}}</span>
+                        <span class="time">{{moment.unix(coupon.use_start_time).format('YYYY-MM-DD')}} - {{moment.unix(coupon.use_end_time).format('YYYY-MM-DD')}}</span>
+                    </span>
+                    <input type="radio" name="coupon" :value="coupon.id" v-model="selected">
+                    <i class="cell-checkbox-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="m-celltitle" v-if="list.invalid.length">不可用优惠券</div>
+        <div class="m-cell">
+            <div id="cover"></div>
+            <div class="cell-item" v-for="(vo,idx) in list.invalid">
+                <div class="cell-left">
+                    <div class="info">
+                        <span class="red">￥</span>
+                        <span class="price">{{vo.money}}</span>
+                        <div class="condition">满{{parseFloat(vo.condition)}}元可用</div>
+                    </div>
+                </div>
+                <div class="cell-right">
+                <span class="body">
+                    <span class="name">{{storename}}&nbsp;{{vo.name}}</span>
+                    <span class="time">{{moment.unix(vo.use_start_time).format('YYYY-MM-DD')}} - {{moment.unix(vo.use_end_time).format('YYYY-MM-DD')}}</span>
+                </span>
+                    <input type="radio" name="invalid" :value="vo.id" readonly="readonly">
+                    <i class="cell-checkbox-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/moment.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: {
+                "valid": [],
+                "invalid": []
+            },
+            store_id: 0,
+            amount: 0,
+            storename: '商超采购',
+            selected: 291
+        },
+        filters: {
+            fix: function (conditon) {
+                return conditon;
+            }
+        },
+        methods: {
+            init: function () {
+                ajax_post('/cart/couponList', {store_id: vm.store_id, amount: vm.amount}, function (res) {
+                    vm.list = res;
+                });
+            },
+            select: function (id) {
+                this.selected = id;
+                api.sendEvent({
+                    name: 'select_coupon',
+                    extra: {
+                        id: id,
+                        store_id: vm.store_id
+                    }
+                });
+                setTimeout(function () {
+                    api.closeWin();
+                }, 200);
+            }
+        }
+    });
+    apiready = function () {
+        vm.store_id = api.pageParam.store;
+        vm.amount = api.pageParam.amount;
+        vm.storename = api.pageParam.storename;
+        vm.selected = api.pageParam.coupon;
+        vm.init();
+        openWin();
+    };
+</script>
+
+</body>
+</html>

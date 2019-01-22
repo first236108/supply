@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-我的店铺</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            background: #f4f4f4;
+        }
+
+        .nav {
+            height: 1rem;
+            background: #fff;
+            border: 0.01rem solid #f0f0f0;
+        }
+
+        .nav a {
+            float: left;
+            display: block;
+            width: 33%;
+            height: 1rem;
+            line-height: 1rem;
+            font-size: 0.3rem;
+            color: #494949;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .nav .active {
+            color: #E7553C;
+        }
+
+        .items {
+            height: calc(100% - 3.2rem);
+            overflow-y: auto;
+            padding-top: 0.2rem;
+        }
+
+        .items .item {
+            height: 2.5rem;
+            background: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .store {
+            height: 1.55rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+            padding: 0 0.24rem;
+        }
+
+        .imgs {
+            float: left;
+        }
+
+        .imgs img {
+            width: 1rem;
+            height: 1rem;
+            margin-top: 0.25rem;
+            border-radius: 0.04rem;
+        }
+
+        .txt {
+            float: left;
+            margin-left: 0.3rem;
+        }
+
+        .txt .name {
+            margin-top: 0.36rem;
+            font-size: 0.3rem;
+            color: #333;
+        }
+
+        .txt .info {
+            margin-top: 0.12rem;
+            font-size: 0.28rem;
+            color: #999;
+        }
+
+        .status {
+            height: calc(100% - 1.56rem);
+        }
+
+        .status span {
+            display: block;
+            margin: 0.22rem 0.24rem 0 0;
+            float: right;
+            width: 1.5rem;
+            height: 0.45rem;
+            text-align: center;
+            line-height: 0.45rem;
+            font-size: 0.28rem;
+            color: #E7553C;
+            border: 0.01rem solid #E7553C;
+        }
+
+        .btn {
+            display: block;
+            margin: 0.4rem auto;
+            width: 6.9rem;
+            height: 0.9rem;
+            color: #fff;
+            text-align: center;
+            line-height: 0.9rem;
+            font-size: 0.32rem;
+            background: rgba(255, 49, 74, 1);
+            border-radius: 0.1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app">
+    <div class="nav clearfix">
+        <a :class="types == '0' ? 'active' : ''" data-types="0" @click="checkTypes">认证中</a>
+        <a :class="types == '1' ? 'active' : ''" data-types="1" @click="checkTypes">已认证</a>
+        <a :class="types == '2' ? 'active' : ''" data-types="2" @click="checkTypes">认证失败</a>
+    </div>
+
+    <store :list="list0" :is-show="isShow" v-show="types == '0'"></store>
+    <store :list="list1" :is-show="isShow" v-show="types == '1'"></store>
+    <store :list="list2" :is-show="isShow" v-show="types == '2'"></store>
+
+    <a class="btn open-win" data-name="add_store" data-url="./add_store.html">新建店铺</a>
+</div>
+
+<script type="text/x-template" id="tpl">
+    <div class="items">
+        <template v-if="list.length>0">
+            <div class="item" v-for="item in list">
+                <div class="store clearfix">
+                    <div class="imgs">
+                        <img :src="item.imgs" alt="">
+                    </div>
+                    <div class="txt">
+                        <p class="name">{{item.shop_name}}</p>
+                        <p class="info">最后编辑时间:{{item.modify_time || item.create_time}}</p>
+                    </div>
+                </div>
+                <div class="status">
+                    <span v-if="item.status == 0">审核中</span>
+                    <span v-if="item.status == 1">审核成功</span>
+                    <span v-if="item.status == 2">审核失败</span>
+                </div>
+            </div>
+        </template>
+
+        <div class="empty" v-if="list.length == 0 && isShow">
+            <img src="../../image/goodsEmpty.png">
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            types: '0', //0=>认证中,1=>已认证,2=>认证失败
+            list0: [], //认证中
+            list1: [], //已认证
+            list2: [], //认证失败
+            isShow: false, //受否显示empty.png
+            isLoadlist1: false, //是否加载已认证列表
+            isLoadlist2: false, //是否加载认证失败列表
+        },
+        components: {
+            'store': {
+                template: '#tpl',
+                props: ['list', 'isShow']
+            }
+        },
+        methods: {
+            checkTypes: function (e) {
+                var types = e.currentTarget.dataset.types;
+                this.types = types;
+                if (!(this['isLoadList' + types]) && types != '0') {
+                    this.isShow = false;
+                    this['isLoadList' + types] = true;
+                    this.getStoreList(types);
+                }
+            },
+            //获取审核列表
+            getStoreList: function (types) {
+                var self = this;
+                loading();
+                ajax_post('/user/certify', {
+                    certify_type: types
+                }, function (res) {
+                    console.log(JSON.stringify(res));
+                    api.hideProgress();
+                    if (res.length == 0) {
+                        self.isShow = true;
+                    }
+                    self['list' + types] = res;
+
+                });
+            }
+        },
+        mounted: function () {
+            openWin();
+        }
+    });
+    apiready = function () {
+        vm.getStoreList('0');
+        api.addEventListener({
+            name: 'add_store_close'
+        }, function (ret, err) {
+            if (ret) {
+                vm.getStoreList('0');
+            } else {
+                //  alert( JSON.stringify( err ) );
+            }
+        });
+    };
+</script>
+
+</body>
+
+</html>

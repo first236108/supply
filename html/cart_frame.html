@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-进货单</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../font/iconfont.css"/>
+    <script type="text/javascript" src="../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html, body, #app {
+            background: #f0f0f0;
+        }
+
+        .goods-list {
+            margin-bottom: 0.89rem;
+        }
+
+        .goods {
+            background: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .title {
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .title .warning {
+            padding: 0 .4rem;
+            line-height: 200%;
+            color: #fd772e;
+        }
+
+        .goods .item {
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .item .left, .item .right {
+            float: left;
+            margin: 0 .2rem 0;
+        }
+
+        .left {
+            height: 100%;
+            line-height: 1.88rem;
+        }
+
+        .right {
+            width: calc(100% - 1.5rem);
+        }
+
+        .right > img {
+            float: left;
+            margin-top: 0.2rem;
+            width: 1.52rem;
+            height: 1.52rem;
+        }
+
+        .right .info {
+            float: left;
+            margin-left: 0.2rem;
+            width: calc(100% - 1.75rem);
+        }
+
+        .right .info p {
+            margin-top: 0.30rem;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            height: 0.36rem;
+            line-height: 0.42rem;
+            font-size: 0.28rem;
+            color: #222;
+        }
+
+        .info .bottom {
+            margin-top: 0.42rem;
+            height: 0.52rem;
+        }
+
+        .info span {
+            display: block;
+            float: left;
+            line-height: 0.52rem;
+        }
+
+        .btns img {
+            float: left;
+            width: 0.4rem;
+            height: 0.4rem;
+        }
+
+        .btns {
+            float: right;
+        }
+
+        .btns span {
+            margin: 0 0.3rem;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .goods-num {
+            float: left;
+            display: inline;
+            width: 1rem;
+            font-size: 0.4rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: #424242
+        }
+
+        .info span:nth-child(1) {
+            font-size: 0.32rem;
+            color: #FF314A;
+        }
+
+        .info span:nth-child(2) {
+            margin-left: 0.3rem;
+            font-size: 0.24rem;
+            color: #999;
+        }
+
+        .info span:nth-of-type(2) {
+            text-decoration: line-through;
+        }
+
+        .ac {
+            height: 0.8rem;
+            padding-left: 0.2rem;
+            clear: both;
+        }
+
+        .ac .give {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ac img {
+            height: 0.8rem;
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .ac .give-words {
+            display: block;
+            float: left;
+            margin: 0.2rem 0.2rem 0 0;
+            width: 0.4rem;
+            height: 0.4rem;
+            line-height: 0.4rem;
+            text-align: center;
+            color: #ff4040;
+            border: 0.02rem solid #ff4040;
+            border-radius: 50%;
+            font-size: 0.28rem;
+        }
+
+        .ac a {
+            display: table;
+            width: calc(100% - 1rem);
+            height: 100%;
+        }
+
+        .ac .num {
+            display: table-cell;
+            vertical-align: middle;
+            width: calc(100% - 1.2rem);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            margin-left: 0.2rem;
+            font-size: 0.26rem;
+            color: #ff4040;
+        }
+
+        .ac .goods-name {
+            margin-left: 0.2rem;
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .counts {
+            height: 0.88rem;
+            line-height: 0.88rem;
+            background: #fff;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .nums {
+            float: right;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .nums span, .nums a {
+            float: left;
+            display: block;
+        }
+
+        .nums span {
+            color: #FF314A;
+            font-size: 0.3rem;
+        }
+
+        .nums a {
+            margin-left: 0.2rem;
+            width: 1.66rem;
+            color: #fff;
+            text-align: center;
+            background: #EF4F4F;
+            font-size: 16px;
+        }
+
+        .qb_tac {
+            color: #999;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .qb_tac img {
+            vertical-align: middle;
+            margin: 0 auto;
+        }
+
+        .counts label {
+            width: 80px;
+            float: left;
+        }
+
+        #total_num {
+            font-size: 0.25rem;
+            color: #999;
+            margin-right: .5rem;
+        }
+
+        .favorite, .delete {
+            border: 1px solid #FF314A;
+            border-radius: 1rem;
+            margin-right: 0.3rem;
+            line-height: 0.3rem;
+            font-size: 0.26rem !important;
+            padding: 6px;
+        }
+
+        .favorite {
+            color: #ffa500 !important;
+            border-color: #ffa500;
+        }
+
+        .warning {
+            clear: both;
+        }
+
+        .cell-item:not(:last-child):after {
+            border-bottom: none;
+        }
+
+        .cell-item {
+            padding-left: .2rem;
+        }
+
+        .strong {
+            font-weight: bold;
+        }
+
+        .remind-item {
+            box-shadow: #0BEAEB 0 0 10px inset;
+        }
+
+        .invalid-item {
+            box-shadow: #f23 0 0 10px inset;
+        }
+    </style>
+</head>
+<body>
+<header class="m-navbar">
+
+    <div class="navbar-center">
+        <span class="navbar-title">进货单</span>
+    </div>
+    <span class="navbar-item" onclick="manager();">管理</span>
+</header>
+
+<div id="app" v-cloak>
+
+    <div class="goods-list" v-if="Object.keys(cartList).length">
+        <div class="goods" v-for="(storegoods,store_id) in cartList">
+
+            <div class="title clearfix" :data-store-id="storeList[store_id].store_id">
+                <div class="cell-item">
+                    <div class="cell-left">
+                        <label class="cell-right pull-left">
+                            <input type="checkbox" :name="'checkstore_'+store_id" @change="selectStore"/>
+                            <i class="cell-checkbox-icon"></i>
+                            <i class="iconfont icon-dianpu"></i>
+                            &nbsp;<span class="strong">{{storeList[store_id].store_name}}</span>
+                        </label>
+                    </div>
+                    <div class="open-win cell-right cell-arrow" data-name="store" data-url="./store/store.html" :data-storeid="store_id">点此进入商铺</div>
+                </div>
+                <div class="warning" v-if="storeList[store_id].difference">
+                    再购¥{{storeList[store_id].difference}}，立享满{{storeList[store_id].store_min_price}}起订并包邮
+                </div>
+            </div>
+
+            <div class="items">
+                <div :class="['item','clearfix',goods.remindStyle?'remind-item':'',goods.status?'invalid-item':'']" v-for="(goods,index) in storegoods">
+                    <div class="left">
+                        <label class="cell-right">
+                            <input type="checkbox" :data-store-id="store_id" v-if="goods.status==0" :data-status="goods.status" v-model="goods.selected" @change="goodsSelect"/>
+                            <input type="checkbox" :data-store-id="store_id" :data-cart-id="goods.id" v-else :data-status="goods.status" checked="checked" @click="goodsSelect"/>
+                            <i class="cell-checkbox-icon"></i>
+                        </label>
+                    </div>
+                    <div class="right clearfix">
+                        <img :src="goods.original_img" class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html" :data-id="goods.goods_id">
+                        <div class="info">
+                            <p>{{goods.goods_name}}</p>
+                            <div class="bottom clearfix">
+                                <span>￥{{goods.goods_price}}</span>
+                                <span>￥{{goods.market_price}}</span>
+                                <div class="btns clearfix" :data-store="store_id" :data-index="index" :data-status="goods.status">
+                                    <img src="../image/minus.png" @click="subEvent">
+                                    <input type="number" min="1" class="goods-num" v-model="goods.goods_num" @change="cartlist">
+                                    <img src="../image/plus.png" @click="addEvent">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 满赠 -->
+                    <div class="ac clearfix" v-if="goods.give_goods">
+                        <div class="give" v-for="give in goods.give_goods">
+                            <span class="give-words">赠</span>
+                            <a>
+                                <img :src="give.img">
+                                <span class="goods-name">{{give.name}}</span>
+                                <span class="num">×{{give.num}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- 商品活动标题 -->
+                    <div class="ac clearfix" v-else-if="goods.prom_title">
+                        <div class="give">
+                            <span class="give-words">促</span>
+                            <a><span class="goods-name">{{goods.prom_title}}</span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="screen-wrap fullscreen login" v-else>
+        <section id="cart-content">
+            <div class="qb_tac" style="padding:50px 0">
+                <img src="../image/empty_cart.png" width="100" height="95">
+                <br>进货单还是空的
+            </div>
+            <div class="qb_gap" style="width:60%; margin:0 auto;">
+                <button type="button" class="btn-block btn-danger" onclick="toIndex();">去首页逛逛</button>
+            </div>
+        </section>
+        <!-- <div style="height:72px;"></div> -->
+        <!-- <section class="f_mask" style="display: none;"></section> -->
+        <!-- <section class="f_block" id="choose" style="height:0px;"></section> -->
+    </div>
+
+    <div class="counts">
+        <label class="cell-right">
+            <input type="checkbox" name="checkbox" @click="selectAll" id="select-all">
+            <i class="cell-checkbox-icon"></i>
+            全选
+        </label>
+        <div class="nums" v-if="manager_status">
+            <span id="total_num">件数:{{total_price.num}}</span>
+            <span>合计:{{total_price.total_fee}}</span>
+            <a @click="checkNum">去结算</a>
+        </div>
+        <div class="nums" v-else>
+            <span class="favorite" @click="movetoFav">移入收藏夹</span>
+            <span class="delete" @click="del()">删除</span>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/ydui.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script>
+
+    var init = false;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            cartList: {},
+            storeList: {},
+            total_price: {
+                "total_fee": 0,
+                "cut_fee": 0,
+                "num": 0
+            },
+            manager_status: true
+        },
+        methods: {
+            //添加商品
+            addEvent: function (e) {
+                var node = e.currentTarget.parentNode;
+                if (node.dataset.status == 1) {
+                    vm.del(vm.cartList[node.dataset.store][node.dataset.index]['id']);
+                    return false;
+                }
+                if (this.cartList[node.dataset.store][node.dataset.index]['store_count'] > this.cartList[node.dataset.store][node.dataset.index]['goods_num']) {
+                    this.cartList[node.dataset.store][node.dataset.index]['goods_num'] += 1;
+                } else {
+                    toast('库存只有 ' + this.cartList[node.dataset.store][node.dataset.index]['store_count'] + ' 哦');
+                    this.cartList[node.dataset.store][node.dataset.index]['goods_num'] = this.cartList[node.dataset.store][node.dataset.index]['store_count'];
+                }
+                this.cartlist(true);
+            },
+            //减少商品
+            subEvent: function (e) {
+                var node = e.currentTarget.parentNode;
+                if (node.dataset.status == 1) {
+                    vm.del(vm.cartList[node.dataset.store][node.dataset.index]['id']);
+                    return false;
+                }
+                if (this.cartList[node.dataset.store][node.dataset.index]['goods_num'] <= this.cartList[node.dataset.store][node.dataset.index]['min_num']) {
+                    toast('此商品最低 ' + this.cartList[node.dataset.store][node.dataset.index]['min_num'] + ' 件起批哦');
+                    this.cartList[node.dataset.store][node.dataset.index]['goods_num'] = this.cartList[node.dataset.store][node.dataset.index]['min_num'];
+                } else {
+                    this.cartList[node.dataset.store][node.dataset.index]['goods_num'] -= 1;
+                }
+                this.cartlist(true);
+            },
+            movetoFav: function () {
+                if (Object.keys(this.cartList).length) {
+                    var ids = this.currentSelectedId();
+                    if (!ids) {
+                        toast('您没有选中任何商品哦!');
+                        return;
+                    } else {
+                        ids = ids.substr(1);
+                    }
+
+                    ajax_post('/cart/movetoFav', {ids: ids}, function (res) {
+                        toast(res.msg);
+                        vm.cartlist(true);
+                    });
+                }
+            },
+            del: function (cid) {
+                if (cid) {
+                    api.confirm({
+                        title: '您选购的商品已失效',
+                        msg: '请重新选购!是否需要删除?',
+                        buttons: ['是的', '取消']
+                    }, function (ret, err) {
+                        if (ret.buttonIndex == 1) {
+                            ajax_post('/cart/delCart', {ids: cid}, function (res) {
+                                vm.cartlist(true);
+                                vm.checkAll();
+                            });
+                        }
+                    });
+                    return;
+                }
+                var ids = this.currentSelectedId();
+                if (!ids) {
+                    toast('您没有选中任何商品哦!');
+                    return;
+                } else {
+                    ids = ids.substr(1);
+                }
+
+                api.confirm({
+                    title: '购物车删除商品',
+                    msg: '确定要删除吗',
+                    buttons: ['是的', '取消']
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+                        ajax_post('/cart/delCart', {ids: ids}, function (res) {
+                            $api.setStorage('cart_count', res.cart_count);
+                            vm.cartlist(true);
+                            vm.checkAll();
+                        });
+                    }
+                });
+            },
+            currentSelectedId: function () {
+                var ids = '';
+                console.log('ids:');
+                Object.keys(vm.cartList).forEach(function (store_id) {
+                    vm.cartList[store_id].forEach(function (goods, index) {
+                        if (vm.cartList[store_id][index].selected) {
+                            ids = ids + ',' + vm.cartList[store_id][index].id;
+                        }
+                    });
+                });
+                return ids;
+            },
+            //全选/反选
+            selectAll: function () {
+                var status = event.target.checked;
+                if (Object.keys(this.cartList).length) {
+                    for (var store_id in this.cartList) {
+                        document.getElementsByName('checkstore_' + store_id)[0].checked = status;
+                        vm.cartList[store_id].forEach(function (goods, index) {
+                            vm.cartList[store_id][index].selected = status;
+                        });
+                    }
+                    this.cartlist();
+                }
+            },
+            //单店铺全选/反选
+            selectStore: function () {
+                //店铺全选
+                var checkbox = event.target;
+                var store_id = checkbox.parentNode.parentNode.parentNode.parentNode.dataset.storeId;
+                var status = checkbox.checked;
+                this.cartList[store_id].forEach(function (val, index) {
+                    vm.cartList[store_id][index].selected = status;
+                });
+                this.checkAll(status);
+                this.cartlist();//刷新接口计算价格
+            },
+            //商品单选
+            goodsSelect: function () {
+                var node = event.currentTarget;
+                if (node.dataset.status == 1) {
+                    vm.del(node.dataset.cartId);
+                    return false;
+                }
+                var store_id = node.dataset.storeId;
+                var status = node.checked;
+                this.cartList[store_id].forEach(function (goods) {
+                    status = status && goods.selected;
+                });
+                document.getElementsByName('checkstore_' + store_id)[0].checked = status;
+                this.checkAll(status);
+                this.cartlist(true);
+            },
+            //检查全选状态
+            checkAll: function (status) {
+                document.querySelectorAll('.title input[type="checkbox"]').forEach(function (node) {
+                    status = status && node.checked;
+                });
+                document.getElementById('select-all').checked = status;
+            },
+            initCheckAll: function () {
+                if (Object.keys(vm.cartList).length) {
+                    var count, selected, status = true;
+                    for (var store_id in vm.cartList) {
+                        count = 0;
+                        selected = 0;
+                        vm.cartList[store_id].forEach(function (goods, index) {
+                            count++;
+                            if (vm.cartList[store_id][index].selected)
+                                selected++;
+                        });
+                        if (count > 0 && count == selected) {
+                            document.getElementsByName('checkstore_' + store_id)[0].checked = true;
+                        }
+                    }
+                    document.querySelectorAll('.title input[type="checkbox"]').forEach(function (n) {
+                        status = status && n.checked;
+                    });
+                    document.getElementById('select-all').checked = status;
+                }
+            },
+            cartlist: function (loading) {
+                if (!loading) {
+                    api.showProgress({
+                        title: '加载中...',
+                        text: '稍等一下...',
+                        modal: true
+                    });
+                }
+
+                var param = {};
+                if (Object.keys(this.cartList).length) {
+                    param.cart_select = {};
+                    param.goods_num = {};
+                    for (var store_id in this.cartList) {
+                        vm.cartList[store_id].forEach(function (goods, index) {
+                            param.cart_select[goods.id] = goods.selected;
+                            param.goods_num[goods.id] = goods.goods_num;
+                        });
+                    }
+                }
+                ajax_post('/cart/cartList', param, function (res) {
+                    vm.cartList = res.cartList;
+                    vm.storeList = res.storeList;
+                    vm.total_price = res.total_price;
+                    $api.setStorage('cart_count', res.total_price.num);
+                    if (res.limited_num) {
+                        api.alert({
+                            title: '提醒',
+                            msg: res.limited_num
+                        }, function (ret, err) {
+                            //
+                        });
+                    }
+
+                    api.hideProgress();
+                    if (loading) {
+                        setTimeout(vm.initCheckAll, 50);
+                        if (Object.keys(vm.cartList).length == 0) {
+                            vm.manager_status = true;
+                        }
+                    }
+                    //首次打开购物车，检查商品提醒及配送区域提醒
+                    if (init) {
+                        var region_remind = 0;
+                        Object.keys(vm.cartList).forEach(function (k) {
+                            vm.cartList[k].forEach(function (t, i) {
+                                if (t.remind) {
+                                    vm.cartList[k][i]['remindStyle'] = true;
+                                    api.alert({
+                                        title: '提醒',
+                                        msg: t.remind
+                                    }, function (ret, err) {
+                                        ajax_post('/cart/updateCartRemind', {id: t.id}, function (res) {
+                                            //TODO
+                                        });
+                                    });
+                                }
+                                if (t.region_remind) {
+                                    vm.cartList[k][i]['remindStyle'] = true;
+                                    region_remind++;
+                                }
+                            });
+                        });
+                        if (region_remind) {
+                            api.alert({
+                                title: '提醒',
+                                msg: '您所选商品可能超出配送范围,请确认供应商能否送达'
+                            }, function (ret, err) {
+                                //
+                            });
+                        }
+                        init = false;
+                    }
+                });
+            },
+            checkNum: function () {
+                ajax_post('/cart/checkNum', {}, function (res) {
+                    api.openWin({
+                        name: 'cart2',
+                        url: 'cart/cart2.html'
+                    });
+                }, function (err) {
+                    //店铺起订金额不足、商品活动过期、商品价格变动失效、商品不满足最小起批量
+                    toast(err.body.msg, 2000);
+                    var res = err.body;
+                    if (err.statusCode == 401) {
+                        openLogin();//登陆状态失效
+                    } else if (err.statusCode == 403) {
+                        //商品最小起批量、商品失效提醒
+                        Object.keys(vm.cartList).forEach(function (k) {
+                            vm.cartList[k].forEach(function (t, i) {
+                                if (t.id == res.id) {
+                                    vm.cartList[k][i]['remindStyle'] = true;
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        init = true;
+        vm.cartlist(true);
+    };
+
+    function manager() {
+        if (Object.keys(vm.cartList).length == 0) {
+            toast('您的进货单还是空的哦');
+            return false;
+        }
+        vm.manager_status = !vm.manager_status;
+        if (vm.manager_status)
+            event.target.innerHTML = '管理';
+        else
+            event.target.innerHTML = '完成';
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../font/iconfont.css"/>
+    <script type="text/javascript" src="../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        #gotop {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>商超世界-采购商城</header>
+<div class="m-scrolltab category" id="J_ScrollTab" v-cloak>
+    <div class="scrolltab-nav">
+        <a href="javascript:;" class="scrolltab-item" v-for="(vo,index) in list">
+            <div class="scrolltab-icon"></div>
+            <div class="scrolltab-title">{{vo.mobile_name}}</div>
+        </a>
+    </div>
+
+    <div class="scrolltab-content">
+        <div class="scrolltab-content-item" v-for="vs in list">
+            <div v-for="secd in vs.second">
+                <strong class="scrolltab-content-title">{{secd.mobile_name}}</strong>
+                <ul class="m-grids-3">
+                    <li v-for="thr in secd.third" class="grids-item" :data-id="thr.id" @click="openSearchWin">
+                        <div><img :src="thr.image"></div>
+                        <div class="text-center">{{thr.mobile_name}}</div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="gotop" onclick="goTop('.scrolltab-content');">
+    <i class="icon iconfont icon-dingbu"></i>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/ydui.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript">
+
+    var vm = new Vue({
+        el: '#J_ScrollTab',
+        data: {
+            list: []
+        },
+        methods: {
+            init: function () {
+                api.ajax({
+                    url: host + '/goods/goodsCategoryList',
+                    method: 'post',
+                    dataType: 'json',
+                    returnAll: false
+                }, function (ret, err) {
+                    vm.list = ret;
+                    setTimeout(function () {
+                        init_scroll(0);
+                    }, 50);
+                });
+            },
+            openSearchWin: function () {
+                api.openDrawerLayout({
+                    name: 'search_result',
+                    url: 'widget://html/search/search_result.html',
+                    pageParam: {
+                        id: event.currentTarget.dataset.id
+                    },
+                    slidBackType: 'edge',
+                    rightPane: {
+                        edge: 180,
+                        name: 'searchPane',
+                        url: 'widget://html/search/rightPane.html'
+                    },
+                    animation: {
+                        type: 'push'
+                    },
+                    slidToOpenPane: false,
+                    overScrollMode: 'scrolls',
+                    slidToClosePane: false,
+                    reload: true
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        vm.init();
+    };
+
+    function init_scroll(index) {
+        $('#J_ScrollTab').scrollTab({
+            initIndex: index // 初始化即高选项卡
+        });
+    }
+
+    $('.scrolltab-content').scroll(function () {
+        if ($(this).scrollTop() > 200) {
+            $("#gotop").show();
+        } else {
+            $("#gotop").hide();
+        }
+    });
+
+    //    init_scroll(0);
+</script>

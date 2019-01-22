@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-搜索结果</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <style>
+        #header {
+            position: relative;
+            height: 40px;
+            background: #fff;
+            border-bottom: 1px solid #eeeeee;
+            z-index: 100;
+        }
+
+        .back {
+            float: left;
+            width: 40px;
+            height: 40px;
+            background: url(../../image/arrow_left.png) no-repeat 15px center;
+            background-size: auto 16px;
+            font-size: 15px;
+            z-index: 2;
+        }
+
+        .search {
+            width: calc(100% - 100px);
+            float: left;
+            margin-top: 5px;
+            height: 30px;
+            background: #e3e3e3;
+            border-radius: 5px;
+        }
+
+        .search img {
+            float: left;
+            margin: 7px 7px 0;
+            width: 15px;
+            height: 15px;
+        }
+
+        .search input {
+            display: block;
+            float: left;
+            font-size: 14px;
+            line-height: 30px;
+            color: #666;
+            width: calc(100% - 30px);
+            border: none;
+        }
+
+        .selects {
+            float: right;
+            display: block;
+            width: 40px;
+            line-height: 40px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<!-- header -->
+
+<header id="header" class="clearfix">
+    <a class="back" onclick="api.closeWin()"></a>
+    <div class="search clearfix">
+        <img src="../../image/search.png" alt="">
+        <input type="text" id="keywords" placeholder="搜索词" onfocus="search();">
+    </div>
+    <a class="selects" onclick="filtor();">筛选</a>
+</header>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script>
+
+    apiready = function () {
+        fnReady();
+        fnReadyFrame(true);
+        if (api.pageParam.keywords) document.getElementById('keywords').value = api.pageParam.keywords;
+    };
+
+    function filtor() {
+        api.openDrawerPane({
+            type: 'right'
+        });
+    }
+
+    function search() {
+        api.openWin({
+            name: 'search',
+            url: 'widget://html/search/search.html'
+        });
+//        var words = $api.trim(document.getElementById('keywords').value);
+//        if(!words){
+//            toast();
+//            return;
+//        }
+//        api.sendEvent({
+//            name: 'keywordsChange',
+//            extra: {
+//                keywords: words
+//            }
+//        });
+    }
+</script>
+</body>
+</html>

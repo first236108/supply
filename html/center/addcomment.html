@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-评价订单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .star-rating {
+            position: relative;
+            margin-left: 0.2rem;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .photo > a span {
+            font-size: 0.4rem;
+            color: #f5445d;
+        }
+
+        .star-rating .star-rating__current {
+            position: absolute;
+            top: 0;
+            left: 0.01rem;
+            overflow: hidden;
+        }
+
+        #goods, .order-scroe {
+            color: #333;
+        }
+
+        .goods-block {
+            padding: .2rem;
+            background-color: #fff;
+            margin-bottom: .1rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .goods-block .goods-info {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .goods-info img {
+            width: 25%;
+        }
+
+        .goods-info div {
+            margin-left: .2rem;
+            display: -webkit-box;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .goods-info div p {
+            margin: .1rem;
+            font-size: .24rem;
+        }
+
+        .goods-comment textarea {
+            width: 100%;
+            min-height: 1rem;
+            padding: .1rem .2rem;
+        }
+
+        .order-scroe, .anonymous {
+            margin-top: .2rem;
+            padding: .2rem;
+            font-size: .26rem;
+            background-color: #fff;
+        }
+
+        .order-scroe .star-rating {
+            color: #f00;
+            font-size: .4rem;
+        }
+
+        .flexdiv {
+            display: flex;
+            align-items: center;
+        }
+
+        .flexdiv .text {
+            height: .4rem;
+        }
+
+        .save {
+            padding: 0 .2rem 1rem;
+        }
+
+        .rank {
+            padding-left: 25%;
+        }
+
+        .rank label {
+            width: 25%;
+            text-align: center;
+            font-size: .25rem;
+            border: 1px solid;
+            border-radius: .2rem;
+            margin: 0 4%;
+        }
+
+        .active {
+            color: #f00;
+        }
+
+        .great {
+            font-size: .2rem;
+            color: #fff;
+        }
+
+        .great span {
+            background-color: #FF314A;
+            padding: .08rem .12rem;
+            border-radius: .1rem;
+        }
+
+        .goods-pic-comment {
+            display: flex;
+            padding: .1rem .2rem;
+        }
+
+        .goods-pic-comment .camera {
+            width: 18%;
+            padding: .1rem;
+            border: 1px dashed #ccc;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .goods-pic-comment .camera:not(:last-child) {
+            margin-right: 2.5%;
+        }
+
+        .camera > img {
+            min-width: 100%;
+            height: 1rem;
+            background: url('../../image/xiangji.png') no-repeat center center;
+            background-size: contain;
+        }
+
+        .camera span {
+            position: absolute;
+            right: -.15rem;
+            top: -.15rem;
+            display: none;
+        }
+
+        .camera span img {
+            width: .35rem;
+        }
+
+        .camera span.del {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            border-radius: 50%;
+        }
+
+        .cell-left {
+            font-size: .26rem;
+        }
+
+        .cell-left input[type="checkbox"], .cell-left input[type="checkbox"]:not(.m-switch) {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            position: absolute;
+            left: -9999em;
+        }
+
+        .cell-left input[type="radio"] + .cell-checkbox-icon:after, .cell-left input[type="checkbox"]:not(.m-switch) + .cell-checkbox-icon:after {
+            content: '\e604';
+            color: #D9D9D9;
+            font-family: 'YDUI-INLAY';
+            font-size: .44rem;
+        }
+
+        .cell-left input[type="radio"]:checked + .cell-checkbox-icon:after, .cell-left input[type="checkbox"]:not(.m-switch):checked + .cell-checkbox-icon:after {
+            color: #FF314A;
+            content: '\e601';
+            font-family: 'YDUI-INLAY';
+            font-size: .44rem;
+        }
+    </style>
+</head>
+<body>
+<section class="g-flexview">
+    <header class="m-navbar" id="header">
+        <a class="navbar-item event-back">
+            <i class="back-ico"></i>
+        </a>
+        <div class="navbar-center">
+            <span class="navbar-title">评价订单</span>
+        </div>
+        <div class="navbar-item great" onclick="vm.great();">
+            <span>一键好评&nbsp;<i class="iconfont icon-zantongfill"></i></span>
+        </div>
+    </header>
+
+    <div id="app" class="g-scrollview">
+        <div id="goods">
+            <section class="goods-block" v-for="(vo,index) in goods">
+                <div class="flexdiv rank">
+                    <label :class="[goods_camera[vo.goods_id]['rank']==5?'active':'']"><i class="iconfont icon-haoping"></i><input type="radio" @click="rankscore(vo.goods_id,5)">好评</label>
+                    <label :class="[goods_camera[vo.goods_id]['rank']==3?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.goods_id,3)">中评</label>
+                    <label :class="[goods_camera[vo.goods_id]['rank']==1?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.goods_id,1)">差评</label>
+                </div>
+                <div class="goods-info">
+                    <img :src="vo.original_img">
+                    <div>
+                        <p>{{vo.goods_name}}</p>
+                        <p>{{vo.spec_key_name}}</p>
+                    </div>
+                </div>
+                <div class="goods-comment">
+                    <textarea v-model="goods_camera[vo.goods_id]['content']" placeholder="购买有一段时间了，品质和服务如何？分享给想买的他们吧"></textarea>
+                </div>
+                <div class="goods-pic-comment">
+                    <goods-camera v-for="(vs,idx) in goods_camera[vo.goods_id]['img']" :src="vs.src" :active="vs.active" :goodsid="vo.goods_id" :index="idx" @click.native="chooseImg(vo.goods_id)"></goods-camera>
+                </div>
+            </section>
+        </div>
+        <div class="order-scroe">
+            <div class="flexdiv">
+                <div class="text">描述相符:</div>
+                <star-rating :max="5" :current="describe_score" class="star" data-name="describe_score"></star-rating>
+            </div>
+            <div class="flexdiv">
+                <div class="text">商家服务:</div>
+                <star-rating :max="5" :current="seller_score" class="star" data-name="seller_score"></star-rating>
+            </div>
+            <div class="flexdiv">
+                <div class="text">物流配送:</div>
+                <star-rating :max="5" :current="logistics_score" class="star" data-name="logistics_score"></star-rating>
+            </div>
+        </div>
+        <div class="anonymous">
+            <label class="cell-left">匿名评价:
+                <input type="checkbox" value="3" name="checkbox" v-model="anonymous">
+                <i class="cell-checkbox-icon"></i>
+            </label>
+        </div>
+        <div class="save">
+            <button type="button" class="btn-block btn-danger" @click="addcomment">保存</button>
+        </div>
+    </div>
+</section>
+<script type="text/x-template" id="star-rating">
+    <div class="star-rating">
+        <span v-for="(n,o_index) in max" @click="scroe(o_index)"><i class="icon-star-outline"></i></span>
+        <div class="star-rating__current" :style="{width: getRating + '%'}">
+            <span v-for="(n,t_index) in max" @click="scroe(t_index)"><i class="icon-star"></i></span>
+        </div>
+    </div>
+</script>
+
+<script type="text-x-template" id="goods-camera">
+    <div class="camera">
+        <img :src="src">
+        <span :class="{del:active}" @click="del(goodsid,index)"><img src="../../image/close_white.png"></span>
+    </div>
+</script>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+
+<script>
+    var xiangji = {src: '', active: false}, vm;
+    Vue.component('star-rating', {
+        template: '#star-rating',
+        props: ['max', 'current'],
+        computed: {
+            getRating: function () {
+                return (this.current / this.max) * 100;
+            }
+        },
+        methods: {
+            scroe: function (index) {
+                this.current = index + 1;
+                var item = event.currentTarget.parentNode.dataset.name;
+                if (!item) item = event.currentTarget.parentNode.parentNode.dataset.name;
+                vm.$data[item] = index + 1;
+            }
+        }
+    });
+
+    Vue.component('goods-camera', {
+        props: ['src', 'active', 'goodsid', 'index'],
+        template: '#goods-camera',
+        methods: {
+            del: function (goods_id, index) {
+                event.stopPropagation();
+                console.log(goods_id);
+                if (vm.goods_camera[goods_id]['img'].length > 1)
+                    Vue.delete(vm.goods_camera[goods_id]['img'], index);
+                else {
+                    Vue.set(vm.goods_camera[goods_id]['img'], 0, xiangji);
+                }
+            }
+        }
+    });
+
+    apiready = function () {
+        var res = api.pageParam.res;
+        vm = new Vue({
+            el: '#app',
+            data: {
+                anonymous: true,
+                order: res.order,
+                goods: res.goods,
+                describe_score: 0,//描述相符
+                seller_score: 0,//商家服务
+                logistics_score: 0,//物流配送
+                sign: {},
+                goods_camera: {}
+            },
+            methods: {
+                rankscore: function (goods_id, score) {
+                    vm.goods_camera[goods_id]['rank'] = score;
+                },
+                great: function () {
+                    vm.describe_score = 5;
+                    vm.seller_score = 5;
+                    vm.logistics_score = 5;
+                    Object.keys(vm.goods_camera).forEach(function (v) {
+                        vm.goods_camera[v]['rank'] = 5;
+                    });
+                },
+                chooseImg: function (goods_id) {
+                    var flag = $api.hasCls($api.dom(event.currentTarget, 'span'), 'del');
+                    if (flag) return;
+
+                    if (!vm.sign.policy) {
+                        ajax_post('/user/ossSign', {
+                            dirPath: 'comment'
+                        }, function (res) {
+                            vm.sign = res;
+                        });
+                    }
+
+                    api.getPicture({
+                        mediaValue: 'pic',
+                        preview: true,
+                        allowEdit: true,
+                        quality: 50,
+                        targetWidth: 500,
+                        targetHeight: 500,
+                        saveToPhotoAlbum: false
+                    }, function (ret, err) {
+                        if (ret) {
+                            if (ret.data)
+                                vm.upload(ret.data, goods_id);
+                        } else {
+                            api.toast(err.msg);
+                        }
+                    });
+                },
+                upload: function (url, goods_id) {
+                    if (!vm.sign.policy) {
+                        api.toast({
+                            msg: '图片上传签名错误',
+                            duration: 1500,
+                            location: 'middle'
+                        });
+                        return;
+                    }
+                    api.ajax({
+                        url: vm.sign.host,
+                        method: 'post',
+                        dataType: 'text',
+                        data: {
+                            values: {
+                                OSSAccessKeyId: vm.sign.accessid,
+                                policy: vm.sign.policy,
+                                Signature: vm.sign.signature,
+                                key: vm.sign.dir + getFileName(url),
+                                success_action_status: 201
+                            },
+                            files: {
+                                file: url
+                            }
+                        }
+                    }, function (ret) {
+                        if (ret) {
+                            var src = parseXML(ret).querySelector('Location').innerHTML;
+                            var len = vm.goods_camera[goods_id]['img'].length;
+                            vm.goods_camera[goods_id]['img'][len - 1]['src'] = src;
+                            vm.goods_camera[goods_id]['img'][len - 1]['active'] = true;
+                            if (len < 6) {
+                                vm.$set(vm.goods_camera[goods_id]['img'], len, {src: '', active: false});
+                            }
+                        } else {
+                            console.log(parseXML(ret).querySelector('Message').innerHTML);
+                            api.toast({
+                                msg: parseXML(ret).querySelector('Message').innerHTML,
+                                duration: 1500,
+                                location: 'middle'
+                            });
+                        }
+                    });
+                },
+                addcomment: function () {
+                    var _this = this;
+                    if (!_this.describe_score) {
+                        toast('请对 描述相符 评分');
+                        return;
+                    }
+                    if (!_this.seller_score) {
+                        toast('请对 商家服务 评分');
+                        return;
+                    }
+                    if (!_this.logistics_score) {
+                        toast('请对 物流配送 评分');
+                        return;
+                    }
+                    try {
+                        _this.goods.forEach(function (v, i) {
+                            if (!_this.goods_camera[v.goods_id]['rank'])
+                                throw new Error('请对商品 ' + _this.goods[i]['goods_name'] + ' 做出评价');
+                        });
+                    } catch (e) {
+                        toast(e.message, 2000);
+                        return;
+                    }
+
+                    var req = {
+                        order_id: _this.order.order_id,
+                        store_id: _this.order.store_id,
+                        anonymous: _this.anonymous,
+                        describe_score: _this.describe_score,
+                        seller_score: _this.seller_score,
+                        logistics_score: _this.logistics_score,
+                        goods: _this.goods_camera
+                    };
+                    ajax_post('/user/addComment', req, function (res) {
+                        api.alert({
+                            msg: res.msg
+                        }, function (ret, err) {
+                            api.sendEvent({
+                                name: 'addCommented',
+                                extra: {
+                                    order_id: _this.order.order_id
+                                }
+                            });
+                            api.closeWin();
+                        });
+                    });
+                }
+            },
+            created: function () {
+                var _this = this;
+                var obj = {
+                    rank: 0,
+                    content: '',
+                    spec_key_name: '',
+                    img: [xiangji]
+                };
+                var param = {};
+                _this.goods.forEach(function (v) {
+                    obj.spec_key_name = v.spec_key_name;
+                    param[v.goods_id] = obj;
+                });
+                _this.goods_camera = Object.assign({}, _this.goods_camera, param);
+            }
+        });
+        fnReadyKeyback();
+    };
+
+</script>
+
+</body>
+</html>

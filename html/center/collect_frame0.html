@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-我的收藏</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .content {
+            padding: 0 0.2rem;
+        }
+
+        .item {
+            overflow: hidden;
+            height: 2.2rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .item .imgs,
+        .items .right {
+            float: left;
+        }
+
+        .item .imgs {
+            margin-left: 0.36rem;
+        }
+
+        .item .imgs img {
+            margin-top: 0.25rem;
+            width: 1.7rem;
+            height: 1.7rem;
+            border-radius: 0.08rem;
+        }
+
+        .item .right {
+            float: left;
+            margin-left: 0.23rem;
+        }
+
+        .item .right .name {
+            margin-top: 0.43rem;
+            width: 4.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.32rem;
+            font-weight: 400;
+        }
+
+        .item .right span {
+            display: block;
+        }
+
+        .item .right .price {
+            float: left;
+            font-size: 0.36rem;
+            color: #FF314A;
+        }
+
+        .item .right div {
+            margin-top: 0.45rem;
+        }
+
+        .item .right .add {
+            float: right;
+            padding: 0.1rem 0.2rem;
+            font-size: 0.24rem;
+            text-align: center;
+            color: #FF314A;
+            border: 0.01rem solid #FF314A;
+            border-radius: 0.8rem;
+        }
+
+        .item .right .del {
+            float: right;
+            margin-left: 0.1rem;
+            padding: 0.1rem 0.2rem;
+            font-size: 0.24rem;
+            color: #666;
+            border: 0.01rem solid #666;
+            border-radius: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <div class="content">
+        <div class="item clearfix" v-for="(goods,index) in list">
+            <div class="imgs open-win" data-name="goodsInfo" data-url="../goods/goodsInfo.html" :data-id="goods.goods_id">
+                <img :src="goods.original_img">
+            </div>
+            <div class="right">
+                <p class="name">{{goods.goods_name}}</p>
+                <div>
+                    <span class="price">￥{{goods.shop_price}}</span>
+                    <span class="del" :data-id="goods.collect_id" @click="delCollectEvent(index)">删除</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            page: 1, //goods列表page参数
+            list: []
+        },
+        methods: {
+            //获取数据
+            getData: function (refreash) {
+                var _this = this;
+                if (refreash) {
+                    _this.page = 1;
+                }
+                if (_this.page == false) {
+                    return;
+                }
+                if (!refreash) {
+                    api.showProgress({
+                        title: '加载中...',
+                        modal: false
+                    });
+                }
+
+                ajax_post('/user/myFavorite', {
+                    type: 0,
+                    page: _this.page
+                }, function (res) {
+                    if (refreash) {
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        api.hideProgress();
+                    }
+
+                    if (res.length == 0) {
+                        toast('没有更多了');
+                        _this.page = false;
+                    } else {
+                        if (_this.page == 1) {
+                            _this.list = res;
+                        } else {
+                            _this.list = _this.list.concat(res);
+                        }
+                        _this.page++;
+                    }
+                });
+            },
+            //删除收藏
+            delCollectEvent: function (index) {
+                var data = event.currentTarget.dataset;
+                var _this = this;
+                api.confirm({
+                    title: '删除',
+                    msg: '确定要删除吗',
+                    buttons: ['确定', '取消']
+                }, function (ret, err) {
+                    var btn = ret.buttonIndex;
+                    if (btn == 1) {
+                        ajax_post('/user/delFavorite', {
+                            id: data.id,
+                            type: 'goods'
+                        }, function (res) {
+                            toast('删除成功');
+                            _this.list.splice(index, 1);
+                        });
+                    }
+                });
+
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+
+    });
+
+    apiready = function () {
+        vm.getData();
+
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.getData(true);
+        });
+
+        //上拉加载事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.getData();
+        });
+    };
+</script>
+
+</body>
+
+</html>

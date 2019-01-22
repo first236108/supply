@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-确认订单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <script type="text/javascript" src="../../font/iconfont.js"></script>
+    <style>
+        .icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+            font-size: .72rem;
+        }
+
+        #app {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            overflow-y: scroll;
+            position: relative;
+        }
+
+        .order-info {
+            background-color: #fff;
+            padding: .1rem .2rem;
+            margin-bottom: .2rem;
+        }
+
+        .order-info div {
+            margin: .1rem 0;
+            font-size: .24rem;
+        }
+
+        .price {
+            font-size: .28rem;
+            font-weight: bold;
+        }
+
+        .cell-left i {
+            font-size: .6rem;
+        }
+
+        .icon-zhifubao2 {
+            color: #19A0E5;
+        }
+
+        .icon-weixin {
+            color: #3FB639;
+        }
+
+        i.icon-yinhangqiazhifu {
+            color: #FFC107;
+            font-size: .65rem;
+        }
+
+        .bottom-block {
+            margin-top: 2rem;
+            padding: 0 .2rem;
+        }
+
+        #money-input {
+            margin: .2rem .3rem;
+            border-bottom: 1px solid #999999;
+            height: .6rem;
+            width: 2rem;
+            padding: 0 .1rem;
+        }
+
+        #money-input[disabled] {
+            background-color: #eeeeee;
+            border-bottom: none;
+        }
+
+        .cell-left {
+            font-size: .26rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="m-navbar" id="header">
+    <a class="navbar-item" onclick="goback();">
+        <i class="back-ico" style="color:#fff;"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">订单支付</span>
+    </div>
+</header>
+
+<div id="app">
+
+    <div class="order-info">
+        <div>
+            <span>订单编号：</span><span class="symbol">{{order.master_order_sn}}</span>
+        </div>
+        <div>
+            <span>需&nbsp;&nbsp;付&nbsp;&nbsp;款：</span>
+            <span class="symbol">￥ </span>
+            <span class="price">{{parseFloat(order.order_amount) + parseFloat(order.money) - (parseFloat(money)?parseFloat(money):0)}}</span>
+            <span class="symbol">元</span>
+        </div>
+
+    </div>
+
+    <div class="m-cell">
+        <div class="cell-item">
+            <span class="cell-left"><i class="iconfont icon-zhifubao2"></i>&nbsp;支付宝</span>
+            <label class="cell-right">
+                <input type="radio" value="ALIPAY_APP_OPEN" name="radio" v-model="paymethod">
+                <i class="cell-checkbox-icon"></i>
+            </label>
+        </div>
+        <div class="cell-item">
+            <span class="cell-left"><i class="iconfont icon-weixin"></i>&nbsp;微信</span>
+            <label class="cell-right">
+                <input type="radio" value="WECHATPAY_APP_OPEN" name="radio" v-model="paymethod">
+                <i class="cell-checkbox-icon"></i>
+            </label>
+        </div>
+        <div class="cell-item">
+            <span class="cell-left"><i class="iconfont icon-yinhangqiazhifu"></i>&nbsp;银行卡</span>
+            <label class="cell-right">
+                <input type="radio" value="bankcard" name="radio" v-model="paymethod">
+                <i class="cell-checkbox-icon"></i>
+            </label>
+        </div>
+    </div>
+
+    <div class="m-celltitle" v-if="user_money>0">您的余额还有：￥{{parseFloat(user_money)}}</div>
+    <div class="m-cell" v-if="user_money>0">
+        <div class="cell-item">
+            <span class="cell-left">
+                <svg class="icon" aria-hidden="true">
+                    <use xlink:href="#icon-jinbi"></use>
+                    </svg>
+                使用余额
+                <input type="number" class="cell-input" id="money-input" placeholder="0.00" v-model="money" :disabled="!money">
+            </span>
+            <label class="cell-right">
+                <input type="radio" value="BALANCE" name="radio" v-model="paymethod">
+                <i class="cell-checkbox-icon"></i>
+            </label>
+        </div>
+    </div>
+
+    <div class="bottom-block">
+        <button type="button" class="btn btn-block btn-danger" @click="paycheck">确认支付</button>
+    </div>
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            money: 0.01,//使用多少余额
+            order: {"order_amount":"0.01","money":"0.01","master_order_sn":"201901181749094683"},
+            user_money: 0.25,//用户余额
+            paymethod: ''
+        },
+        methods: {
+            init: function (data) {
+                ajax_post('/cart/cart4', data, function (res) {
+                    console.log(JSON.stringify(res));
+                    vm.order = res.order;
+                    vm.user_money = res.user_money;
+                    vm.money = res.order.money;
+                }, function (err) {
+                    if (err.statusCode == 402) {
+                        //未实名认证，不可支付
+                        api.alert({
+                            msg: err.body.msg
+                        }, function (ret, err) {
+                            api.openWin({
+                                name: 'wallet',
+                                url: '../wallet/wallet.html'
+                            });
+                            api.addEventListener({
+                                name: 'wait_realname'
+                            }, function (ret, err) {
+                                api.closeWin();
+                            });
+                        });
+                    } else {
+                        var msg = err.body.msg ? err.body.msg : err.msg;
+                        toast(msg);
+                    }
+                });
+            },
+            //微信支付
+            wxpay: function () {
+                var self = this;
+                ajax_post('/cart/recharge', {
+                    pay_code: 'weixin',
+                    amount: self.money
+                }, function (res) {
+                    console.log(JSON.stringify(res));
+                    var wxPay = api.require('wxPay');
+                    wxPay.payOrder({
+                        apiKey: res.appid,
+                        orderId: res.prepayid,
+                        mchId: res.partnerid,
+                        nonceStr: res.noncestr,
+                        timeStamp: res.timestamp,
+                        package: res.package,
+                        sign: res.sign
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            //支付成功
+                            console.log(JSON.stringify(ret));
+                        } else {
+                            if (err.code == -2) {
+                                toast('已取消支付');
+                            }
+                        }
+                    });
+                });
+            },
+            //支付宝支付
+            alipay: function () {
+                var self = this;
+                ajax_post('/cart/recharge', {
+                    pay_code: 'alipayMobile',
+                    amount: self.money
+                }, function (res) {
+                    var aliPayPlus = api.require('aliPayPlus');
+                    log(res.param);
+                    aliPayPlus.payOrder({
+                        orderInfo: res.param
+                    }, function (ret, err) {
+
+                        api.alert({
+                            title: '支付结果',
+                            msg: ret.code,
+                            buttons: ['确定']
+                        });
+                    });
+
+                });
+            },
+            use_balance: function () {
+                if (event.currentTarget.firstChild.checked) {
+                    vm.money = Math.min(vm.order.order_amount, vm.user_money);
+                } else {
+                    vm.money = '';
+                }
+            },
+            paycheck: function () {
+                if (!vm.paymethod && vm.money < vm.order.order_amount) {
+                    toast('请选择支付方式');
+                    return;
+                }
+                var param = {
+                    master_order_sn: vm.order.master_order_sn,
+                    pay_code: vm.paymethod,
+                    user_money: vm.money
+                };
+                ajax_post('/cart/pay', param, function (res) {
+                    console.log(JSON.stringify(param));
+                    console.log(JSON.stringify(res));
+                    if (vm.paymethod == 'WECHATPAY_APP_OPEN') {
+                        var wxPay = api.require('wxPay');
+                        wxPay.payOrder({
+                            apiKey: res.weChatAPPInfo.appid,
+                            orderId: res.weChatAPPInfo.prepayid,
+                            mchId: res.weChatAPPInfo.partnerid,
+                            nonceStr: res.weChatAPPInfo.noncestr,
+                            timeStamp: res.weChatAPPInfo.timestamp,
+                            package: res.weChatAPPInfo.package,
+                            sign: res.weChatAPPInfo.sign
+                        }, function (ret, err) {
+                            console.log(JSON.stringify(ret));
+                            if (ret.status) {
+                                toast('支付成功');
+                                setTimeout(function () {
+                                    goback();
+                                }, 1500);
+                            } else {
+                                console.log(JSON.stringify(err));
+                                if (err.code == -2) {
+                                    toast('已取消支付');
+                                }
+                            }
+                        });
+                    } else if (vm.paymethod == 'ALIPAY_APP_OPEN') {
+                        var aliPayPlus = api.require('aliPayPlus');
+                        aliPayPlus.payOrder({
+                            orderInfo: res.param
+                        }, function (ret, err) {
+                            console.log(JSON.stringify(ret));
+                            if (err) {
+                                console.log(JSON.stringify(err));
+                            }
+                            if (ret.code == '9000') {
+                                toast('支付成功');
+                                setTimeout(function () {
+                                    goback();
+                                }, 1500);
+                            } else {
+                                var status = {
+                                    '9000': '支付成功',
+                                    '8000': '正在处理中，支付结果未知',
+                                    '4000': '订单支付失败',
+                                    '5000': '重复请求',
+                                    '6001': '取消支付',
+                                    '6002': '网络连接出错',
+                                    '6004': '支付结果未知'
+                                };
+                                api.alert({
+                                    title: '支付结果',
+                                    msg: status[ret.code],
+                                    buttons: ['确定']
+                                });
+                            }
+                        });
+                    } else {
+                        toast('支付方式错误..');
+                    }
+                });
+            }
+        }
+    });
+
+    var name = '';
+    apiready = function () {
+        vm.init(api.pageParam);
+        name = api.pageParam.name;
+        if (name == 'cart2') {
+            api.sendEvent({name: 'cart2'});
+        }
+
+        api.addEventListener({
+            name: 'close_order_pay'
+        }, function (ret, err) {
+            api.closeWin();
+        });
+    };
+
+    function goback() {
+        if (name == 'order_pay') {
+            api.closeWin();
+        }
+        if (name == 'cart2') {
+            api.openWin({
+                name: 'order_detail',
+                url: '../order/order_detail.html',
+                animation: {
+                    subType: 'from_left'
+                },
+                pageParam: {
+                    master_order_sn: vm.order.master_order_sn,
+                    from: 'order_pay'
+                }
+            });
+        }
+    }
+</script>
+
+</html>

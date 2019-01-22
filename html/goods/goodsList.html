@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<header class="m-navbar">
+    <a class="navbar-item" onclick="api.closeWin();">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center navbar-search">
+        <i class="icon-search"></i>
+        <div class="text_box">
+            <input type="text" class="text" name="q" id="keyword" value="" placeholder="搜索关键字">
+        </div>
+    </div>
+    <a class="navbar-item">筛选</a>
+</header>
+<div class="search-filter">
+    <ul>
+        <li>新品</li>
+        <li>销量</li>
+        <li>评论</li>
+        <li>价格</li>
+        <li><i class="icon iconfont icon-liebiaoxingshi"></i></li>
+    </ul>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/ydui.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    function init_frm(cid) {
+        var h = $api.dom('header').offsetHeight + $api.dom('.search-filter').offsetHeight;
+        api.openFrame({
+            name: 'goodsListFrame',
+            url: 'goodsListFrame.html',
+            pageParam: {cid: cid, order: 'price', sort: 'desc'},
+            bounces: true,
+            rect: {
+                x: 0,
+                y: h,
+                w: 'auto',
+                h: api.winHeight - h
+            }
+        });
+    }
+
+    apiready = function () {
+        var cid = api.pageParam.cid;
+        init_frm(cid);
+    };
+</script>
+</body>
+</html>

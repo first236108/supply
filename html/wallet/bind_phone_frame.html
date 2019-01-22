@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>我的钱包 | 商超世界</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #f4f4f4;
+        }
+
+        body .login {
+            background-color: #fff;
+        }
+
+        body .login #tel,
+        body .login #pwd,
+        body .login #newpwd {
+            height: 1.2rem;
+            line-height: 1.2rem;
+            font-size: .26rem;
+            color: #606060;
+            padding-left: .30rem;
+            border-bottom: .01rem solid #f4f4f4;
+        }
+
+        body .login #tel span,
+        body .login #pwd span,
+        body .login #newpwd span {
+            margin-right: .50rem;
+        }
+
+        body .login #tel input,
+        body .login #pwd input,
+        body .login #newpwd input {
+            border: 0;
+            outline: none;
+        }
+
+        body .login #tel input[type=text],
+        body .login #pwd input[type=text],
+        body .login #newpwd input[type=text],
+        body .login #tel input[type=password],
+        body .login #pwd input[type=password],
+        body .login #newpwd input[type=password] {
+            width: 50%;
+            font-size: .24rem;
+        }
+
+        body .login #tel input[type=button],
+        body .login #pwd input[type=button],
+        body .login #newpwd input[type=button] {
+            width: 25%;
+            height: .52rem;
+            border: 0;
+            color: #fff;
+            font-size: .22rem;
+            border-radius: .5rem;
+            background-color: #E25757;
+        }
+
+        body #sure {
+            display: block;
+            margin: 3.32rem auto 1rem;
+            text-align: center;
+            width: 5.70rem;
+            height: .96rem;
+            line-height: .96rem;
+            background-color: #E25757;
+            border-radius: 1rem;
+            color: #fff;
+            font-size: .30rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <div class="login">
+            <!-- 找回密码页面电话号码 -->
+            <div id="tel">
+                <span>手机号:</span>
+                <input type="text" id="text" v-model="phone" placeholder="请输入手机号码">
+            </div>
+
+            <!-- 新密码 -->
+            <div id="pwd">
+                <span>验证码:</span>
+                <input type="text" name="" id="captaha" v-model="code" placeholder="输入验证码">
+                <input type="button" value="发送验证码" id="codeBtn" @click="getCode" v-if="!isSend">
+                <input type="button" v-model="time" id="codeBtn" v-if="isSend">
+            </div>
+
+        </div>
+        <!-- 找回密码确认按钮 -->
+
+        <a id="sure" @click="sureEvent">
+            确认
+        </a>
+    </div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+
+<script>
+    apiready = function() {
+        initVue();
+    }
+
+
+    function initVue() {
+        new Vue({
+            el: '#app',
+            data: {
+                phone: '',
+                code: '',
+                isSend: false,
+                time: 60
+            },
+            methods: {
+                //保存
+                sureEvent: function() {
+                    var self = this;
+                    var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+                    if (!this.phone || !this.code) {
+                        toast('请完善信息');
+                        return false;
+                    }
+                    if (!rules.test(this.phone)) {
+                        toast('手机号码格式不正确');
+                        return false;
+                    }
+                    ajax_post('/user/bindPhone', {
+                        phone: self.phone,
+                        code: self.code,
+                        type: 0
+                    }, function(res) {
+                        log(res);
+                        toast('绑定成功');
+                        setTimeout(function() {
+                            api.sendEvent({
+                                name: 'refreshWallet'
+                            });
+                            api.closeWin();
+                        }, 1000)
+
+                    });
+                },
+                //获取验证码
+                getCode: function() {
+                    var self = this;
+                    var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+                    if (!rules.test(this.phone)) {
+                        toast('手机号码格式不正确');
+                        return false;
+                    }
+                    self.isSend = true;
+                    self.countDown();
+                    ajax_post('/user/sendVerificationCode', {
+                        phone: self.phone
+                    }, function(res) {
+                        toast('发送成功');
+                    })
+                },
+                //倒计时
+                countDown: function() {
+                    var self = this;
+                    var time = setInterval(function() {
+                        if (self.time == 0) {
+                            self.time = 60;
+                            self.isSend = false;
+                            clearInterval(time);
+                        }
+                        self.time--;
+                    }, 1000)
+                }
+            },
+            mounted: function() {
+                openWin();
+            }
+        })
+    }
+</script>
+
+</html>

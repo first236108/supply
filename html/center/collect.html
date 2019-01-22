@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-我的收藏</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .nav {
+            height: 0.88rem;
+            line-height: 0.84rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+            margin-bottom: 0.2rem;
+        }
+
+        .nav a {
+            display: block;
+            float: left;
+            width: 50%;
+            height: 0.84rem;
+            text-align: center;
+            font-size: 0.28rem;
+            color: rgba(51, 51, 51, 1);
+            background: #fff;
+            border-bottom: 0.04rem solid #fff;
+        }
+
+        .nav .active {
+            color: rgba(255, 49, 74, 1);
+            border-bottom: 0.04rem solid rgba(255, 49, 74, 1);
+        }
+    </style>
+</head>
+<body>
+
+<header class="m-navbar" id="header">
+    <a href="#" class="navbar-item event-back">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">我的收藏</span>
+    </div>
+</header>
+
+<div id="app">
+    <div class="nav">
+        <a :class="type=='0'?'active':''" data-type='0' @click="checkTypes">商品</a>
+        <a :class="type=='1'?'active':''" data-type='1' @click="checkTypes">店铺</a>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            type: 0
+        },
+        methods: {
+            checkTypes: function (e) {
+                this.type = e.currentTarget.dataset.type;
+                var param = {
+                    name: 'collectframes',
+                    index: vm.type,
+                    scroll: true
+                };
+                api.setFrameGroupIndex(param);
+            }
+        }
+    });
+
+    function openCommentFrames() {
+        api.openFrameGroup({
+            name: 'collectframes',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: $api.dom('#app').offsetHeight + $api.dom('header').offsetHeight,
+                w: 'auto',
+                h: 'auto'
+            },
+            index: 0,
+            preload: 0,
+            frames: [
+                {
+                    name: 'collect_frame',
+                    url: './collect_frame0.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: true
+                },
+                {
+                    name: 'collect_frame',
+                    url: './collect_frame1.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                }
+            ]
+        }, function (ret, err) {
+            var index = ret.index;
+        });
+    }
+
+    apiready = function () {
+        fnReadyKeyback();
+        openCommentFrames();
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="zh-CN">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>我的钱包 | 商超世界</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .top {
+            position: relative;
+            padding-top: 1.5rem;
+            height: 3.5rem;
+            text-align: center;
+            background: url('../../image/l_bg.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        .top img {
+            display: block;
+            margin: 0 auto;
+            width: 3.06rem;
+        }
+
+        .choice {
+            position: absolute;
+            bottom: 0;
+            height: 1.08rem;
+            width: 100%;
+        }
+
+        .choice ul {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .choice ul li {
+            float: left;
+            width: 50%;
+            height: 100%;
+            line-height: 1.08rem;
+            text-align: center;
+            color: #fff;
+            font-size: .3rem;
+        }
+
+        .active {
+            background: url('../../image/in_tab_now.png') no-repeat center bottom;
+            background-size: 0.22rem 0.12rem;
+        }
+
+        .login {
+            padding: 0 0.76rem;
+        }
+
+        .login #tel,
+        .login #smCode,
+        .login #pwd {
+            border-bottom: 1px solid #eee;
+            color: #4e4e4e;
+            font-size: .28rem;
+            height: 1.1rem;
+            line-height: 1.1rem;
+            padding: .25rem 0 0 .24rem;
+        }
+
+        .login #smCode {
+            position: relative;
+        }
+
+        .login #smCode .yzm {
+            position: absolute;
+            right: 0.20rem;
+            top: 50%;
+            font-size: 0.22rem;
+            display: block;
+            color: #fff;
+            z-index: 10;
+            border: 0;
+            border-radius: 100rem;
+            padding: 0.14rem 0.2rem;
+            transform: translateY(-50%);
+            background-color: #E15656;
+            outline: none;
+        }
+
+        .login #smCode img,
+        .login #tel img,
+        .login #pwd img {
+            display: inline-block;
+            height: .42rem;
+            vertical-align: middle;
+        }
+
+        .login #smCode input,
+        .login #tel input,
+        .login #pwd input {
+            height: 0.42rem;
+            border: 0;
+            width: 84%;
+            margin-left: .40rem;
+            outline: none;
+        }
+
+        .login #login {
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .login #login input {
+            display: inline-block;
+            color: #fff;
+            font-size: .3rem;
+            background-color: #E15656;
+            width: 90%;
+            height: .8rem;
+            line-height: .8rem;
+            border-radius: .4rem;
+            border: 0;
+        }
+
+        .login #resit {
+            text-align: center;
+            margin-top: .52rem;
+        }
+
+        .login #resit a {
+            color: #e36261;
+            font-size: .26rem;
+        }
+
+        .login #resit a:nth-of-type(1) {
+            margin-right: .4rem;
+        }
+
+        .login #resit a:nth-of-type(2) {
+            margin-left: .4rem;
+        }
+
+        .login #resit span {
+            color: #CACACA;
+            font-size: 0.24rem;
+        }
+
+        .login #qq {
+            text-align: center;
+            margin-top: .20rem;
+            /* margin-bottom: .58rem; */
+        }
+
+        .login #qq a:nth-of-type(1) {
+            margin-right: 2.56rem;
+        }
+
+        .login #qq a {
+            display: inline-block;
+            height: .56rem;
+        }
+
+        .login #qq a img {
+            display: inline-block;
+            height: .56rem;
+        }
+
+        #close {
+            width: .5rem;
+            height: .5rem;
+            position: absolute;
+            top: -.2rem;
+            right: .3rem;
+            z-index: 99999;
+        }
+
+        #close img {
+            width: 100%
+        }
+    </style>
+</head>
+
+<body>
+<div id="app" v-cloak>
+    <div id="close" @click="cancle"><img src="../../image/close_white.png"></div>
+    <div class="top">
+        <img src="../../image/txt.png" alt="">
+        <div class="choice">
+            <ul>
+                <li :class="types=='pwd'?'active':''" data-types='pwd' @click="checkTypes">登录</li>
+                <li :class="types=='phone'?'active':''" data-types='phone' @click="checkTypes">短信登录</li>
+            </ul>
+        </div>
+    </div>
+    <div class="login">
+        <!-- 登陆页面电话号码 -->
+        <div id="tel">
+            <img src="../../image/phone.png" alt="">
+            <input type="text" v-model="phone" placeholder="请输入手机号">
+        </div>
+        <!-- 登陆页面密码 -->
+        <div id="pwd" v-show="types=='pwd'">
+            <img src="../../image/pw.png" alt="">
+            <input type="password" v-model="password" value="" placeholder="请输入密码">
+        </div>
+        <!-- 短信验证码登录 -->
+        <div id="smCode" v-show="types == 'phone'">
+            <img src="../../image/pw.png" alt="">
+            <input type="number" v-model="code" value="" placeholder="请输入手机验证码">
+            <button class="yzm" @click="getCode">获取验证码</button>
+        </div>
+        <!-- 登陆页面登陆按钮-->
+        <div id="login">
+            <input type="button" value="登录" @click="login">
+        </div>
+        <!-- 登陆页面注册按钮 -->
+        <div id="resit">
+            <a class="open-win" data-name="regiest" data-url="./regiest.html">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;注册</a>
+            <span>|</span>
+            <a class="open-win" data-name="forget" data-url="./forget.html">找回密码</a>
+        </div>
+        <!-- 登陆页面微信和qq -->
+        <div id="qq">
+            <a style="display:none" class="wx">
+                <img src="../../image/wx.png" alt="">
+            </a>
+            <a style="display:none" class="qqF">
+                <img src="../../image/qq.png" alt="">
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+
+<script>
+    var refer;
+    var ajpush;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            types: 'pwd',
+            phone: '13007686112',
+            password: '123456',
+            code: ''
+        },
+        methods: {
+            checkTypes: function (e) {
+                var data = e.currentTarget.dataset;
+                this.types = data.types;
+            },
+            //获取验证码
+            getCode: function () {
+                var phone = this.phone;
+                var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+                if (!rules.test(phone)) {
+                    toast('手机号码格式不正确');
+                    return false;
+                }
+                var postData = {
+                    type: 'mobile',
+                    mobile: phone,
+                    scene: 2,
+                    unique_id: api.deviceId
+                };
+                api.ajax({
+                    url: root_host + 'home/api/send_validate_code',
+                    method: 'post',
+                    timeout: 30,
+                    dataType: 'json',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                        token: api.deviceId
+                    },
+                    data: {
+                        values: postData
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+                        console.log(JSON.stringify(ret));
+                        toast('消息已发送');
+                    } else {
+                        //错误处理
+                        if (err.statusCode == 401) {
+                            //denglu
+                        } else {
+                            // api.alert(msg);
+                            console.log(JSON.stringify(err));
+                        }
+                    }
+                });
+            },
+            //登录
+            login: function () {
+                var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+                if (!this.phone) {
+                    toast('请填写电话号码');
+                    return;
+                }
+                if (!rules.test(this.phone)) {
+                    toast('手机号码格式不正确');
+                    return false;
+                }
+                var postData = {
+                    device_id: api.deviceId,
+                    from: api.systemType
+                };
+                postData.jpush_id = getJpushId();
+                var url = '/login/index';
+                //密码登录
+                if (this.types == 'pwd') {
+                    if (!this.password) {
+                        toast('请填写密码');
+                        return;
+                    }
+                    postData.username = this.phone;
+                    postData.password = this.password;
+                }
+                //手机短信登录
+                if (this.types == 'phone') {
+                    url = "/login/forget";
+                    if (!this.code) {
+                        toast('请填写验证码');
+                        return;
+                    }
+                    postData.mobile = this.phone;
+                    postData.code = this.code;
+                    postData.sence = 2;
+                }
+                ajax_post(url, postData, function (res) {
+                    console.log(JSON.stringify(res));
+                    $api.setStorage('token', res.token);
+                    $api.setStorage('cart_count', res.cart_count);
+                    $api.setStorage('certify', res.certify);
+                    $api.setStorage('user_info', {
+                        head_pic: res.head_pic,
+                        nickname: res.nickname,
+                        salesman: res.salesman,
+                        mobile: res.mobile
+                    });
+                    var refreash = {
+                        'root_0': true,
+                        'root_2': true,
+                        'root_3': true
+                    };
+                    $api.rmStorage('refreash');
+                    $api.setStorage('refreash', refreash);
+                    toast('登录成功');
+                    setTimeout(function () {
+                        api.closeWin();
+                        if (refer.redirect) {
+                            if (refer.is_root) {
+                                toIndex(refer.name);
+                            } else {
+                                var setter = refer.setter;
+                                setter.name = refer.name;
+                                setter.url = refer.url;
+                                setter.pageParam = refer.param;
+                                api.openWin(setter);
+                            }
+                        }
+                    }, 1200);
+                });
+
+            },
+            cancle: function () {
+                api.closeWin();
+            },
+            init: function () {
+                openWin();
+            }
+        }
+    });
+
+    function getJpushId() {
+        return '160a3797c82a56b85c4';//FIXME 生产打包前测试极光注册
+        var id = $api.getStorage('jpush_id');
+        if (id) return id;
+        ajpush.init(function (ret, err) {
+            if (ret && ret.status) {
+                ajpush.getRegistrationId(function (ret) {
+//                    console.log(JSON.stringify(ret));
+                    if (ret) {
+                        $api.setStorage('jpush_id', ret.id);
+                        return ret.id;
+                    }
+                });
+            } else {
+                console.log(JSON.stringify(err));
+            }
+        });
+//        console.log(222);
+    }
+
+    apiready = function () {
+        ajpush = api.require('ajpush');
+        getJpushId();
+        refer = api.pageParam;
+        vm.init();
+    };
+</script>
+
+</html>

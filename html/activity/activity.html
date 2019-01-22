@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-活动</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+</head>
+<body>
+
+<header class="m-navbar" id="header">
+    <a href="#" class="navbar-item event-back">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title" id="title"></span>
+    </div>
+</header>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script>
+    function loadFrame(name, url, data, bounces) {
+        var json = {
+            name: name,
+            url: url,
+            bounces: false,
+            bgColor: data.venue.background_color,
+            rect: {
+                x: 0,
+                y: $api.offset(header).h,
+                w: 'auto',
+                h: api.winHeight - $api.offset(header).h
+            },
+            pageParam: data
+        };
+        if (bounces) {
+            json.bounces = true;
+        }
+        api.openFrame(json);
+    }
+
+    apiready = function () {
+        fnReady();
+        var param = api.pageParam, data;
+        if (param.api == 'activity') {
+            ajax_post('/index/venue', param, function (res) {
+                data = res;
+                $api.text($api.dom('#title'), res.venue.title);
+                loadFrame('activity_frame', './activity_frame.html', data, true);
+            }, function (err) {
+                api.alert({
+                    msg: err.responseJSON.msg
+                }, function (ret, err) {
+                    api.closeWin();
+                });
+            });
+        } else {
+            api.alert({
+                msg: '要访问的信息不存在'
+            }, function (ret, err) {
+                api.closeWin();
+            });
+        }
+    };
+</script>
+
+</body>
+</html>

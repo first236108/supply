@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>我的钱包 | 商超世界</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .content {
+            height: 3.41rem;
+            background-color: #f5445d;
+            color: #fff;
+            padding-top: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .content p {
+            text-align: center;
+            font-size: 0.24rem;
+        }
+
+        .content > div {
+            /* margin-top: 0.34rem; */
+            font-size: 0.3rem;
+            text-align: center;
+            height: 0.62rem;
+        }
+
+        #count {
+            font-size: 0.8rem;
+        }
+
+        .options {
+            background: #fff;
+        }
+
+        .options .item {
+            padding: 0 0.2rem;
+            position: relative;
+        }
+
+        .options .item a {
+            display: block;
+            height: 0.98rem;
+            border-bottom: 1px solid #f4f4f4;
+            font-size: 0.28rem;
+            line-height: 0.98rem;
+            color: #383938;
+        }
+
+        .options .item:nth-of-type(1) a {
+            padding-left: 0.61rem;
+            background: url('../../image/balance.png') no-repeat left center;
+            background-size: 0.28rem 0.35rem;
+        }
+
+        .options .item:nth-of-type(2) a {
+            padding-left: 0.61rem;
+            background: url('../../image/cz.png') no-repeat left center;
+            background-size: 0.32rem 0.27rem;
+        }
+
+        .options .item:nth-of-type(3) a {
+            padding-left: 0.61rem;
+            background: url('../../image/tixian.png') no-repeat left center;
+            background-size: 0.32rem 0.32rem;
+        }
+
+        .options .item:nth-of-type(4) a, .options .item:nth-of-type(5) a {
+            padding-left: 0.61rem;
+            background: url('../../image/mima.png') no-repeat left center;
+            background-size: 0.24rem 0.32rem;
+        }
+        .options .item:nth-of-type(6) a {
+            padding-left: 0.61rem;
+            background: url('../../image/card.png') no-repeat left center;
+            background-size: 0.32rem 0.32rem;
+        }
+        .options .item .more {
+            position: absolute;
+            display: block;
+            width: 0.14rem;
+            height: 0.25rem;
+            background: url('../../public/images/rightArrow.png') no-repeat center center;
+            background-size: 0.14rem 0.25rem;
+            right: 0.2rem;
+            top: 0.36rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="wallet" v-cloak>
+    <div class="content">
+        <p>当前余额</p>
+        <div>
+            <span id="count">{{pageData.allAmount || 0}}</span>
+            <span>元</span>
+        </div>
+    </div>
+
+    <div class="options">
+
+        <!-- 余额明细 -->
+        <div class="item" @click="openEvent" data-name="balance" data-url="./balance.html" data-bounces="true">
+            <a>余额明细</a>
+            <span class="more"></span>
+        </div>
+
+        <!-- 充值 -->
+        <div class="item" @click="openEvent" data-name="pay" data-url="./pay.html">
+            <a>我要充值</a>
+            <span class="more"></span>
+        </div>
+
+        <div class="item" @click="openEvent">
+            <a>我要提现</a>
+            <span class="more"></span>
+        </div>
+
+        <div class="item" @click="openEvent" data-name="paypwd" data-url="paypwd.html" data-types="2">
+            <a>修改支付密码</a>
+            <span class="more"></span>
+        </div>
+        <div class="item" @click="openEvent" data-name="paypwd" data-url="paypwd.html" data-types="3">
+            <a>忘记支付密码</a>
+            <span class="more"></span>
+        </div>
+        <!-- 银行卡 -->
+        <div class="item" @click="openEvent" data-name="card" data-url="card.html" :data-username="pageData.realname">
+            <a>银行卡</a>
+            <span class="more"></span>
+        </div>
+    </div>
+
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#wallet',
+        data: {
+            pageData: ''
+        },
+        methods: {
+            //获取钱包信息
+            getWallet: function () {
+                var self = this;
+                api.showProgress({
+                    title: '加载中...'
+                });
+                ajax_post('/user/queryBalance', {}, function (res) {
+                        api.hideProgress();
+                        self.pageData = res;
+                        self.checkLimit();
+                });
+            },
+            //监听页面更新
+            listenWallet: function () {
+                var self = this;
+                api.addEventListener({
+                    name: 'refreshWallet'
+                }, function (ret, err) {
+                    if (ret) {
+
+                    } else {
+                        alert(JSON.stringify(err));
+                    }
+                });
+            },
+            //检查通联四要素
+            checkLimit: function () {
+                var self = this;
+                //绑定手机号码
+                if (self.pageData.mobile_validated == 0) {
+                    api.confirm({
+                        title: '温馨提示',
+                        msg: '您还没有绑定手机号码,需要绑定手机号之后才能继续使用！',
+                        buttons: ['确定', '取消']
+                    }, function (ret, err) {
+                        var index = ret.buttonIndex;
+                        if (index == 1) {
+                            api.openWin({
+                                name: 'bind_phone',
+                                url: './bind_phone.html'
+                            });
+
+                        } else if (index == 2) {
+                            api.closeWin();
+                        }
+                    });
+                    return false;
+                }
+                //实名认证
+                if (!self.pageData.realname) {
+                    api.confirm({
+                        title: '温馨提示',
+                        msg: '您还没有进行实名认证,需要实名认证之后才能继续使用！',
+                        buttons: ['确定', '取消']
+                    }, function (ret, err) {
+                        var index = ret.buttonIndex;
+                        if (index == 1) {
+                            api.openWin({
+                                name: 'bind_name',
+                                url: './bind_name.html'
+                            });
+
+                        } else if (index == 2) {
+                            api.closeWin();
+                        }
+                    });
+                    return false;
+                }
+                //判断是否设置支付密码
+                if (!self.pageData.isSetPayPwd) {
+                    api.confirm({
+                        title: '温馨提示',
+                        msg: '您还没有设置支付密码,需要设置支付之后才能继续使用！',
+                        buttons: ['确定', '取消']
+                    }, function (ret, err) {
+                        var index = ret.buttonIndex;
+                        if (index == 1) {
+                            api.openWin({
+                                name: 'paypwd',
+                                url: './paypwd.html',
+                                pageParam: {
+                                    types: 1
+                                }
+                            });
+                        } else if (index == 2) {
+                            api.closeWin();
+                        }
+                    });
+                    return false;
+                }
+                return true;
+            },
+            //打开windows
+            openEvent: function (e) {
+                var data = e.currentTarget.dataset;
+                var flag = this.checkLimit();
+                if (!flag) {
+                    return false;
+                }
+                var json = {
+                    name: data.name,
+                    url: data.url,
+                    pageParam: {}
+                };
+
+                for (var i in data) {
+                    if (i != 'name' && i != 'url' && i != 'bounces') {
+                        json.pageParam[i] = data[i];
+                    }
+                }
+                api.openWin(json);
+            }
+        },
+        mounted: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.getWallet();
+        vm.listenWallet();
+        if(api.pageParam.from=='order_pay'){
+            api.sendEvent({name:'wait_realname'});
+        }
+    };
+</script>
+
+</html>

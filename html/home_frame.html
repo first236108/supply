@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/swiper.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../font/iconfont.css"/>
+    <script type="text/javascript" src="../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        header {
+            height: .8rem;
+            position: absolute;
+            background: rgba(0, 0, 0, 0);
+            z-index: 9999;
+            top: 0;
+            border: none;
+            color: #000;
+            display: flex;
+            justify-content: center;
+        }
+
+        header .iconfont {
+            font-size: 15px;
+        }
+
+        header .scan-qrcode {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20%;
+        }
+
+        header .icon-iconfontsaoyisao {
+            font-size: .45rem;
+            color: #fff;
+        }
+
+        header .input-wrap {
+            width: 60%;
+            display: flex;
+            align-items: center;
+        }
+
+        header .input-wrap input {
+            display: block;
+            padding: 5px 0 5px 10px;
+            width: 100%;
+            height: .6rem;
+            line-height: .6rem;
+            font-size: .244rem;
+            background-color: rgba(255, 255, 255, .5);
+            border-radius: .6rem;
+        }
+
+        header .city {
+            display: flex;
+            width: 20%;
+            font-size: 14px;
+            color: #fff;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header .city span,
+        header .city img {
+            display: inline-block;
+        }
+
+        header .city img {
+            width: 10px;
+            height: 10px;
+        }
+
+        body {
+            height: 100%;
+            overflow-y: scroll;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .swiper-container img {
+            width: 100%;
+        }
+
+        #loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #loading img {
+            max-width: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+<div id="wrap" v-cloak>
+
+    <header class="clearfix">
+        <div class="city open-win" data-name="city" data-url="./city/city.html">
+            <span class="cityname" id="cityname">郑州市</span><i class="iconfont icon-xiangxia1"></i>
+        </div>
+        <div class="input-wrap open-win" data-name="search" data-url="widget://html/search/search.html">
+            <input type="text" placeholder="请输入要搜索的商品" disabled/>
+        </div>
+        <div class="scan-qrcode" onclick="scanQrcode();">
+            <i class="iconfont icon-iconfontsaoyisao"></i>
+        </div>
+    </header>
+
+    <!--轮播图-->
+    <div class="swiper-container" id="carousel">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" v-for="(item,index) in slider">
+                <a :data-api="item.api" :data-key="item.key" :data-value="item.value" @click="advertising">
+                    <img :src="item.ad_code">
+                </a>
+            </div>
+        </div>
+        <div class="swiper-pagination" id="carousel-pagination"></div>
+    </div>
+
+    <!--分类导航-->
+    <ul class="navList flex flex-align-center flex-pack-justify">
+        <li v-for="(cat,index) in category">
+            <a :data-id="cat.id" @click="openSearchWin">
+                <img :src="cat.image">
+                <p class="text-center">{{cat.name}}</p>
+            </a>
+        </li>
+    </ul>
+    <!--广告-->
+    <div class="banner">
+        <a :data-api="adv.api" :data-key="adv.key" :data-value="adv.value" @click="advertising"><img :src="adv.ad_code"></a>
+    </div>
+    <!--新品、热销、精品推荐-->
+    <div class="active flex flex-align-center">
+        <div class="left flex-1">
+            <h3>新品上市</h3>
+            <p>爆品30天最低价</p>
+            <span class="tag">款款畅销</span>
+            <ul class="flex flex-align-center flex-pack-justify">
+                <li v-for="item in newGoods">
+                    <a :data-id="item.goods_id" class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
+                        <img :src="item.goods_image"/>
+                        <span>￥{{item.shop_price}}元</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <ul class="right flex-1">
+            <li class="hot" v-if="hotGoods">
+                <a :data-id="hotGoods.goods_id" class="flex flex-align-center flex-pack-justify open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
+                    <div>
+                        <h3>热销商品</h3>
+                        <p>特价最划算</p>
+                        <span class="tag">立即抢购</span>
+                    </div>
+                    <img :src="hotGoods.goods_image">
+                </a>
+            </li>
+            <li class="rec flex flex-align-center flex-pack-justify" v-if="recGoods">
+                <a :data-id="recGoods.goods_id" class="flex flex-align-center flex-pack-justify open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
+                    <div>
+                        <h3>精品推荐</h3>
+                        <p>品质好货上市</p>
+                        <span class="tag">猜你喜欢</span>
+                    </div>
+                    <img :src="recGoods.goods_image">
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!--限时抢购-->
+    <div class="flash" v-if="flash_sale.length">
+        <div class="title flex flex-align-center">
+            <div class="logo">
+                <img src="../image/tag.png">
+                <img src="../image/limitTime.png" alt="抢购">
+            </div>
+        </div>
+        <div class="swiper-container" id="flash-sale">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide flashsale" v-for="(goods,index) in flash_sale">
+                    <a :data-id="goods.goods_id" class="goods flex flex-align-center open-win" data-name="goodsInfo" data-url="widget://html/goods/goodsInfo.html">
+                        <img :src="goods.original_img">
+                        <div class="goodsDesc flex-1">
+                            <div class="remainTime">{{goods.remainTime}}</div>
+                            <p></p>
+                            <div class="goodsPrice flex flex-align-center flex-1">
+                                <i>促</i> <span>￥{{goods.shop_price}}元</span> <span>&nbsp;/{{goods.unit_name}}</span>
+                            </div>
+                        </div>
+                        <button>马上抢</button>
+                    </a>
+                </div>
+            </div>
+            <div class="swiper-pagination" id="flash-sale-pagination"></div>
+        </div>
+    </div>
+
+    <!--零售精选-->
+    <div class="retail">
+        <div class="title flex flex-align-center">
+            <div class="logo">
+                <img src="../image/tag.png">
+                <img src="../image/retail.png" alt="零售">
+            </div>
+        </div>
+        <div class="swiper-container" id="swiper2">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide" v-for="(goods,index) in retail">
+                    <a :data-goods_id="goods.goods_id" class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
+                        <div class="img">
+                            <img :src="goods.goods_image">
+                        </div>
+                        <p>{{goods.goods_name}}</p>
+                        <div class="flex flex-align-center"><span>￥{{goods.shop_price}}元</span> <span>/{{goods.unit_name}}</span></div>
+                    </a>
+                </div>
+            </div>
+            <div class="swiper-pagination" id="swiper-pagination2"></div>
+        </div>
+    </div>
+    <!--广告2-->
+    <div class="banner2">
+        <a :data-api="banner2.api" :data-key="banner2.key" :data-value="banner2.value" @click="advertising">
+            <img :src="banner2.ad_code">
+        </a>
+    </div>
+    <!-- 热门市场 -->
+    <div class="hotMarket" v-if="hotMarket && hotMarket.length>0">
+        <div class="title">
+            <img src="../image/hotMarket.png">
+        </div>
+        <div class="hotMarket-content">
+            <ul class="clearfix">
+                <li v-for="item in hotMarket">
+                    <a :data-id="item.id" @click="openSearchWin">
+                        <h3 v-text="item.name"></h3>
+                        <img :src="item.image"/>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 猜你喜欢 -->
+    <div class="recommend">
+        <div class="title">
+            <img src="../image/guess_like.png">
+        </div>
+        <div class="recommend-content">
+            <ul class="flex flex-wrap">
+                <li v-for="item in list" class="relative">
+                    <a class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html" :data-id="item.goods_id">
+                        <!--<saleout v-if="item.store_count < 1"></saleout>-->
+                        <img :src="item.goods_image"/>
+                        <p v-text="item.goods_name"></p>
+                        <div class="origin">{{item.num||1}}{{item.unit_name||"件"}}起批</div>
+                        <div class="sale flex flex-align-center flex-pack-justify">
+                            <div class="price flex flex-align-center">
+                                <i v-if="item.prom_id>0">促</i>
+                                <span>￥{{item.shop_price}}元</span>
+                                <span>/{{item.unit_name}}</span>
+                            </div>
+                            <p>已售出{{item.sales_sum}}件</p>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="loading"><img src="../image/loading.gif"></div>
+</div>
+
+<div id="login-icon"></div>
+<div id="gotop" onclick="goTop('#wrap');">
+    <i class="iconfont icon-dingbu"></i>
+</div>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../script/swiper.min.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/ydui.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+
+<script type="text/javascript">
+    var index_param = {};
+    var FNScanner;
+    var clipBoard;
+    var vm = new Vue({
+        el: '#wrap',
+        data: {
+            slider: [],
+            category: [],
+            adv: {},
+            newGoods: [],
+            hotGoods: [],
+            recGoods: {},
+            flash_sale: [],
+            banner2: {},
+            retail: [],
+            hotMarket: [],
+            list: [],
+            finish: false,
+            page: 1
+        },
+        methods: {
+            //页面初始化 获取第一屏
+            init: function (loadDone) {
+                loading();
+                var city;
+                if (city = $api.getStorage('current_city')) {
+                    index_param = {};
+                    index_param.select_city = city.id;
+                }
+                ajax_post('/index/home_one', index_param, function (ret) {
+                    document.getElementById('cityname').innerHTML = ret.current_city.city;
+                    vm.slider = ret.banner;
+                    vm.category = ret.category;
+                    vm.adv = ret.ad;
+                    vm.newGoods = ret.new;
+                    vm.hotGoods = ret.hot[0];
+                    vm.recGoods = ret.recommend[0];
+                    vm.flash_sale = ret.flash_sale;
+                    $(ret.flash_sale).each(function (i, v) {
+                        vm.countdown(v.end_time, i);
+                    });
+                    vm.home_two();
+                    $api.setStorage('current_city', ret.current_city);
+                    api.hideProgress();
+                    if (loadDone) {
+                        vm.page = 1;
+                        vm.list = [];
+                        vm.finish = false;
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        vm.initSwiper();
+                    }
+                });
+            },
+
+            initSwiper: function () {
+                setTimeout(function () {
+                    new Swiper('#carousel', {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                        loop: true,
+                        autoplay: true,
+                        pagination: {
+                            el: '#carousel-pagination',
+                            clickable: true
+                        }
+                    });
+                    new Swiper('#flash-sale', {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                        pagination: {
+                            el: '#flash-sale-pagination',
+                            clickable: true
+                        }
+                    });
+                }, 50);
+            },
+
+            home_two: function () {
+                ajax_post('/index/home_two', {}, function (ret) {
+                    vm.banner2 = ret.ad;
+                    vm.category = ret.category;
+                    vm.retail = ret.retail;
+                    vm.hotMarket = ret.category;
+                    vm.guess_you_like();
+                    setTimeout(function () {
+                        new Swiper('#swiper2', {
+                            slidesPerView: 3,
+                            spaceBetween: 30
+                        });
+                    }, 50);
+
+                });
+            },
+
+            guess_you_like: function () {
+                ajax_post('/index/guess_you_like', {p: vm.page}, function (res) {
+                    $api.dom('#loading').style.display = 'none';
+                    vm.page++;
+                    if (!res || res.length == 0) {
+                        vm.finish = true;
+                        toast('没有更多了');
+                    } else {
+                        if (vm.page == 1) {
+                            vm.list = res;
+                        } else {
+                            vm.list = vm.list.concat(res);
+                        }
+                    }
+                });
+            },
+
+            newOnePage: function (id) {
+                api.openWin({
+                    name: 'newOnePage',
+                    url: './newOnePage.html',
+                    pageParam: {
+                        id: id
+                    }
+                });
+            },
+
+            countdown: function (end_time, param) {
+                var list = vm.flash_sale;
+                var EndTime = end_time || [];
+                var NowTime = new Date().getTime();
+                var total_micro_second = EndTime * 1000 - NowTime || [];
+                Vue.set(vm.flash_sale[param], 'remainTime', vm.dateformat(total_micro_second, 0));
+                if (total_micro_second <= 0) {
+                    list[param].remainTime = "已经截止";
+                    Vue.set(vm.flash_sale[param], 'remainTime', "已经截止");
+                    return;
+                }
+                setTimeout(function () {
+                    vm.countdown(end_time, param);
+                }, 1000);
+            },
+            dateformat: function (micro_second, t) {
+                // 总秒数
+                var second = Math.floor(micro_second / 1000) >= 10 ? Math.floor(micro_second / 1000) : "0" + Math.floor(micro_second / 1000);
+                // 天数
+                var day = Math.floor(second / 3600 / 24) >= 10 ? Math.floor(second / 3600 / 24) : "0" + Math.floor(second / 3600 / 24);
+                // 小时
+                var hr = Math.floor(second / 3600 % 24) >= 10 ? Math.floor(second / 3600 % 24) : "0" + Math.floor(second / 3600 % 24);
+                // 分钟
+                var min = Math.floor(second / 60 % 60) >= 10 ? Math.floor(second / 60 % 60) : "0" + Math.floor(second / 60 % 60);
+                // 秒
+                var sec = Math.floor(second % 60) >= 10 ? Math.floor(second % 60) : "0" + Math.floor(second % 60);
+                if (t == 0) {
+                    return day + "天" + hr + "小时" + min + "分钟" + sec + "秒";
+                } else {
+                    return hr + "小时" + min + "分钟" + sec + "秒";
+                }
+            },
+            openSearchWin: function () {
+                api.openDrawerLayout({
+                    name: 'search_result',
+                    url: 'widget://html/search/search_result.html',
+                    pageParam: {
+                        id: event.currentTarget.dataset.id
+                    },
+                    slidBackType: 'edge',
+                    rightPane: {
+                        edge: 180,
+                        name: 'searchPane',
+                        url: 'widget://html/search/rightPane.html'
+                    },
+                    animation: {
+                        type: 'push'
+                    },
+                    slidToOpenPane: false,
+                    overScrollMode: 'scrolls',
+                    slidToClosePane: false,
+                    reload: true
+                });
+            },
+            advertising: function () {
+                var data = event.currentTarget.dataset;
+                var param = {pageParam: {}};
+                param.pageParam[data.key] = data.value;
+                param.pageParam.api = data.api;
+                switch (data.api) {
+                    case 'goodsInfo':
+                        param.name = 'goodsInfo';
+                        param.url = './goods/goodsInfo.html';
+                        break;
+                    case 'activity':
+                        param.name = 'activity';
+                        param.url = './activity/activity.html';
+                        break;
+                    case 'loan':
+                        param.name = 'activity';
+                        param.url = './activity/loan.html';
+                        break;
+                    case 'notice':
+                        param.name = 'activity';
+                        param.url = './activity/notice.html';
+                        break;
+                    default:
+                        YDUI.dialog.toast('要查看的信息不存在', 'error', 1200);
+                        return;
+                }
+                api.openWin(param);
+            }
+        },
+        updated: function () {
+            openWin();
+            api.parseTapmode();
+        }
+    });
+
+    document.getElementById('gotop').onclick = function () {
+        api.pageUp({top: true});
+    };
+
+    //认证店铺点击事件
+    document.getElementById('login-icon').onclick = function () {
+        console.log($api.getStorage('token'));
+        if ($api.getStorage('token')) {
+            api.openWin({
+                name: 'check',
+                url: 'widget://html/store/check.html'
+            });
+        } else {
+            openLogin();
+        }
+    };
+
+    //判断认证店铺按钮是否显示
+    if ($api.getStorage('token') && $api.getStorage('certify') > 0) {
+        document.getElementById('login-icon').classList.add('hidden');
+    }
+
+    apiready = function () {
+        if ($api.getStorage('current_city')) {
+            vm.init();
+        } else {
+            if (api.systemType == 'ios') {
+                api.getLocation(function (ret, err) {
+                    if (ret && ret.status) {
+                        index_param.lng = longitude;
+                        index_param.lat = latitude;
+                    }
+                    vm.init();
+                });
+            } else {
+                var map = api.require('bMap');
+                map.getLocation({
+                    accuracy: '100m'
+                }, function (ret, err) {
+                    if (ret.status) {
+                        index_param.lng = ret.lon;
+                        index_param.lat = ret.lat;
+                    }
+                    vm.init();
+                });
+            }
+        }
+
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.init(true);
+        });
+
+        //上拉加载事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            if (this.finish) {
+                return false;
+            } else {
+                $api.dom('#loading').style.display = 'flex';
+            }
+            vm.guess_you_like();
+        });
+
+        api.addEventListener({
+            name: 'selectCity'
+        }, function (ret, err) {
+            console.log(JSON.stringify(ret));
+        });
+        FNScanner = api.require('FNScanner');
+        clipBoard = api.require('clipBoard');
+
+//        document.querySelector('header').style.marginTop = api.safeArea.top;
+//        document.querySelector('#wrap').style.paddingTop = api.safeArea.top;
+    };
+
+    window.onscroll = function () {
+        if (window.scrollY > 200) {
+            document.getElementById('gotop').style.display = 'block';
+        } else {
+            document.getElementById('gotop').style.display = 'none';
+        }
+    };
+
+    function scanQrcode() {
+        if (!FNScanner) {
+            YDUI.dialog.toast('调用相机模块失败', 'error');
+            return;
+        }
+        FNScanner.openScanner({
+            autorotation: true,
+//            sound:'',
+            hintText: '放入框内,自动扫描'
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == 'fail') {
+                    api.toast({
+                        msg: ret.content,
+                        duration: 1200,
+                        location: 'bottom'
+                    });
+                } else if (ret.eventType == 'success') {
+                    showScanResult(ret.content);
+                }
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    }
+
+    function showScanResult(str) {
+        if (!str.length) {
+            YDUI.dialog.toast('扫描结果错误');
+            return;
+        }
+
+        switch (str.split('://')[0]) {
+            case 'pay':
+                //todo pay order
+                console.log('san === pay');
+                break;
+            case 'alipay':
+                //todo weixin协议
+                console.log('san === weixin');
+                break;
+            case 'weixin':
+                //todo weixin协议
+                console.log('san === weixin');
+                break;
+            case 'http':
+            case 'https':
+                //todo web url
+                if (api.systemType == 'ios') {
+                    var param = {iosUrl: str};
+                } else {
+                    var param = {androidPkg: 'android.intent.action.VIEW', mimeType: 'text/html', uri: str};
+                }
+                api.openApp(param, function (ret, err) {
+                    if (err) {
+                        api.alert(JSON.stringify(err));
+                    }
+                });
+                break;
+            default:
+                clipBoard.set({
+                    value: str
+                }, function (ret, err) {
+                    if (ret) {
+                        YDUI.dialog.toast('无法处理,已复制扫描结果', 'error', 2200);
+                    } else {
+                        console.log('复制错误...');
+                    }
+                });
+
+        }
+    }
+</script>
+</body>
+</html>

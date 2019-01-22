@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-地图</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            position: relative;
+        }
+
+        .btn {
+            display: block;
+            position: absolute;
+            left: calc(50% - 3.45rem);
+            bottom: 0.2rem;
+            width: 6.9rem;
+            height: 0.9rem;
+            color: #fff;
+            text-align: center;
+            line-height: 0.9rem;
+            font-size: 0.32rem;
+            background: rgba(255, 49, 74, 1);
+            border-radius: 0.1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="m-navbar" id="header">
+    <a href="#" class="navbar-item event-back">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">选择地址</span>
+    </div>
+</header>
+
+<a class="btn" onclick="saveMapData();">保存</a>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script>
+    var annotations = []; //添加标注
+    var lng, lat;
+    apiready = function () {
+        fnReady();
+        getLocation();
+    };
+
+    function getLocation() {
+        var map = api.require('bMap');
+        map.getLocation({
+            accuracy: '100m',
+            autoStop: true,
+            filter: 1
+        }, function (ret, err) {
+            if (ret.status) {
+                openMap(ret, map);
+                clickMapEvent(map);
+            } else {
+                alert(err.code);
+            }
+        });
+    }
+
+    //打开地图
+    function openMap(ret, map) {
+        map.open({
+            rect: {
+                x: 0,
+                y: headerHeight,
+                w: api.winWidth,
+                h: api.winHeight - headerHeight - 100
+            },
+            center: {
+                lon: ret.lon,
+                lat: ret.lat
+            },
+            zoomLevel: 16,
+            showUserLocation: true,
+            fixedOn: api.frameName,
+            fixed: true
+        }, function (ret) {
+            if (ret.status) {
+                // alert('地图打开成功');
+            }
+        });
+
+    }
+
+    //地圖添加標記
+    function clickMapEvent(map) {
+        map.addEventListener({
+            name: 'click'
+        }, function (ret) {
+            if (ret.status) {
+                if (annotations.length > 0) {
+                    map.removeAnnotations();
+                }
+                lat = ret.lat;
+                lng = ret.lon;
+                annotations = [{
+                    id: 1,
+                    lon: ret.lon,
+                    lat: ret.lat
+                }];
+                map.addAnnotations({
+                    annotations: annotations,
+                    draggable: false
+                }, function (ret) {
+                    if (ret) {
+                        // alert(ret.id);
+                    }
+                });
+            }
+        });
+    }
+
+    //保存坐标
+    function saveMapData() {
+        if (!lat || !lng) {
+            toast('请选择地点');
+            return false;
+        }
+        api.sendEvent({
+            name: api.pageParam.froms + '_location',
+            extra: {
+                lon: lng,
+                lat: lat
+            }
+        });
+        api.closeWin();
+    }
+</script>
+
+</body>
+
+</html>

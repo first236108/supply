@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-确认订单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/animate.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, #app {
+            background-color: #f5f5f5;
+        }
+
+        #app {
+            position: relative;
+        }
+
+        .address {
+            background: #5e6b85;
+            height: 1.4rem;
+            margin-bottom: .2rem;
+        }
+
+        .address .cell-left, .address .cell-right, .address .cell-arrow:after {
+            color: #fff;
+            position: relative;
+        }
+
+        .cell-right {
+            font-size: .28rem;
+        }
+
+        .icon-location {
+            font-size: .4rem;
+        }
+
+        .address .info {
+            height: 100%;
+            position: absolute;
+            left: .3rem;
+            text-align: left;
+        }
+
+        .address .info div {
+            height: 50%;
+            display: flex;
+            align-items: center;
+        }
+
+        section:not(:last-of-type) {
+            margin-bottom: .2rem;
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, .2), 0 0.5px 0 0 rgba(0, 0, 0, .3);
+        }
+
+        section:last-of-type {
+            margin-bottom: 1.4rem;
+        }
+
+        section .store, .foot, .user-note, .prom, .coupon {
+            padding: .2rem;
+            background-color: #fff;
+        }
+
+        section .goods {
+            padding: .1rem .2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F5F5F5;
+        }
+
+        section .pic {
+            width: 20%;
+        }
+
+        section .pic img {
+            width: 100%;
+        }
+
+        section .goods-info {
+            width: 60%;
+            padding-left: .2rem;
+        }
+
+        section .price-num {
+            width: 20%;
+            text-align: right;
+        }
+
+        .goods-name {
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
+        }
+
+        .price {
+            font-size: .28rem;
+            color: #f50;
+            font-weight: bold;
+        }
+
+        .red {
+            color: #f50;
+            font-size: .2rem;
+        }
+
+        .price-num .price, .price-num .red, .point .red, .point .price {
+            color: #000;
+            font-weight: normal;
+        }
+
+        .price-num .num {
+            margin-top: .1rem;
+        }
+
+        section > .foot {
+            text-align: right;
+        }
+
+        .foot .store-sum, .total-price .sum, .point .cell-right, .order-prom .tag {
+            font-size: .28rem;
+        }
+
+        .foot .price-block {
+            min-width: 20%;
+        }
+
+        .user-note, .coupon {
+            height: 1rem;
+        }
+
+        .user-note .cell-left, .prom, .coupon .cell-left {
+            color: #333;
+            font-size: .24rem;
+        }
+
+        .user-note .cell-right, .coupon .cell-right, .point .cell-right {
+            min-height: 0;
+        }
+
+        .user-note .cell-right input {
+            font-size: .24rem;
+        }
+
+        .prom {
+            border-bottom: 1px solid #D9D9D9;
+        }
+
+        .head em {
+            background-color: #f47a86;
+            border-radius: 1px;
+            color: #fff;
+            position: relative;
+            padding: 1px 5px;
+        }
+
+        .head em s {
+            position: absolute;
+            width: 0;
+            display: block;
+            font-size: 0;
+            right: -4px;
+            bottom: 0;
+            height: 0;
+            border: 3px solid #f47a86;
+            border-color: transparent transparent #f47a86 #f47a86;
+        }
+
+        .shine {
+            box-shadow: #0BEAEB 0 0 10px inset;
+        }
+
+        .description {
+            color: #999;
+            padding: .2rem;
+            animation-duration: .5s;
+            max-height: 2.5rem;
+            overflow-y: scroll;
+        }
+
+        .description * {
+            max-width: 100% !important;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .1rem .2rem;
+        }
+
+        .content {
+            margin: .1rem 0;
+        }
+
+        .prom .title {
+            font-size: .26rem;
+            color: #ff0035;
+            font-weight: bold;
+            text-shadow: 0 0 10px #f47a86;
+        }
+
+        .prom .remind {
+            margin: .2rem .2rem 0;
+            color: #f50;
+        }
+
+        .total-price {
+            margin-top: .5rem;
+            background-color: #fff;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -1px 0 0 rgba(0, 0, 0, .1), 0 -0.5px 0.5px 0 rgba(0, 0, 0, .2);
+        }
+
+        .point {
+            background-color: #fff;
+            padding: .2rem;
+            display: flex;
+            position: relative;
+            align-items: center;
+        }
+
+        .point .cell-end {
+            min-width: 15%;
+            text-align: right;
+        }
+
+        .comfirm-order {
+            background-color: #ff0036;
+            color: #FFF;
+            height: .9rem;
+            width: 20%;
+            margin-left: .2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: -webkit-linear-gradient(left, #FF0077, #ff0036);
+            font-size: .28rem;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="cell-item address">
+        <div class="cell-left"><i class="icon-location"></i></div>
+        <div class="cell-right cell-arrow open-win" data-name="address" data-url="../center/address.html" data-origin="cart2">
+            <div class="info">
+                <div>收&nbsp;货&nbsp;人：<span v-if="address">{{address.consignee}}</span></div>
+                <div>收货地址：<span v-if="address">{{address.address}}</span></div>
+            </div>
+            <div><span v-if="address">{{address.mobile}}</span></div>
+        </div>
+    </div>
+
+    <section class="" v-for="(item,store_id) in cartList">
+        <div class="store"><i class="iconfont icon-dianpu"></i>&nbsp;{{storeList[store_id].store_name}}</div>
+        <div class="goods" v-for="(goods,vi) in item">
+            <div class="pic"><img :src="goods.original_img"></div>
+            <div class="goods-info">
+                <div class="goods-name">{{goods.goods_name}}</div>
+                <div>{{goods.spec_key_name}}</div>
+            </div>
+            <div class="price-num">
+                <div><span class="red">￥</span><span class="price">{{goods.goods_price | removeZero}}</span></div>
+                <div class="num">x {{goods.goods_num}}</div>
+            </div>
+        </div>
+        <div class="prom" v-if="prom[store_id]">
+            <div class="head"><em>订单促销<s></s></em></div>
+            <div :class="[{shine:vo.id==result.store_order_prom_id[store_id]},'content']" v-for="(vo,idx) in prom[store_id]">
+                <div class="option" @click="toggle(store_id,idx)">
+                    <div class="title">{{vo.title}}</div>
+                    <div class="time">{{moment.unix(vo.start_time).format('M月D日')}} - {{moment.unix(vo.end_time).format('M月D日')}}</div>
+                    <i :class="[vo.status?'icon-more':'icon-moreunfold','iconfont']"></i>
+                </div>
+                <transition name="custom-classes-transition" enter-active-class="slideInLeft" leave-active-class="slideOutRight">
+                    <div class="description animated" v-show="vo.description && !vo.status" v-html="vo.description"></div>
+                </transition>
+            </div>
+            <div class="remind" v-if="result.store_prom_order_msg[store_id]">{{result.store_prom_order_msg[store_id] | substr}}</div>
+        </div>
+        <div class="coupon cell-item open-win" v-if="couponList[store_id]" data-name="select_coupon" data-url="./select_coupon.html" :data-store="store_id" :data-amount="result.store_goods_price[store_id]" :data-storename="storeList[store_id]['store_name']" :data-coupon="result.coupon_id[store_id]">
+            <div class="cell-left head"><em>优惠券<s></s></em></div>
+            <div class="cell-right">
+                <span class="red">-￥</span>
+                <span class="price">{{result.store_coupon_price[store_id] | removeZero}} 元</span>
+                <i class="icon-more iconfont"></i>
+            </div>
+        </div>
+        <div class="cell-item user-note">
+            <div class="cell-left">买家留言：</div>
+            <div class="cell-right"><input type="text" class="cell-input" v-model="user_note[store_id]" placeholder="选填:填写内容已和商家协商确认" autocomplete="off"></div>
+        </div>
+        <div class="foot">
+            <div class="order-prom" v-if="result.store_order_prom_amount[store_id] > 0">
+                <span class="tag">订单优惠：</span>
+                <span class="price-block">
+                    <span class="red">-￥</span>
+                    <span class="price">{{result.store_order_prom_amount[store_id]}} 元</span>
+                </span>
+            </div>
+            <span class="store-sum">共{{item.length}}件商品&nbsp;&nbsp;&nbsp;&nbsp;小计：</span>
+            <span class="price-block">
+                <span class="red">￥</span>
+                <span class="price">{{storeAmount(store_id)}} 元</span>
+            </span>
+        </div>
+    </section>
+
+    <section v-if="user_point>0 && result.point_limit >0">
+        <div class="point">
+            <div class="cell-right" @click="checkPoint">{{pointRate}}
+                <input type="checkbox" value="0" id="checkbox">
+                <i class="cell-checkbox-icon"></i>
+            </div>
+            <div class="cell-end"><span class="red">￥</span><span class="price">-{{result.pointsFee}}</span></div>
+        </div>
+    </section>
+
+    <div class="total-price">
+        <div>
+            <span class="sum">合计：</span>
+            <span class="red">￥</span>
+            <span class="price">{{result.payables}}</span>
+        </div>
+        <div class="comfirm-order" @click="calculate('submit_order')">提交订单</div>
+    </div>
+
+</div>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/moment.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            cartList: {
+                "12": [
+                    {
+                        "id": 19,
+                        "user_id": 3410,
+                        "session_id": "3410",
+                        "goods_id": 10606,
+                        "goods_sn": "SC0010606",
+                        "goods_name": "康师傅 绿茶1L*8瓶",
+                        "market_price": "25.00",
+                        "goods_price": "23.50",
+                        "member_goods_price": "23.50",
+                        "goods_num": 1,
+                        "spec_key": "",
+                        "spec_key_name": "",
+                        "bar_code": "",
+                        "selected": 1,
+                        "add_time": 1547543366,
+                        "prom_type": 0,
+                        "prom_id": 0,
+                        "sku": "",
+                        "store_id": 12,
+                        "remind": "",
+                        "status": 0,
+                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180621/yrQDMXRSB4.jpg",
+                        "min_num": 1,
+                        "cart_prom_type": 0,
+                        "house_id": 2,
+                        "goods_fee": 23.5,
+                        "store_count": 55,
+                        "region_remind": 0
+                    },
+                    {
+                        "id": 12,
+                        "user_id": 3410,
+                        "session_id": "3410",
+                        "goods_id": 10983,
+                        "goods_sn": "SC0010983",
+                        "goods_name": "峨眉钰泉天然矿泉水整箱520ml*24瓶",
+                        "market_price": "50.00",
+                        "goods_price": "0.02",
+                        "member_goods_price": "0.02",
+                        "goods_num": 1,
+                        "spec_key": "",
+                        "spec_key_name": "",
+                        "bar_code": "",
+                        "selected": 1,
+                        "add_time": 1547519093,
+                        "prom_type": 0,
+                        "prom_id": 0,
+                        "sku": "",
+                        "store_id": 12,
+                        "remind": "",
+                        "status": 0,
+                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg",
+                        "min_num": 1,
+                        "cart_prom_type": 0,
+                        "house_id": 2,
+                        "goods_fee": 0.02,
+                        "store_count": 1412,
+                        "region_remind": 0
+                    }
+                ],
+                "14": [
+                    {
+                        "id": 21,
+                        "user_id": 3410,
+                        "session_id": "3410",
+                        "goods_id": 1314,
+                        "goods_sn": "SC0001314",
+                        "goods_name": "东鹏特饮  500ml*24瓶",
+                        "market_price": "4.00",
+                        "goods_price": "60.00",
+                        "member_goods_price": "60.00",
+                        "goods_num": 1,
+                        "spec_key": "",
+                        "spec_key_name": "",
+                        "bar_code": "",
+                        "selected": 1,
+                        "add_time": 1547545021,
+                        "prom_type": 0,
+                        "prom_id": 0,
+                        "sku": "",
+                        "store_id": 14,
+                        "remind": "",
+                        "status": 0,
+                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180518/JXCY75hQQw.jpg",
+                        "min_num": 1,
+                        "cart_prom_type": 0,
+                        "house_id": 22,
+                        "goods_fee": 60,
+                        "store_count": 8000,
+                        "region_remind": 0
+                    }
+                ]
+            },
+            storeList: {
+                "12": {
+                    "store_id": 12,
+                    "store_name": "商超采购",
+                    "store_phone": "19937413017",
+                    "store_min_price": "0.00",
+                    "stock_type": 1
+                },
+                "14": {
+                    "store_id": 14,
+                    "store_name": "商超供应链",
+                    "store_phone": "19937413017",
+                    "store_min_price": "0.00",
+                    "stock_type": 0
+                }
+            },
+            prom: {
+                "12": [
+                    {
+                        "id": 1,
+                        "title": "满2019减30元",
+                        "description": "<p>订单活动简介内容填充，本店满2019立减30元哦，大力促销优惠活动中。</p>",
+                        "money": 2019,
+                        "expression": "30",
+                        "type": 1,
+                        "start_time": 1546012800,
+                        "end_time": 1551196800,
+                        "store_id": 12,
+                        "status": 1
+                    },
+                    {
+                        "id": 2,
+                        "title": "2999元，天天9折采购",
+                        "description": "<p>这里是2999活动海报，图文内容填充；</p><p><img src=\"http://mallscsj.oss-cn-beijing.aliyuncs.com/public/upload/goods/f336f0366fa40518271afa9a5379721b.png\" alt=\"f336f0366fa40518271afa9a5379721b.png\"/></p>",
+                        "money": 2999,
+                        "expression": "90",
+                        "type": 0,
+                        "start_time": 1547654400,
+                        "end_time": 1552838400,
+                        "store_id": 12,
+                        "status": 1
+                    }
+                ]
+            },
+            couponList: {
+                "12": [
+                    {
+                        "name": "20元",
+                        "money": "20.00",
+                        "condition": "30.00",
+                        "id": 291,
+                        "cid": 23,
+                        "type": 1,
+                        "uid": 3410,
+                        "order_id": 0,
+                        "use_time": 0,
+                        "code": "",
+                        "send_time": 1542161882,
+                        "store_id": 12,
+                        "status": 1,
+                        "is_delete": 0
+                    },
+                    {
+                        "name": "20元",
+                        "money": "20.00",
+                        "condition": "30.00",
+                        "id": 293,
+                        "cid": 23,
+                        "type": 1,
+                        "uid": 3410,
+                        "order_id": 0,
+                        "use_time": 0,
+                        "code": "",
+                        "send_time": 1543390475,
+                        "store_id": 12,
+                        "status": 0,
+                        "is_delete": 0
+                    }
+                ]
+            },
+            shippingList: {
+                "12": "scsjexpress",
+                "14": "scsjexpress"
+            },
+            total_price: {
+                "total_fee": 83.52,
+                "cut_fee": -4.52,
+                "num": 3
+            },
+            address: {
+                "address_id": 693,
+                "user_id": 3410,
+                "consignee": "小志",
+                "email": "",
+                "lng": 113.724453,
+                "lat": 34.768959,
+                "country": 0,
+                "province": 21387,
+                "city": 21388,
+                "district": 21435,
+                "twon": 0,
+                "address": "景峰国际",
+                "zipcode": "",
+                "mobile": "13007686118",
+                "is_default": 1,
+                "store_name": "圣菲超市",
+                "is_delete": 0
+            },
+            result: {
+                store_order_prom_id: {},
+                store_order_prom_amount: {},
+                store_order_amount: {},
+                store_coupon_price: {},
+                store_point_count: {},
+                store_goods_price: {},
+                store_prom_order_msg: {},
+                coupon_id: {}
+            },
+            user_note: {},
+            user_point: 0,
+            point_ratio: 0,
+            use_point: 0
+        },
+        filters: {
+            substr: function (str) {
+                return str.substr(0, str.indexOf('|scsj|'));
+            },
+            removeZero: function (amount) {
+                return parseFloat(amount);
+            }
+        },
+        computed: {
+            pointRate: function () {
+                var max = Math.min(this.user_point, this.result.point_limit - 1);
+                var point = Math.round(max / this.point_ratio * Math.pow(10, 2)) / Math.pow(10, 2);
+                return '使用' + max + '积分抵扣' + point + '元';
+            }
+        },
+        methods: {
+            init: function () {
+                ajax_post('/cart/cart2', {}, function (res) {
+                    vm.cartList = res.cartList;
+                    vm.storeList = res.storeList;
+                    vm.prom = res.prom;
+                    vm.couponList = res.couponList;
+                    vm.shippingList = res.shippingList;
+                    vm.total_price = res.total_price;
+                    vm.address = res.address;
+                    vm.user_point = res.user_point;
+                    vm.point_ratio = res.point_ratio;
+                    if (res.address) {
+                        vm.calculate();
+                    } else {
+                        api.confirm({
+                            title: '提醒',
+                            msg: '请添加一个收货地址吧?',
+                            buttons: ['确定', '取消']
+                        }, function (ret, err) {
+                            if (ret.buttonIndex == 1) {
+                                api.openWin({
+                                    name: 'address',
+                                    url: '../center/address.html',
+                                    pageParam: {
+                                        origin: 'cart2'
+                                    }
+                                });
+                            } else {
+                                api.closeWin();
+                            }
+                        });
+                    }
+                });
+            },
+            calculate: function (act) {
+                loading();
+                var param = {
+                    pay_points: vm.use_point,
+                    address_id: vm.address.address_id,
+                    shipping_code:vm.shippingList
+                };
+                if (Object.keys(vm.result.coupon_id).length) {
+                    param.coupon_id = vm.result.coupon_id;
+                }
+
+                if (Object.keys(vm.user_note).length) {
+                    param.user_note = vm.user_note;
+                }
+                if (act) {
+                    param.act = 'submit_order';
+                }
+                ajax_post('/cart/cart3', param, function (res) {
+                    api.hideProgress();
+                    if (act) {
+                        api.openWin({
+                            name:'order_pay',
+                            url:'./order_pay.html',
+                            pageParam:{
+                                master_order_sn:res.master_order_sn,
+                                name:'cart2'
+                            }
+                        });
+                    } else {
+                        vm.result = res;
+                    }
+                });
+            },
+            toggle: function (store_id, index) {
+                //切换活动详情显示状态
+                this.prom[store_id][index]['status'] = !this.prom[store_id][index]['status'];
+            },
+            coupon: function (store_id) {
+                var _this = this;
+                return _this.couponList[store_id][0].money;
+            },
+            checkPoint: function () {
+                var flag = document.getElementById('checkbox').checked;
+                document.getElementById('checkbox').checked = !flag;
+                if (!flag) {
+                    this.use_point = Math.min(this.user_point, this.result.point_limit - 1);
+                } else {
+                    this.use_point = 0.00;
+                }
+                this.calculate();
+            },
+            storeAmount: function (store_id) {
+                var amount = this.result.store_goods_price[store_id];
+                if (this.result.store_coupon_price[store_id])
+                    amount -= this.result.store_coupon_price[store_id];
+                return Math.round(amount * Math.pow(10, 2)) / Math.pow(10, 2);
+            }
+        },
+        mounted: function () {
+            openWin();//
+        }
+    });
+
+    apiready = function () {
+        vm.init();
+
+        api.addEventListener({
+            name: 'address_car2'
+        }, function (ret, err) {
+            vm.address = ret.value;
+            vm.calculate();
+        });
+
+        api.addEventListener({
+            name: 'select_coupon'
+        }, function (ret, err) {
+            vm.result.coupon_id[ret.value.store_id] = ret.value.id;//手工选择优惠券
+            vm.calculate();
+        });
+
+        api.addEventListener({
+            name: 'cart2'
+        }, function (ret, err) {
+            api.closeWin()//进入支付后关闭本窗口
+        });
+    };
+</script>
+
+</body>
+</html>

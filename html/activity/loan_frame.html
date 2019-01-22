@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-优惠券</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        #app {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .banner {
+            height: 325px;
+            background: url('http://mallscsj.oss-cn-beijing.aliyuncs.com//upload/comment_list/20190114/HCd6RMw7na.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        .banner img {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* content */
+
+        .content {
+            padding-bottom: 25px;
+        }
+
+        .fill {
+            height: 10px;
+            background: #F2F2F2;
+        }
+
+        .content .items {
+            padding: 0 22px;
+            background: #fff;
+
+        }
+
+        .content .items .item {
+            padding: 19px 0 3px;
+            border-bottom: 1px solid #DFDFDF;
+        }
+
+        .content .items .item:last-of-type {
+            border-bottom: 0;
+        }
+
+        .content .title {
+            height: 12px;
+            line-height: 12px;
+            font-size: 12px;
+            color: #FF4800;
+        }
+
+        .content .items .input-wrap {
+            padding: 10px 0;
+            position: relative;
+        }
+
+        .content input {
+            width: 80%;
+            height: 26px;
+            line-height: 26px;
+            font-size: 14px;
+            border: 0;
+        }
+
+        #get-codes, #wait {
+            display: block;
+            position: absolute;
+            right: 10px;
+            height: 24px;
+            font-size: 12px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #get-codes {
+            bottom: 14px;
+            width: 80px;
+            color: #fff;
+            background: #FF4800;
+        }
+
+        #wait {
+            bottom: 14px;
+            width: 100px;
+            color: #000;
+            background: #f0f0f0;
+            display: none;
+        }
+
+        .sure-codes {
+            display: none;
+            position: absolute;
+            right: 10px;
+            bottom: 17px;
+            width: 16px;
+            height: 16px;
+            background: url('../../image/sure-codes.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        .maps {
+            display: block;
+            position: absolute;
+            right: 10px;
+            bottom: 17px;
+            width: 12px;
+            height: 15px;
+            background: url('../../image/map.png') no-repeat center center;
+            background-size: cover;
+        }
+
+        input[disabled], input:disabled {
+            background: #fff;
+        }
+
+        .content .items .item .address {
+            border-bottom: 1px solid #DFDFDF;
+        }
+
+        .content .items .item .address-info {
+            padding-top: 8px;
+        }
+
+        .subs {
+            display: block;
+            margin: 24px auto 0;
+            width: 330px;
+            height: 46px;
+            font-size: 16px;
+            line-height: 46px;
+            color: #fff;
+            text-align: center;
+            background: rgba(255, 72, 0, 1);
+            border-radius: 4px;
+        }
+
+        .txt {
+            margin-top: 20px;
+            font-size: 12px;
+            height: 12px;
+            line-height: 12px;
+            text-align: center;
+            color: #BEBEBE;
+        }
+
+        .txt a {
+            color: #FF8556;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+
+    <div class="banner" id="banner">
+    </div>
+
+    <div class="content">
+
+        <div class="items">
+            <!-- 手机号码 -->
+            <div class="item">
+                <div class="title">手机号</div>
+                <div class="input-wrap">
+                    <input type="number" v-model="phone" placeholder="请输入手机号"/>
+                    <span id="get-codes" @click="getCode">获取验证码</span>
+                    <span id="wait"></span>
+                </div>
+            </div>
+            <!-- 验证码 -->
+            <div class="item">
+                <div class="title">验证码</div>
+                <div class="input-wrap">
+                    <input type="number" v-model="code" maxlength="6" placeholder="验证码"/>
+                    <span class="sure-codes" id="sure-codes"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="fill"></div>
+
+        <div class="items">
+            <!-- 店铺名称 -->
+            <div class="item">
+                <div class="title">店铺名称</div>
+                <div class="input-wrap">
+                    <input type="text" v-model="store_name" placeholder="请输入店铺名称"/>
+                </div>
+            </div>
+            <!-- 姓名 -->
+            <div class="item">
+                <div class="title">姓名</div>
+                <div class="input-wrap">
+                    <input type="text" v-model="name" placeholder="请输入店铺名称"/>
+                </div>
+            </div>
+
+            <!-- 店铺地址 -->
+            <div class="item">
+                <div class="title">店铺地址</div>
+                <div class="input-wrap address open-win" data-name="map" data-url="../center/map.html" data-froms="loan">
+                    <input type="text" id="address_input" placeholder="请在地图上准确选择店铺地址" disabled/>
+
+                    <span class="maps"></span>
+                </div>
+                <div class="input-wrap address-info">
+                    <input type="text" v-model="address" placeholder="请补充详细地址,门牌号"/>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="fill"></div>
+
+        <!-- 提交 -->
+        <a class="subs" @click="checkSub">提交申请</a>
+
+        <!-- 客服热线 -->
+        <p class="txt">
+            客服热线：
+            <a href="tel:" class="kefu" id="kefu"></a>
+        </p>
+
+    </div>
+
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var apply = false;
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            phone: '',
+            code: '',
+            loan_id: 0,
+            store_name: '',
+            name: '',
+            lng: '',
+            lat: '',
+            address: ''
+        },
+        methods: {
+            getCode: function () {
+                if (apply) {
+                    toast('您已经提交过信息,请耐心等待工作人员联系,或拨打下方服务电话', 3000);
+                    return;
+                }
+                if (!checkMobile(vm.phone)) {
+                    toast('手机号码不正确');
+                    return;
+                }
+                var postData = {
+                    type: 'mobile',
+                    mobile: vm.phone,
+                    scene: 2,
+                    unique_id: api.deviceId
+                };
+
+                ajax_post('/home/api/send_validate_code', postData, function (res) {
+                    if (res.status != 1) {
+                        toast(res.msg);
+                    } else {
+                        toast('短信已发送,请注意查收');
+                        vm.countTimes();
+                        $api.dom('#get-codes').style.display = 'none';
+                        $api.next($api.dom('#get-codes')).style.display = 'block';
+                    }
+                });
+            },
+            countTimes: function () {
+                var num = 60;
+                var time = setInterval(function () {
+                    if (num == 0) {
+                        clearInterval(time);
+                        $api.dom('#wait').style.display = 'none';
+                        $api.prev($api.dom('#wait')).style.display = 'block';
+                    }
+                    num--;
+                    $api.text($api.dom('#wait'), num + '秒后重新获取');
+                }, 1000);
+            },
+            checkSub: function () {
+                if (apply) {
+                    toast('您已经提交过信息,请耐心等待工作人员联系,或拨打下方服务电话', 3000);
+                    return;
+                }
+                var data = vm.$data;
+                if (!checkMobile(data.phone)) {
+                    toast('手机号码不正确');
+                    return;
+                }
+                if (data.code.length < 6 || isNaN(data.code)) {
+                    toast('验证码不正确');
+                    return;
+                }
+                if (!data.store_name) {
+                    toast('请输入您的店铺名称');
+                    return;
+                }
+                if (!data.store_name) {
+                    toast('请输入您的姓名');
+                    return;
+                }
+                if (!data.lng || !data.lat) {
+                    toast('请选择您的店铺地址');
+                    return;
+                }
+                if (!data.address) {
+                    toast('请补充您店铺的详细地址');
+                    return;
+                }
+                ajax_post('/index/loan', data, function (res) {
+                    toast(res.msg);
+                    apply = true;
+                });
+            }
+        },
+        watch: {
+            code: function (val, oldval) {
+                if (val.length == 6) {
+                    $api.dom('#sure-codes').style.display = 'block';
+                } else {
+                    $api.dom('#sure-codes').style.display = 'none';
+                }
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        var data = api.pageParam;
+        $api.html($api.dom('#kefu'), data.phone);
+        $api.attr($api.dom('#kefu'), 'href', 'tel:' + data.phone);
+        vm.loan_id = data.id;
+        apply = data.apply;
+        api.addEventListener({
+            name: 'loan_location'
+        }, function (ret, err) {
+            vm.lat = ret.value.lat.toFixed(6);
+            vm.lng = ret.value.lon.toFixed(6);
+        });
+    };
+</script>
+</body>
+</html>

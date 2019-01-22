@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .remind {
+            height: .8rem;
+            font-size: .28rem;
+            color: #999;
+            padding-left: .24rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-container {
+            padding: 0 .3rem;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <div class="remind">
+        请绑定持卡人本人银行卡
+    </div>
+    <div class="m-cell demo-small-pitch">
+        <div class="cell-item">
+            <div class="cell-left">持卡人：</div>
+            <div class="cell-right"><input type="text" class="cell-input" v-model="name" readonly="readonly"></div>
+        </div>
+        <div class="cell-item">
+            <div class="cell-left">卡号：</div>
+            <div class="cell-right"><input type="number" class="cell-input" id="cardno" placeholder="请输入银行卡号" value="6226632202135302"></div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button type="button" class="btn btn-block btn-danger" @click="next">下一步</button>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: ''
+        },
+        methods: {
+            next: function () {
+                var cardno = document.getElementById('cardno').value;
+                if (!this.check(cardno)) {
+                    api.toast({
+                        msg: '银行卡号码错误',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+                    return;
+                }
+                ajax_post('/user/getBankCardBin', {card_no: cardno}, function (res) {
+                    if (res.cardState != 1) {
+                        api.toast({
+                            msg: '此银行卡无效,请重新输入',
+                            duration: 1500,
+                            location: 'middle'
+                        });
+                        return;
+                    }
+                    api.openWin({
+                        name: 'checkcard',
+                        url: 'checkcard.html',
+                        pageParam: {
+                            bankName: res.bankName,
+                            cardName: res.cardName,
+                            cardTypeLabel: res.cardTypeLabel,
+                            idcard: res.idcard,
+                            cardno: cardno,
+                            realname: res.realname,
+                            mobile: res.mobile
+                        }
+                    });
+                });
+            },
+            check: function CheckBankNo(bankno) {
+                bankno = bankno.toString();
+                if (bankno.length < 16 || bankno.length > 19) {
+                    return false;
+                }
+
+                if (!/^\d*$/.test(bankno)) {
+                    return false;
+                }
+                //开头6位
+                if ("10,18,30,35,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,58,60,62,65,68,69,84,87,88,94,95,98,99".indexOf(bankno.substring(0, 2)) < 0) {
+                    return false;
+                }
+
+                return true;
+            }
+        },
+        mounted: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.name = api.pageParam.username;
+    };
+</script>
+
+</html>

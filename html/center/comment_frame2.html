@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-全部评价</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        * {
+            color: #666
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <order-item v-for="vo in list" :order='vo'></order-item>
+
+</div>
+
+<script type="text/x-template" id="order-item">
+    <div class="content">
+        <div class="comment">
+            <div class="title clearfix">
+                <span class="spec">订单编号:{{order.order_sn}}</span>
+                <span class="order-time">{{order.order_time | timeParse}}</span>
+            </div>
+            <div class="goods-block" v-for="goods in order.goods">
+                <div class="content" v-if="goods.content">
+                    <div>{{goods.content}}</div>
+                    <div class="comment-img" v-if="goods.img.length">
+                        <img v-for="(image,index) in goods.img" :src="image" @click="photoview(goods.img,index)">
+                    </div>
+                </div>
+
+                <div class="item open-win" data-name="goodsInfo" data-url="../goods/goodsInfo.html" :data-id="goods.goods_id">
+                    <div class="imgs">
+                        <img class="goods-img" :src="goods.original_img">
+                    </div>
+                    <div class="right">
+                        <p>{{goods.goods_name}}</p>
+                        <div class="clearfix">
+                            <span class="price">￥{{goods.goods_price}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="foot" :data-orderid="order.order_id">
+                <a class="btn btn-hollow" v-if="order.is_comment" onclick="vieworder();">查看订单</a>
+                <a class="btn btn-hollow" v-else onclick="comment();">评价订单</a>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/moment.min.js"></script>
+<script>
+    var photoBrowser;
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            page: 1
+        },
+        components: {
+            'order-item': {
+                props: ['order'],
+                filters: {
+                    timeParse: function (timestamp) {
+                        return moment.unix(timestamp).format('YYYY-MM-DD HH:mm:ss');
+                    }
+                },
+                methods: {
+                    photoview: function (imgs, index) {
+                        photoBrowser.open({
+                            images: imgs,
+                            activeIndex: index,
+                            placeholderImg: 'widget://image/default.png',
+                            bgColor: '#000'
+                        }, function (ret) {
+                            if (ret.eventType == 'click') {
+                                photoBrowser.close();
+                            } else if (ret.eventType == 'longPress') {
+                                console.log('lognPress');
+                            }
+                        });
+                    }
+                },
+                template: '#order-item'
+            }
+        },
+        methods: {
+            checkTypes: function (e) {
+                var data = e.currentTarget.dataset;
+                this.status = data.status;
+            },
+            getList: function (refreash) {
+                if (refreash) {
+                    vm.page = 1;
+                }
+                if (vm.page == false) {
+                    return;
+                }
+                if (!refreash) {
+                    api.showProgress({
+                        title: '加载中...',
+                        modal: false
+                    });
+                }
+                ajax_post('/user/commentList', {status: 2, page: vm.page}, function (res) {
+                    if (refreash) {
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        api.hideProgress();
+                    }
+                    if (res.length == 0) {
+                        toast('没有更多了');
+                        vm.page = false;
+                    } else {
+                        if (vm.page == 1) {
+                            vm.list = res;
+                        } else {
+                            vm.list = vm.list.concat(res);
+                        }
+                        vm.page++;
+                    }
+                });
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.getList();
+        photoBrowser = api.require('photoBrowser');
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.getList(true);
+        });
+
+        //上拉加载事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.getList();
+        });
+
+        api.addEventListener({
+            name: 'addCommented'
+        }, function (ret, err) {
+            vm.getList(true);//添加评论后刷新数据
+        });
+    };
+
+    function vieworder() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        api.openWin({
+            name: 'order_detail',
+            url: '../order/order_detail.html',
+            pageParam: {
+                order_id: order_id
+            }
+        });
+    }
+
+    function comment() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        ajax_post('/user/orderDetail', {order_id: order_id}, function (res) {
+            api.openWin({
+                name: 'addcomment',
+                url: './addcomment.html',
+                pageParam: {
+                    res: res
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-全部订单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .content {
+            height: calc(100% - 0.88rem);
+            background: #fff;
+            margin-bottom: .2rem;
+        }
+
+        .content .title {
+            padding: 0 0.24rem;
+            height: 0.76rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .content .title span, .content .title i {
+            display: block;
+            height: 0.76rem;
+            line-height: 0.76rem;
+        }
+
+        .content .title span:nth-of-type(1) {
+            float: left;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .content .title i {
+            margin-right: 0.09rem;
+            font-size: 0.5rem;
+            float: left;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        .content .title span:nth-of-type(2) {
+            float: right;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .goods {
+            background: #fff;
+        }
+
+        .goods .item {
+            border-bottom: 0.01rem solid #f0f0f0
+        }
+
+        .goods .imgs {
+            float: left;
+            padding: 0.2rem 0;
+            margin: 0 0.4rem 0 0.2rem;
+        }
+
+        .goods img {
+            width: 1.86rem;
+            height: 1.86rem;
+            background: url(https://oss-pub.scsj.net.cn/Image/default.png) no-repeat center center;
+        }
+
+        .goods .right {
+            padding: 0.3rem 0.2rem 0 0;
+        }
+
+        .goods .right p {
+            line-height: 0.4rem;
+            font-size: 0.26rem;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .goods .spec {
+            color: #666;
+            margin-top: .2rem;
+        }
+
+        .goods .right .info {
+            margin-top: 0.2rem;
+        }
+
+        .goods .right .info span {
+            display: block;
+            line-height: 0.24rem;
+        }
+
+        .goods .right .info .num {
+            float: left;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .goods .right .info .price {
+            float: right;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .amount .all {
+            padding-right: 0.2rem;
+            line-height: 0.52rem;
+            text-align: right;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .amount .all span {
+            font-size: 0.32rem;
+            color: #e41735;
+        }
+
+        .amount .all .order-amount {
+            color: #666;
+            font-weight: normal;
+        }
+
+        .oprate {
+            margin: .2rem;
+            text-align: right;
+            height: .5rem;
+        }
+
+        .oprate .btn {
+            height: .5rem;
+            line-height: .5rem;
+            padding: 0 .1rem;
+        }
+
+        .order-sumary {
+            margin: .1rem .2rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 内容 -->
+    <order-item v-for="vo in list" :order='vo' :store="store_list" :order_status="order_status"></order-item>
+
+</div>
+
+<script type="text/x-template" id="order-item">
+    <div class="content">
+        <!-- 店铺信息 -->
+        <div class="title open-win" data-name="store" data-url="../store/store.html" :data-storeid="order.store_id">
+            <i class="iconfont  icon-dianpu"></i>
+            <span>{{store[order.store_id].store_name}}</span>
+            <span><i class="iconfont icon-more"></i></span>
+        </div>
+        <div class="order-sumary">
+            <span class="left">订单编号:{{order.order_sn}}</span>
+            <span class="right">{{order_status[order.order_status]}}</span>
+
+        </div>
+        <!-- 商品 -->
+        <div class="goods" v-for="goods in order.goods_list">
+            <div class="item clearfix">
+                <div class="imgs open-win" data-name="goodsInfo" data-url="../goods/goodsInfo.html" :data-id="goods.goods_id">
+                    <img :src="goods.original_img">
+                </div>
+                <div class="right">
+                    <p>{{goods.goods_name}}</p>
+                    <div class="spec" v-if="goods.spec_key_name">
+                        {{goods.spec_key_name}}
+                    </div>
+                    <div class="info clearfix">
+                        <span class="num">×{{goods.goods_num}}</span>
+                        <span class="price">￥{{goods.goods_price}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 金额 -->
+        <div class="amount">
+            <p class="all">共{{order.goods_list.length}}件商品&nbsp;&nbsp;商品总价:<span class="order-amount">￥{{order.total_amount}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.coupon_price >0">优惠券抵扣: <span>￥{{order.coupon_price}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.integral_money>0">积分抵扣: <span>￥{{order.integral_money}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.user_money>0">余额支付: <span>￥{{order.user_money}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.order_amount>0">实际支付: <span>￥{{order.order_amount}}</span>&nbsp;元</p>
+        </div>
+        <div class="oprate" :data-orderid="order.order_id">
+            <a class="btn btn-hollow" onclick="detail();">订单详情</a>
+            <a class="btn btn-primary open-win" v-if="order.pay_btn>0" data-name="order_pay" data-url="../cart/order_pay.html" :data-order_id="order.order_id">立即支付</a>
+            <a class="btn btn-hollow" v-if="order.cancel_btn>0" onclick="cancle();">取消订单</a>
+            <a class="btn btn-danger" v-if="order.receive_btn>0" onclick="receive();">确认收货</a>
+            <a class="btn btn-warning" v-if="order.comment_btn>0" onclick="comment();">评价订单</a>
+            <!--<a class="btn btn-hollow" v-if="order.shipping_btn>0">查看物流</a>-->
+            <a class="btn btn-hollow" v-if="order.return_btn>0" onclick="return_order();">申请退款</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            page: 1,
+            pay_status: [],
+            shipping_status: [],
+            order_status: [],
+            store_list: {}
+        },
+        components: {
+            'order-item': {
+                props: ['order', 'store', 'order_status'],
+                template: '#order-item'
+            }
+        },
+        methods: {
+            getList: function (refreash) {
+
+                if (refreash) {
+                    vm.page = 1;
+                }
+                if (vm.page == false) {
+                    return;
+                }
+                if (!refreash) {
+                    api.showProgress({
+                        title: '加载中...',
+                        modal: false
+                    });
+                }
+                ajax_post('/user/orderList', {p: vm.page}, function (res) {
+                    if (refreash) {
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        api.hideProgress();
+                    }
+                    if (res.list.length == 0) {
+                        toast('没有更多了');
+                        vm.page = false;
+                    } else {
+                        if (vm.page == 1) {
+                            vm.list = res.list;
+                            vm.store_list = res.store_list;
+                            vm.order_status = res.order_status;
+                        } else {
+                            vm.list = vm.list.concat(res);
+                            for (var store_id in res.store_list) {
+                                if (!vm.store_list.hasOwnProperty(store_id))
+                                    vm.store_list[store_id] = res.store_list[store_id];
+                            }
+                        }
+                        vm.page++;
+                    }
+                });
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.getList();
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.getList(true);
+        });
+
+        //上拉加载事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.getList();
+        });
+
+        api.addEventListener({
+            name: 'addCommented'
+        }, function (ret, err) {
+            vm.getList(true);//添加评论后刷新数据
+        });
+    };
+
+    function pay() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+    }
+
+    /**
+     * 取消订单
+     */
+    function cancle() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        api.confirm({
+            title: '订单操作',
+            msg: '要取消订单吗?',
+            buttons: ['确定', '取消']
+        }, function (ret, err) {
+            if (ret.buttonIndex == 1) {
+                ajax_post('/user/cancelOrder', {order_id: order_id}, function (res) {
+                    toast(res.msg);
+                    vm.getList(true);
+                });
+            }
+        });
+    }
+
+    /**
+     * 确认收货
+     */
+    function receive() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        ajax_post('/user/orderConfirm', {order_id: order_id}, function (res) {
+            toast(res.msg);
+            vm.getList(true);
+        });
+    }
+
+    function comment() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        ajax_post('/user/orderDetail', {order_id: order_id}, function (res) {
+            api.openWin({
+                name: 'addcomment',
+                url: './addcomment.html',
+                pageParam: {
+                    res: res
+                }
+            });
+        });
+    }
+
+    function return_order() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+    }
+
+    /**
+     * 订单详情
+     */
+    function detail() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        api.openWin({
+            name: 'order_detail',
+            url: './order_detail.html',
+            pageParam: {
+                order_id: order_id
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

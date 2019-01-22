@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-优惠券</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css" />
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .nav {
+            height: 0.88rem;
+            line-height: 0.84rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+            margin-bottom: 0.2rem;
+        }
+
+        .nav a {
+            display: block;
+            float: left;
+            width: 33%;
+            height: 0.84rem;
+            text-align: center;
+            ;
+            font-size: 0.28rem;
+            color: rgba(51, 51, 51, 1);
+            background: #fff;
+            border-bottom: 0.04rem solid #fff;
+        }
+
+        .nav .active {
+            color: rgba(255, 49, 74, 1);
+            border-bottom: 0.04rem solid rgba(255, 49, 74, 1);
+        }
+
+        .content {
+            padding: 0 0.2rem;
+        }
+
+        .item {
+            margin-top: 0.2rem;
+            width: 7.1rem;
+            height: 2.5rem;
+            background: url(../../image/coupon1.png) no-repeat center center;
+            background-size: cover;
+        }
+
+        .content .bg2 {
+            background: url(../../image/coupon2.png) no-repeat center center;
+            background-size: cover;
+        }
+
+        .item .top {}
+
+        .item .top .left {
+            float: left;
+            margin-left: 0.2rem;
+        }
+
+        .item .top .right {
+            float: left;
+            margin-left: 0.65rem;
+        }
+
+        .item .top .left span {
+            display: block;
+            float: left;
+            height: 1.95rem;
+            line-height: 1.95rem;
+            color: #222;
+            font-size: 0.32rem;
+        }
+
+        .item .top .left span:nth-of-type(2) {
+            font-size: 0.6rem;
+        }
+
+        .item .top .right span {
+            display: block;
+        }
+
+        .item .top .right span:nth-of-type(1) {
+            margin-top: 0.5rem;
+            font-size: 0.3rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .item .top .right span:nth-of-type(2) {
+            margin-top: 0.3rem;
+            font-size: 0.22rem;
+            color: #333;
+        }
+
+        .item p {
+            padding-left: 0.2rem;
+            font-size: 0.24rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="nav">
+            <a :class="types=='0'?'active':''" data-types='0' @click="checkTypes">未使用</a>
+            <a :class="types=='1'?'active':''" data-types="1" @click="checkTypes">已使用</a>
+            <a :class="types=='2'?'active':''" data-types="2" @click="checkTypes">已过期</a>
+        </div>
+
+        <coupon :list="list0" :types="types" :is-hide="isHide" v-show="types == '0'"></coupon>
+        <coupon :list="list1" :types="types" :is-hide="isHide" v-show="types == '1'"></coupon>
+        <coupon :list="list2" :types="types" :is-hide="isHide" v-show="types == '2'"></coupon>
+
+    </div>
+
+
+    <script type="text/x-template" id="tpl">
+        <div class="content">
+            <template v-if="list.length>0">
+                <div :class="['item',types != '0' ? 'bg2' : '']" v-for="item in list" :key="item.id">
+                    <div class="top clearfix">
+                        <div class="left">
+                            <span>￥</span>
+                            <span>{{item.money}}</span>
+                        </div>
+
+                        <div class="right">
+                            <span>满{{item.condition}}元使用</span>
+                            <span v-if="types == '0'">有效期：{{item.use_start_time | dateFormat(false,true)}} 至 {{item.use_end_time | dateFormat(false,true)}}</span>
+                            <span v-if="types == '1'">{{item.use_end_time | dateFormat(false,true)}}&nbsp;&nbsp;&nbsp;&nbsp;已使用</span>
+                            <span v-if="types == '2'">{{item.use_end_time | dateFormat(false,true)}}&nbsp;&nbsp;&nbsp;&nbsp;已过期</span>
+                        </div>
+                    </div>
+                    <p>仅限在{{item.store_name}}使用</p>
+                </div>
+            </template>
+              <div class="empty" v-if="list.length == 0 && !isHide">
+                  <img src="../../image/goodsEmpty.png" alt="">
+                  <!-- <p>还没有优惠券</p> -->
+              </div>
+
+
+        </div>
+
+
+    </script>
+
+
+
+
+    <script type="text/javascript" src="../../script/api.js"></script>
+    <script type="text/javascript" src="../../script/common.js"></script>
+    <script type="text/javascript" src="../../script/vue.min.js"></script>
+    <script>
+        Vue.filter('dateFormat', function(timestamp, getTime, getDate) {
+            var date = new Date(parseInt(timestamp) * 1000);
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            var D = date.getDate() + ' ';
+            var h = date.getHours() + ':';
+            var m = date.getMinutes() + ':';
+            var s = date.getSeconds();
+            if (getTime)
+                return h + m + s;
+            if (getDate)
+                return Y + M + D;
+            return Y + M + D + h + m + s;
+        })
+        apiready = function() {
+
+            new Vue({
+                el: '#app',
+                data: {
+                    types: '0', //0=>未使用,1=>已使用,2=>已过期
+                    list0: [], //未使用
+                    list1: [], //已使用
+                    list2: [], //已过期
+                    page0: 0, //未使用
+                    page1: 1, //已使用
+                    page2: 2, //已过期
+                    isLoadPage1: false, //判断是否加载已使用
+                    isLoadPage2: false, //判断是否加载已过期
+                    isPullPage1: true, //判断是否继续加载已使用
+                    isPullPage2: true, //判断是否继续加载已过期
+                    isHide: true
+                },
+                components: {
+                    'coupon': {
+                        template: '#tpl',
+                        props: ['list', 'types','isHide']
+                    }
+                },
+                methods: {
+                    //切换tab
+                    checkTypes: function(e) {
+                        var types = e.currentTarget.dataset.types;
+                        this.types = types;
+                        if(!(this['isLoadPage'+types]) && types != '0'){
+                          this.isHide = true;
+                          this['isLoadPage'+types] = true;
+                          this.getCoupons(types);
+                        }
+                    },
+                    //获取数据
+                    getCoupons: function(types) {
+                        var self = this;
+                        var page = self['page' + types];
+                        loading();
+                        ajax_post('/user/couponList', {
+                            type: types,
+                            page: page
+                        }, function(res) {
+                            api.hideProgress();
+                            if (res.length == 0) {
+                                self.isHide = false;
+                                self['isPullPage' + types] = false;
+                                toast('没有更多了');
+                            } else {
+                                self['list' + types] = self['list' + types].concat(res);
+                            }
+                        })
+                    },
+                    //上拉加载
+                    loadEvent: function() {
+                        var self = this;
+                        var types = self.types;
+                        api.addEventListener({
+                            name: 'scrolltobottom',
+                            extra: {
+                                threshold: 0 //设置距离底部多少距离时触发，默认值为0，数字类型
+                            }
+                        }, function(ret, err) {
+                            //数据加载完后取消loading
+                            if (!self['isPullPage' + types]) {
+                                return false;
+                            }
+                            self['page' + types]++;
+                            self.getCoupons(types);
+                        });
+                    },
+                },
+
+                created: function() {
+                    this.getCoupons('0');
+                },
+                mounted: function() {
+
+                },
+                updated: function() {
+                    openWin();
+                    this.loadEvent();
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

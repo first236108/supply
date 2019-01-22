@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>选择城市</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+
+<script>
+    apiready = function () {
+        showCity();
+    };
+
+    function showCity() {
+        var UICityList = api.require('UICityList');
+        var current_city = $api.getStorage('current_city');
+        UICityList.open({
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.frameWidth,
+                h: api.frameHeight
+            },
+            resource: 'http://192.168.1.186/city.json',
+            styles: {
+                searchBar: {
+                    bgColor: '#696969',
+                    cancelColor: '#E3E3E3'
+                },
+                location: {
+                    color: '#696969',
+                    size: 12
+                },
+                sectionTitle: {
+                    bgColor: '#eee',
+                    color: '#000',
+                    size: 12
+                },
+                item: {
+                    bgColor: '#fff',
+                    activeBgColor: '#696969',
+                    color: '#000',
+                    size: 14,
+                    height: 40
+                },
+                indicator: {
+                    bgColor: '#fff',
+                    color: '#696969'
+                }
+            },
+            currentCity: current_city.city,
+            locationWay: 'GPS',
+            hotTitle: '当前城市',
+            fixedOn: api.frameName,
+            placeholder: '输入城市名或首字母查询'
+        }, function (ret, err) {
+            if (ret) {
+                if (ret.eventType == 'selected') {
+                    //所选城市与原城市不一致时，刷新首页数据
+                    if (current_city.id != ret.cityInfo.id) {
+                        $api.setStorage('current_city', ret.cityInfo);
+                        var refreash = $api.getStorage('refreash');
+                        refreash = refreash ? refreash : {};
+                        refreash.root_0 = true;
+                        $api.setStorage('refreash', refreash);
+                    }
+//                    UICityList.close();
+//                    api.closeWin();
+                    toIndex(0);
+                }
+            }
+        });
+    }
+
+</script>
+
+</html>

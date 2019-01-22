@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <title>商购商城启动画面</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="./css/ydui.css"/>
+    <script type="text/javascript" src="script/ydui.flexible.js"></script>
+</head>
+
+<body>
+<div id="wrap" class="flex-wrap flex-vertical">
+    <!-- <div id="main" class="flex-con">
+
+    </div> -->
+
+
+    <footer class="m-tabbar tabbar-fixed">
+        <a class="tabbar-item tabbar-active" onclick="randomSwitchBtn(this);">
+            <span class="tabbar-icon">
+                <i class="icon-home-outline"></i>
+            </span>
+            <span class="tabbar-txt">首页</span>
+        </a>
+        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+            <span class="tabbar-icon">
+                <i class="icon-type"></i>
+            </span>
+            <span class="tabbar-txt">分类</span>
+        </a>
+        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+            <span class="tabbar-icon">
+                <i class="icon-shopcart-outline"></i>
+            </span>
+            <span class="tabbar-txt">进货单</span>
+        </a>
+        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+            <span class="tabbar-icon">
+                <i class="icon-ucenter-outline"></i>
+            </span>
+            <span class="tabbar-txt">我的</span>
+        </a>
+    </footer>
+
+</div>
+
+</body>
+<script type="text/javascript" src="script/api.js"></script>
+<script type="text/javascript" src="script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="script/common.js"></script>
+<script type="text/javascript" src="script/ydui.js"></script>
+
+<script type="text/javascript">
+
+    function funIniGroup() {
+        api.openFrameGroup({
+            name: 'group',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight - $api.dom('footer').offsetHeight
+            },
+            index: 0,
+            preload: 0,
+            frames: [
+                {
+                    name: 'index',
+                    url: './html/home_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: true,
+                    overScrollMode:'scrolls'
+                },
+                {
+                    name: 'category',
+                    url: './html/category_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                },
+                {
+                    name: 'cart',
+                    url: './html/cart_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                },
+                {
+                    name: 'my',
+                    url: './html/my_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false
+                }
+            ]
+        }, function (ret, err) {
+            var index = ret.index;
+        });
+    }
+
+    // 随意切换按钮
+    function randomSwitchBtn(tag, idx) {
+        var current_active = $api.dom('footer a.tabbar-active');
+        if (tag == current_active) {
+            if (idx != 0) return;
+
+            var refreash = $api.getStorage('refreash');
+            if (!refreash || !refreash['root_' + idx]) return;
+        }
+        var eFootLis = $api.domAll('footer a'),
+            index = 0;
+        for (var i = 0, len = eFootLis.length; i < len; i++) {
+            if (tag == eFootLis[i]) {
+                index = i;
+            } else {
+                $api.removeCls(eFootLis[i], 'tabbar-active');
+            }
+        }
+
+        //购物车、我的页面检测是否登录
+        if (!$api.getStorage('token') && (index == 2 || index == 3)) {
+            $api.addCls(current_active, 'tabbar-active');
+            openLogin(true, true, index);
+            return;
+        }
+
+        $api.addCls(eFootLis[index], 'tabbar-active');
+        var param = {
+            name: 'group',
+            index: index
+        };
+
+        //登录、退出后需要刷新重载的页面
+        if (index != 1 && needRefreash('root_' + index)) {
+            param.reload = true;
+        }
+        api.setFrameGroupIndex(param);
+    }
+
+    function home(index) {
+        var dom = $api.domAll('footer a.tabbar-item')[index];
+        randomSwitchBtn(dom, index);
+    }
+
+    apiready = function () {
+        funIniGroup();
+    };
+
+</script>
+
+</html>

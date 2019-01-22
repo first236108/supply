@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <style>
+        body {
+            /*position: relative*/
+        }
+
+        #header {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        #header .item {
+            float: left;
+            width: 20%;
+            height: 45px;
+        }
+
+        #header .event-back {
+            background: url(../../image/arrow_left.png) no-repeat 15px center;
+            background-size: auto 15px;
+        }
+
+        #header .cart {
+            float: right;
+            width: 40px;
+            height: 45px;
+            position: relative;
+            background: url(../../image/cart.png) no-repeat center center;
+            background-size: auto 35px;
+        }
+
+        .cart-num {
+            position: absolute;
+            left: 50%;
+            top: 3px;
+            color: #fff;
+            text-align: center;
+            font-weight: normal;
+            font-size: 12px;
+            font-family: 宋体;
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            background: #ff2233;
+            border-radius: 50%;
+        }
+
+        #header .tab {
+            text-align: center;
+            height: 43px;
+            font-size: 14px;
+            line-height: 43px;
+            color: #333;
+        }
+
+        #header .active {
+            border-bottom: 2px solid #dd2726;
+            color: #dd2726;
+        }
+
+        .footer_nav {
+            width: 100%;
+            height: 50px;
+            position: fixed;
+            z-index: 100;
+            bottom: 0px;
+            background: #f8f8f8;
+            border-top: 1px solid #eeeeee;
+            max-width: 640px;
+        }
+
+        .footer_nav ul {
+            width: 40%;
+            float: left;
+            height: 50px;
+        }
+
+        .footer_nav ul li {
+            width: 33%;
+            float: left;
+            height: 50px;
+        }
+
+        .footer_nav ul li a {
+            display: block;
+            text-align: center;
+        }
+
+        .footer_nav ul li .goods_nav1 {
+            background-position: 0 -190px;
+        }
+
+        .footer_nav ul li em {
+            display: block;
+            width: 30px;
+            height: 25px;
+            margin: auto;
+            background: url(../../image/pub_goods.png) no-repeat;
+            background-size: auto 280px;
+        }
+
+        .footer_nav ul li .goods_nav2 {
+            background-position: 0 -220px;
+        }
+
+        .footer_nav ul li .goods_nav3 {
+            background-position: 0 -252px;
+        }
+
+        .footer_nav ul li span {
+            display: block;
+            width: 100%;
+            height: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            line-height: 20px;
+        }
+
+        .bian {
+            border-right: 1px solid #eeeeee;
+            margin-left: -1px;
+        }
+
+        .footer_nav dl {
+            width: 60%;
+            float: left;
+            height: 50px;
+        }
+
+        .footer_nav dl .flow {
+            background: #ff9c00;
+        }
+
+        .footer_nav dl dd {
+            width: 50%;
+            float: left;
+            height: 51px;
+            text-align: center;
+            margin-top: -1px;
+        }
+
+        .footer_nav dl dd a {
+            font-size: 18px;
+            line-height: 51px;
+            color: #FFF;
+        }
+
+        .footer_nav dl .goumai {
+            background: #dd2726;
+        }
+
+        .footer_nav li a i {
+            display: block;
+            margin: 0 auto;
+            font-size: 1.3rem;
+            color: #666;
+        }
+
+        .icon-like {
+            color: #ff9c00 !important;
+        }
+    </style>
+</head>
+<body>
+<!-- header -->
+<header id="header" class="clearfix">
+    <div class="item event-back"></div>
+    <div class="item tab active" data-types="goodsInfo" onclick="tabEvent(this);">商品</div>
+    <div class="item tab" data-types="goodsDetail" onclick="tabEvent(this);">详情</div>
+    <div class="item tab" data-types="goodsComment" onclick="tabEvent(this);">评价</div>
+    <div class="item cart" onclick="toIndex(2);">
+        <em class="cart-num" id="cart-num"></em>
+    </div>
+</header>
+
+
+<!-- footer -->
+<div class="footer_nav" id="footer">
+    <ul>
+        <li class="bian" onclick="toIndex();"><a><i class="icon-home"></i><span>首页</span></a></li>
+        <li class="bian"><a id="service"><i class="icon-phone2"></i><span>客服</span></a></li>
+        <li><a id="favorite_add"><i class=""></i><span>收藏</span></a></li>
+    </ul>
+    <dl>
+        <dd class="flow" style=""><a class="button active_button" onclick="addCart(1);">加入进货单</a></dd>
+        <dd class="goumai"><a style="display:block;" onclick="addCart();">立即购买</a></dd>
+    </dl>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var count;
+    var data = {
+        goods_id: 0,
+        goods_num: 1
+    };
+    var param = {
+        goodsInfo: {
+            goods: {},
+            spec_goods_price: {},
+            prom_goods: {},
+            prom_order_end: 0,
+            interval_price: [],
+            interval_min: 1,
+            filter_spec: {},
+            goods_images_list: [],
+            store: {},
+            prom_order: []
+        },
+        goodsDetail: {
+            detail: '',
+            goods_attr_list: []
+        },
+        goodsCommit: {
+            commentStatistics: {}
+        }
+    };
+    var cart_dom = document.getElementById('cart-num');
+    apiready = function () {
+        fnReady();
+        ajax_post('/goods/goodsInfo', {
+            goods_id: api.pageParam.id//10752
+        }, function (res) {
+            param.goodsInfo.goods = res.goods;
+            param.goodsInfo.spec_goods_price = res.spec_goods_price;
+            param.goodsInfo.prom_goods = res.prom_goods;
+            param.goodsInfo.prom_order_end = res.prom_order_end;
+            param.goodsInfo.interval_price = res.interval_price;
+            param.goodsInfo.interval_min = res.interval_min;
+            param.goodsInfo.filter_spec = res.filter_spec;
+            param.goodsInfo.goods_images_list = res.goods_images_list;
+            param.goodsInfo.store = res.store;
+            param.goodsInfo.prom_order = res.prom_order;
+            param.goodsDetail.detail = res.goods.goods_content;
+            param.goodsDetail.goods_attr_list = res.goods_attr_list;
+            param.goodsCommit.commentStatistics = res.commentStatistics;
+            param.goodsCommit.goods_id = res.goods.goods_id;
+            data.goods_id = res.goods.goods_id;
+            data.goods_num = res.interval_min;
+            openFrames();
+            document.getElementById('service').onclick = function () {
+                callphone(res.store.store_phone);
+            };
+            document.getElementById('favorite_add').onclick = function () {
+                ajax_post('/goods/collectGoods', {goods_id: res.goods.goods_id}, function (res) {
+                    param.goodsInfo.goods.is_favorite = !param.goodsInfo.goods.is_favorite;
+                    toast(res.msg);
+                    choosecloass();
+                });
+            };
+            choosecloass();
+        }, function (err) {
+            toast(err.body.msg);
+            api.closeWin();
+        });
+
+        api.addEventListener({
+            name: 'cartparam'
+        }, function (ret, err) {
+            for (var k in ret.value) {
+                data[k] = ret.value[k];
+            }
+        });
+
+        var count = $api.getStorage('cart_count');
+        if (count && count > 0) {
+            cart_dom.innerHTML = count;
+            cart_dom.style.backgroundColor = '#ff5000';
+        } else {
+            cart_dom.style.backgroundColor = 'rgba(0,0,0,0)';
+        }
+    };
+
+    function choosecloass() {
+        var list = document.querySelector('#favorite_add i').classList;
+
+        if (param.goodsInfo.goods.is_favorite) {
+            list.remove('icon-like-outline');
+            list.add('icon-like');
+        } else {
+            list.remove('icon-like');
+            list.add('icon-like-outline');
+        }
+    }
+
+    function openFrames() {
+        api.openFrameGroup({
+            name: 'goods_group',
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: $api.dom('header').offsetHeight,
+                w: api.winWidth,
+                h: api.winHeight - $api.dom('header').offsetHeight - $api.dom('#footer').offsetHeight
+            },
+            index: 0,
+            preload: 1,
+            frames: [
+                {
+                    name: 'goodsInfo',
+                    url: './goodsInfo_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false,
+                    pageParam: param.goodsInfo
+                },
+                {
+                    name: 'goodsDetail',
+                    url: './goodsDetail_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false,
+                    pageParam: param.goodsDetail
+                },
+                {
+                    name: 'goodsComment',
+                    url: './goodsComment_frame.html',
+                    bgcolor: 'rgba(0,0,0,.2)',
+                    bounces: false,
+                    pageParam: param.goodsCommit
+                }
+            ]
+        }, function (ret, err) {
+//            ret.name;
+        });
+    }
+
+    function tabEvent(dom) {
+        if (dom == $api.dom('.active')) return;
+        var tabs = $api.domAll('.tab'),
+            index = 0;
+        for (var i = 0; i < tabs.length; i++) {
+            if (dom == tabs[i]) {
+                index = i;
+            }
+            $api.removeCls(tabs[i], 'active');
+        }
+
+        $api.addCls(tabs[index], 'active');
+
+
+        api.setFrameGroupIndex({
+            scroll: true,
+            name: 'goods_group',
+            index: index
+        });
+    }
+
+    function addCart(flag) {
+        ajax_post('/cart/addcart', data, function (res) {
+            $api.setStorage('cart_count', res.cart_count);
+            var refreash = $api.getStorage('refreash');
+            if (!refreash) {
+                refreash = {root_2: true};
+            } else {
+                refreash.root_2 = true;
+            }
+
+            $api.setStorage('refreash', refreash);
+
+            document.getElementById('cart-num').innerHTML = res.cart_count;
+            if (flag) {
+                api.confirm({
+                    msg: '已添加至您的进货单',
+                    buttons: ['再逛逛', '我的进货单']
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 2) {
+                        toIndex(2);
+                    }
+                    cart_dom.style.backgroundColor = '#ff5000';
+                    cart_dom.innerHTML = res.cart_count;
+                });
+            } else {
+                toIndex(2);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

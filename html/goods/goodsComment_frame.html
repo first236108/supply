@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .comment_nav {
+            width: 100%;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .comment_nav ul {
+            padding-bottom: 10px;
+        }
+
+        .comment_nav ul li {
+            display: inline-block;
+            width: 18.4%;
+            padding: 4px 0;
+            line-height: 14px;
+            text-align: center;
+            color: #9a9a9a;
+            cursor: pointer;
+        }
+
+        .comment_nav ul li.com-red {
+            color: red;
+        }
+
+        .comment_list {
+            width: 100%;
+            overflow: hidden;
+            background: #F0F2F5;
+        }
+
+        .comment_list li {
+            width: 100%;
+            overflow: hidden;
+            background: white;
+            margin-top: 14px;
+            padding: 10px 0 10px 0;
+        }
+
+        .content_head {
+            width: 90%;
+            overflow: hidden;
+            margin: auto;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-bottom: 10px;
+        }
+
+        .comment_item .content_head .info {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .bor_sli {
+            overflow: hidden;
+            padding-bottom: 12px;
+        }
+
+        .content_head .one {
+            float: left;
+            overflow: hidden;
+            line-height: 30px;
+            padding-right: 10px;
+        }
+
+        .comment_star .one em img {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+        }
+
+        .comment_item .content_head .info .name {
+            display: inline-block;
+            float: left;
+            font-size: 12px;
+            color: #666;
+            line-height: 54px;
+        }
+
+        .content_head .two {
+            float: right;
+            overflow: hidden;
+            font-size: 14px;
+            line-height: 54px;
+            color: #666;
+            text-indent: 10px;
+        }
+
+        .satr_img {
+            clear: both;
+        }
+
+        .satr_img img {
+            width: 20%;
+        }
+
+        .comment_item .content_head p {
+            font-size: 14px;
+            line-height: 150%;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .twos {
+            font-size: 12px;
+            color: #999;
+            line-height: 14px;
+        }
+
+        .sd_img {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .sd_img dl {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .assess-btns {
+            width: 200%;
+            -webkit-transform: scale(0.5, 0.5);
+            transform: scale(0.5, 0.5);
+            transform-origin: left top;
+            -webkit-transform-origin: left top;
+            margin-top: 10px;
+        }
+
+        .assess-like-btn, .assess-reply-btn {
+            font-size: 0;
+            position: relative;
+            width: 45%;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+        }
+
+        .assess-like-btn i, .assess-reply-btn i {
+            font-size: 26px;
+            line-height: 58px;
+            height: 58px;
+            color: #bfbfbf;
+        }
+
+        .assess-like-btn i.icon-like {
+            color: #ff5000
+        }
+
+        .assess-like-btn {
+            float: left;
+            margin-left: 20px;
+        }
+
+        .assess-btns-num {
+            font-size: 26px;
+            line-height: 58px;
+            display: inline-block;
+            height: 58px;
+            color: #bfbfbf;
+        }
+
+        .assess-reply-btn {
+            float: right;
+            margin-right: 20px;
+        }
+
+        .assess-btns:after {
+            font-size: 0;
+            display: block;
+            visibility: hidden;
+            clear: both;
+            height: 0;
+            content: '';
+        }
+
+        #finish {
+            padding-bottom: 20px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 50px;
+            color: #666;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .sd_img dl dd img {
+            width: 50px;
+            height: 50px;
+            display: inline;
+            margin-right: 0.3rem;
+        }
+
+        .sale-reply {
+            color: #ff5000;
+        }
+
+        .reply {
+            margin: .4rem 0;
+            border-top: 1px dashed #e5e5e5;
+        }
+
+        .reply-head, .head {
+            height: 30px;
+            display: table;
+            margin: .3rem 0;
+        }
+
+        .head {
+            padding-right: 0.3rem;
+        }
+
+        .reply img {
+            width: 27px;
+        }
+
+        .reply .reply-head div {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+        .reply .sale-reply {
+            padding-right: .5rem;
+        }
+
+        .time {
+            color: #999
+        }
+        #score{
+            padding-bottom: 20px;
+            text-align: center;
+            font-size: 16px;
+            line-height: 50px;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" v-cloak>
+    <div class="comment_nav">
+        <ul id="fy-comment-list">
+            <li class="com-red" @click="filterComment(1)">全部评论<br>({{comment.c0}})</li>
+            <li @click="filterComment(2)">好评<br>({{comment.c1}})</li>
+            <li @click="filterComment(3)">中评<br>({{comment.c2}})</li>
+            <li @click="filterComment(4)">差评<br>({{comment.c3}})</li>
+            <li @click="filterComment(5)">晒单<br>({{comment.c4}})</li>
+        </ul>
+    </div>
+
+    <div class="my_comment_list">
+        <div class="comment_list" id="commentList">
+            <ul>
+                <li class="comment_item" v-for="(comment,index) in list">
+                    <div class="content_head">
+                        <div class="info">
+                            <div class=" comment_star">
+                                <div class="bor_sli">
+                                    <div class="one"><em><img :src="comment.head_pic"></em></div>
+                                    <div class="name">{{comment.nickname}}</div>
+                                    <div class="two">{{timeParse(comment.add_time)}}</div>
+                                </div>
+                                <div class="satr_img"><em><img :src="'../../image/stars'+parseInt(comment.goods_rank)+'.png'" alt=""></em></div>
+                                <p></p>
+                                <div class="twos">购买日期：{{timeParse(comment.pay_time)}}</div>
+                            </div>
+                        </div>
+                        <p>{{comment.content}}</p>
+                        <!---晒单-->
+                        <div class="sd_img" v-if="comment.img.length">
+                            <dl id="gallery">
+                                <dd><img v-for="image in comment.img" :src="image"></dd>
+                            </dl>
+                        </div>
+                        <!--评论回复-->
+                        <div class="sale-commit" v-if="comment.parent_id.length">
+                            <div class="reply" v-for="(reply,ridx) in comment.parent_id">
+                                <div class="reply-head">
+                                    <div class="head"><img :src="reply.head_pic"></div>
+                                    <div class="sale-reply" v-if="reply.seller==1">商家回复：</div>
+                                    <div class="sale-reply" v-else>{{reply.user_name}}：</div>
+                                    <div class="time">{{timeParse(reply.reply_time)}}</div>
+                                </div>
+                                <div>{{reply.content}}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="assess-btns">
+                        <a class="assess-like-btn" :data-comment-id="comment.comment_id" @click="zan">
+                            <i class="icon-like-outline"></i>&nbsp;
+                            <span class="assess-btns-num" id="span_zan_5">{{comment.zan_num}}</span>
+                        </a>
+                        <a class="assess-reply-btn" :data-comment-id="comment.comment_id" @click="checkReply">
+                            <i class="icon-compose"></i>&nbsp;
+                            <span class="assess-btns-num">{{comment.reply_num}}</span>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            <div id="score" v-if="list.length==0">暂时还没有用户评论</div>
+        </div>
+        <div id="finish">已显示完所有评论</div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/ydui.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            comment: {},
+            p: 1,
+            goods_id: 0,
+            list: []
+        },
+        methods: {
+            init: function (commentType) {
+                if (this.p === false) return;
+                var param = {
+                    page: vm.p,
+                    goods_id: vm.goods_id
+                };
+                if (commentType) param.commentType = commentType;
+                ajax_post('/goods/commentList', param, function (res) {
+                    vm.list = res;
+                    vm.p++;
+                    if (Object.keys(res).length < 5) vm.p = false;
+                    api.hideProgress();
+                });
+            },
+            zan: function () {
+                var node = event.currentTarget;
+                var nodes = node.childNodes;
+                ajax_post('/goods/zan', {comment_id: node.dataset.commentId}, function (res) {
+                    nodes[0].classList.remove('icon-like-outline');
+                    nodes[0].classList.add('icon-like');
+                    nodes[1].innerHTML = parseInt(nodes[1].innerHTML) + 1;
+                    YDUI.dialog.toast('感谢爱心点赞！', 'success', 1500);
+                }, function (err) {
+                    if (err.statusCode == 402) {
+                        nodes[0].classList.remove('icon-like-outline');
+                        nodes[0].classList.add('icon-like');
+                    }
+                    toast(err.body.msg);
+                });
+            },
+            checkReply: function () {
+                if (!$api.getStorage('token')) {
+                    YDUI.dialog.toast('请登录后发表评论', 'error', 2000);
+                    return;
+                }
+                var comment_id = event.currentTarget.dataset.commentId;
+                ajax_get('/goods/reply_add?comment_id=' + event.currentTarget.dataset.commentId, function (res) {
+                    vm.doReply(comment_id);
+                });
+            },
+            doReply: function (comment_id) {
+                api.prompt({
+                    buttons: ['确定', '取消']
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+                        ajax_post('/goods/reply_add', {comment_id: comment_id, content: ret.text}, function (res) {
+                            try {
+                                vm.list.forEach(function (val, index) {
+                                    if (val.comment_id == comment_id) {
+                                        vm.list[index].parent_id.push(res);
+                                        throw new Error('comelete.');
+                                    }
+                                });
+                            } catch (e) {
+                                YDUI.dialog.toast('回复成功', 'success', 1200);
+                            }
+                        });
+                    }
+                });
+            },
+            filterComment: function (commentType) {
+                api.showProgress({
+                    title: '加载中...'
+                });
+                document.querySelectorAll('#fy-comment-list li').forEach(function (li) {
+                    li.classList.remove('com-red');
+                });
+
+                event.currentTarget.classList.add('com-red');
+                this.p = 1;
+                this.init(commentType);
+            }
+        }
+    });
+    apiready = function () {
+        vm.comment = api.pageParam.commentStatistics;
+        vm.goods_id = api.pageParam.goods_id;
+        vm.init();
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .remind {
+            height: .8rem;
+            font-size: .2rem;
+            color: #999;
+            padding-left: .24rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .btn-container {
+            padding: 0 .3rem;
+        }
+
+        .m-t-none {
+            margin-bottom: 0;
+        }
+
+        .red {
+            color: #FC586C;
+        }
+
+        .m-cell:after {
+            border-bottom: none;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+
+    <div class="m-cell">
+        <div class="cell-item">
+            <div class="cell-left">持卡人：</div>
+            <div class="cell-right"><input type="text" class="cell-input" v-model="info.realname" readonly="readonly"></div>
+        </div>
+        <div class="cell-item">
+            <div class="cell-left">身份证：</div>
+            <div class="cell-right"><input type="number" class="cell-input" v-model="info.idcard" readonly="readonly"></div>
+        </div>
+    </div>
+
+    <div class="m-cell m-t-none">
+        <div class="cell-item">
+            <div class="cell-left">银行卡：</div>
+            <div class="cell-right"><input type="text" class="cell-input" v-model="info.bankName" readonly="readonly"></div>
+        </div>
+        <div class="cell-item">
+            <div class="cell-left">卡号：</div>
+            <div class="cell-right"><input type="number" class="cell-input" v-model="info.cardno" readonly="readonly"></div>
+        </div>
+    </div>
+
+    <div class="remind">
+        提醒：只能绑定本人的银行卡
+    </div>
+
+    <div class="m-cell">
+        <div class="cell-item">
+            <div class="cell-left">手机号：</div>
+            <div class="cell-right"><input type="text" class="cell-input" v-model="info.mobile"></div>
+        </div>
+    </div>
+    <div class="remind">
+        查看 <span class="red">《用户协议》</span>
+    </div>
+
+    <div class="btn-container">
+        <button type="button" class="btn btn-block btn-danger" @click="bind(false)">下一步</button>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            info: {}
+        },
+        methods: {
+            bind: function (reSendCode) {
+                if (!checkMobile(vm.info.mobile)) {
+                    api.toast({
+                        msg: '手机号码错误',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+                    return;
+                }
+                ajax_post('/user/bindBankCard', {card_no: vm.info.cardno, phone: vm.info.mobile}, function (res) {
+                    if (reSendCode) {
+                        return;
+                    }
+                    api.openWin({
+                        name: 'bindcard',
+                        url: 'bindcard.html',
+                        pageParam: {
+                            tranceNum: res.tranceNum,
+                            transDate: res.transDate,
+                            mobile: vm.info.mobile
+                        }
+                    });
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        vm.info = api.pageParam;
+        api.addEventListener({
+            name: 'reSendCode'
+        }, function (ret, err) {
+            if (ret) vm.bind(true);
+        });
+
+    };
+</script>
+
+</html>

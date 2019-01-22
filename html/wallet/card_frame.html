@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html {
+            background: #F5F5F5;
+        }
+
+        .cardlist {
+            padding: 1%;
+            overflow-x: hidden;
+        }
+
+        .r {
+            background: url('../../image/bank/r.png') no-repeat;
+        }
+
+        .g {
+            background: url('../../image/bank/g.png') no-repeat;
+        }
+
+        .b {
+            background: url('../../image/bank/b.png') no-repeat;
+        }
+
+        .y {
+            background: url('../../image/bank/y.png') no-repeat;
+        }
+
+        .card {
+            height: 2.3rem;
+            width: 120%;
+            -webkit-transition: all 0.15s ease;
+            transition: all 0.15s linear;
+        }
+
+        .card .left {
+            display: flex;
+            height: 100%;
+            width: 83.4%;
+            float: left;
+            background-size: 100% 100%;
+        }
+
+        .card .right {
+            margin-left:1%;
+            width: 15.6%;
+            float: left;
+            border-radius: 5%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #FF314A;
+            color: #ffffff;
+        }
+
+        .bank-logo {
+            width: 20%;
+            padding: .1rem;
+        }
+
+        .bank-logo img {
+            width: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .5);
+        }
+
+        .bank-info {
+            width: 80%;
+            color: #fff;
+            margin: .3rem .1rem;
+        }
+
+        .bank-info h2 {
+            font-size: .3rem;
+            margin: .1rem 0;
+        }
+
+        .card-no {
+            margin-top: .2rem;
+            font-size: .32rem;
+        }
+
+        button {
+            color: #FF314A !important;
+            font-family: "微软雅黑", "宋体", Arial, Helvetica, sans-serif;
+            font-size: .3rem !important;
+        }
+
+        .slideleft {
+            transform: translateX(-16.6%);
+            -webkit-transform: translateX(-16.6%);
+        }
+        .layui-m-layer0 .layui-m-layersection .layui-m-layerchild{
+            width:78%;
+        }
+        .layui-m-layer0 .layui-m-layercont{
+            padding:30px 20px;
+        }
+        .layui-m-layercont h2{
+            font-size:.3rem;
+            margin-bottom: .2rem;
+        }
+        .layui-m-layerbtn span{
+            color:#F64850!important;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app" v-cloak>
+    <div class="cardlist">
+        <div class="card" v-for="(vo,index) in card">
+            <div :class="['left', backgroundCalc(vo.bankName)]">
+                <div class="bank-logo">
+                    <img :src="'../../image/bank/'+getBankLogo(vo.bankName)"/>
+                </div>
+                <div class="bank-info">
+                    <h2>{{vo.bankName}}</h2>
+                    <span v-if="vo.cardType==1">储蓄卡</span>
+                    <span v-else-if="vo.cardType==2">信用卡</span>
+                    <span v-else="vo.cardType==2">未知类型卡</span>
+                    <div class="card-no">{{filterNo(vo.bankCardNo)}}</div>
+                </div>
+            </div>
+            <div class="right" @click="unbind(vo.bankCardNo,index)">删除</div>
+        </div>
+        <button type="button" class="btn-block btn-hollow open-win" data-name="addcard" data-url="addcard.html" :data-username="name">添加银行卡</button>
+    </div>
+
+
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/layer.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            name: '',
+            card: []
+        },
+        methods: {
+            init: function () {
+                ajax_post('/user/queryBankCard', {}, function (res) {
+                    vm.card = res;
+                });
+            },
+            filterNo: function (no) {
+                return no.replace(/s/g, '').replace(/(.{4})/g, "$1 ");
+            },
+            backgroundCalc: function (name) {
+                return getBankLogo(name).split('_')[0];
+            },
+            unbind: function (cardno, index) {
+                event.stopPropagation();
+                layer.open({
+                    content: '<h2>解除绑定</h2><p>解除后银行服务将不可用</p>'
+                    , btn: ['去解绑', '取消']
+                    , yes: function (index) {
+                        layer.close(index);
+                        api.showProgress({title: '请稍候...'});
+                        ajax_post('/user/unbindBankCard', {card_no: cardno}, function (res) {
+                            api.hideProgress();
+                            vm.card.splice(index, 1);
+                        });
+                    }
+                });
+
+            }
+        },
+        updated: function () {
+            openWin();
+            //侧滑显示右边按钮
+            var right = null;
+            //是否存在展开的list
+            var container = document.querySelectorAll('.cardlist .card');
+            for (var i = 0, l = container.length; i < l; i++) {
+                var x, y, X, Y, swipeX, swipeY;
+                container[i].addEventListener('touchstart', function (event) {
+                    if(event.target.className=='right'){
+                        return;
+                    }
+                    x = event.changedTouches[0].pageX;
+                    y = event.changedTouches[0].pageY;
+                    swipeX = true;
+                    swipeY = true;
+                    if (right) {//判断是否展开，如果展开则收起
+                        right.classList.remove('slideleft');
+                    }
+                });
+                container[i].addEventListener('touchmove', function (event) {
+                    X = event.changedTouches[0].pageX;
+                    Y = event.changedTouches[0].pageY;
+                    // 左右滑动
+                    if (swipeX && Math.abs(X - x) - Math.abs(Y - y) > 0) {
+                        // 阻止事件冒泡
+                        event.stopPropagation();
+                        if (X - x > 15) {//右滑
+                            event.preventDefault();
+                            this.classList.remove('slideleft');
+                            //右滑收起
+                        }else if (x - X > 15) {//左滑
+                            event.preventDefault();
+                            this.classList.add('slideleft');
+                            //左滑展开
+                            right = this;
+                        }
+                        swipeY = false;
+                    }
+                    // 上下滑动
+                    if (swipeY && Math.abs(X - x) - Math.abs(Y - y) < 0) {
+                        swipeX = false;
+                    }
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        vm.init();
+        vm.name = api.pageParam.username;
+
+        api.addEventListener({
+            name: 'reFreashCard'
+        }, function (ret, err) {
+            if (ret) vm.init();
+        });
+    };
+
+
+</script>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        body {
+            position: relative
+        }
+
+        #app {
+            overflow: scroll;
+        }
+    </style>
+</head>
+<body>
+
+<article class="m-list list-theme1" id="app" v-cloak>
+    <a class="list-item" v-for="(vo,index) in list" @click="goodsDetail(vo.goods_id)">
+        <div class="list-img">
+            <img :src="vo.original_img">
+        </div>
+        <div class="list-mes">
+            <h3 class="list-title">{{vo.goods_name}}</h3>
+            <div class="list-mes-item">
+                <div>
+                    <span class="list-price"><em>¥</em>{{vo.shop_price}}</span>
+                    <span class="list-del-price">¥{{vo.market_price}}</span>
+                </div>
+                <div v-if="vo.is_recommend==1">推荐</div>
+                <div v-if="vo.is_new==1">新品</div>
+                <div v-if="vo.is_hot==1">热卖</div>
+            </div>
+        </div>
+    </a>
+</article>
+
+<div id="gotop" onclick="goTop('#app');">
+    <i class="icon iconfont icon-dingbu"></i>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/ydui.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            p: 1,
+            total: 2,
+            searchParam: {}
+        },
+        methods: {
+            init: function () {
+                api.ajax({
+                    url: host + '/goods/goodsList',
+                    method: 'post',
+                    data: {values: vm.searchParam},
+                    dataType: 'json'
+                }, function (ret, err) {
+//                    console.log(JSON.stringify(ret));
+                    if (err) {
+                        api.toast({
+                            msg: err.msg,
+                            location: 'middle'
+                        });
+                    }
+                    if (vm.p == 1) {
+                        api.refreshHeaderLoadDone();
+                        vm.p++;
+                        vm.list = ret.goods_list;
+                    } else {
+                        vm.p++;
+                        vm.list = vm.list.concat(ret.goods_list);
+                    }
+                });
+            },
+            goodsDetail: function (goods_id) {
+                api.openWin({
+                    name: 'goodsDetail',
+                    url: 'goodsDetail.html',
+                    pageParam: {goods_id: goods_id},
+                    scrollToTop: true
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        $("#app").height(api.winHeight);
+        vm.searchParam.id = api.pageParam.cid;
+//        console.log(JSON.stringify(api.pageParam));
+        vm.init();
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.p = 1;
+            vm.init();
+        });
+
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 150   //设置距离底部多少距离时触发，默认值为0，数字类型
+            }
+        }, function (ret, err) {
+            if (vm.p > vm.total)
+                return;
+            api.toast({
+                msg: '加载中…',
+                duration: 1000,
+                location: 'middle'
+            });
+//            vm.init();
+        });
+    };
+</script>
+</body>
+</html>

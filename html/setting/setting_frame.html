@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-售后服务</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        #app {
+            margin-top: 0.2rem;
+            background: #fff;
+        }
+
+        .line {
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .line span,
+        .txt {
+            display: block;
+            float: left;
+            height: 0.9rem;
+            line-height: 0.9rem;
+        }
+
+        .line .name {
+            width: 25%;
+            font-size: 0.3rem;
+            margin-left: 0.24rem;
+            color: #333;
+        }
+
+        .line .right {
+            float: right;
+            margin-right: 0.24rem;
+            width: 0.14rem;
+            height: 0.9rem;
+            background: url(../../image/right.png) no-repeat center center;
+            background-size: 0.14rem 0.25rem;
+        }
+
+        .line img {
+            float: right;
+            margin: 0.21rem 0.2rem 0 0;
+            width: 0.94rem;
+            height: 0.94rem;
+            border-radius: 50%;
+        }
+
+        .line .txt {
+            float: right;
+            margin-right: 0.2rem;
+            font-size: 0.28rem;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="app" v-cloak>
+    <div class="line clearfix" @click="avatar">
+        <span class="name" style="height:1.36rem;line-height:1.36rem;">头像</span>
+
+        <span class="right" style="height:1.36rem;"></span>
+        <img :src="user_info.head_pic">
+    </div>
+
+    <div class="line clearfix" @click="nickname">
+        <span class="name">昵称</span>
+        <span class="right"></span>
+        <span class="txt" id="nickname">{{user_info.nickname}}</span>
+    </div>
+
+    <div class="line clearfix" @click="phone">
+        <span class="name">手机号码</span>
+        <span class="right"></span>
+        <span class="txt">{{user_info.mobile}}</span>
+    </div>
+
+    <div class="line clearfix open-win" data-name="pwd" data-url="./pwd.html">
+        <span class="name">修改登录密码</span>
+        <span class="right"></span>
+    </div>
+
+
+</div>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            user_info: {},
+            sign: {}
+        },
+        methods: {
+            nickname: function () {
+                api.prompt({
+                    title: "输入新的昵称",
+                    text: vm.user_info.nickname,
+                    buttons: ['确定', '取消']
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1 && ret.text) {
+                        ajax_post('/user/updateUserInfo', {nickname: ret.text}, function (res) {
+                            api.toast({
+                                msg: '昵称已修改',
+                                duration: 1500,
+                                location: 'middle'
+                            });
+                            vm.user_info.nickname = res.nickname;
+                            vm.sendEvent({nickname: res.nickname});
+                        });
+                    }
+                });
+            },
+            avatar: function () {
+                ajax_post('/user/ossSign', {
+                    dirPath: 'head_pic'
+                }, function (res) {
+                    vm.sign = res;
+                });
+                api.getPicture({
+                    mediaValue: 'pic',
+                    allowEdit: true,
+                    quality: 50,
+                    targetWidth: 300,
+                    targetHeight: 300,
+                    saveToPhotoAlbum: false
+                }, function (ret, err) {
+                    if (ret) {
+                        vm.upload(ret.data);
+                    } else if(err.msg) {
+                        api.toast(err.msg);
+                    }
+                });
+            },
+            upload: function (url) {
+                if (!vm.sign.policy) {
+                    api.toast({
+                        msg: '图片上传签名错误',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+                    return;
+                }
+                api.ajax({
+                    url: vm.sign.host,
+                    method: 'post',
+                    dataType: 'text',
+                    data: {
+                        values: {
+                            OSSAccessKeyId: vm.sign.accessid,
+                            policy: vm.sign.policy,
+                            Signature: vm.sign.signature,
+                            key: vm.sign.dir + getFileName(url),
+                            success_action_status: 201
+                        },
+                        files: {
+                            file: url
+                        }
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+                        var img = $(ret).find('Location').text();
+                        ajax_post('/user/updateUserInfo', {head_pic: img}, function (res) {
+                            vm.user_info.head_pic = res.head_pic;
+                            vm.sendEvent({head_pic: res.head_pic});
+                        });
+                    } else {
+                        api.toast({
+                            msg: $(ret).find('Message').text(),
+                            duration: 1500,
+                            location: 'middle'
+                        });
+                    }
+                });
+            },
+            phone: function () {
+                api.openWin({
+                    name: 'modifyphone',
+                    url: 'modifyphone.html'
+                });
+            },
+            sendEvent: function (obj) {
+                api.sendEvent({
+                    name: 'userinfo',
+                    extra: obj
+                });
+            }
+        },
+        mounted: function () {
+            openWin();
+        }
+    });
+    apiready = function () {
+        vm.user_info = api.pageParam;
+        api.addEventListener({
+            name: 'usermodile'
+        }, function (ret, err) {
+            if (ret) {
+                console.log(JSON.stringify(ret));
+                vm.user_info.mobile = ret.value.mobile;
+                vm.sendEvent({mobile: ret.value.mobile});
+            }
+        });
+    };
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,794 @@
+#wrap {
+    background-color: #F9F7FA;
+}
+
+.navList {
+    width: 100%;
+    height: 1.76rem;
+    background-color: #ffffff;
+    padding: 0 0.24rem;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.flex-pack-justify {
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+
+.flex-align-center {
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+}
+
+.navList img {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 50%;
+    display: block;
+    background: url(https://oss-pub.scsj.net.cn/Image/default.png) no-repeat center center;
+    background-size: 1.1rem 1.1rem;
+    overflow: hidden;
+}
+
+.navList p {
+    font-size: 0.22rem;
+    color: #363636;
+    line-height: 0.25rem;
+    margin-top: 0.19rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.banner img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background: url(https://oss-pub.scsj.net.cn/Image/bannerDefault.png) no-repeat center center;
+    background-size: contain;
+}
+
+/*新品*/
+.active {
+    width: 100%;
+    height: 3.25rem;
+    background: #ffffff;
+    margin-bottom: 0.15rem;
+    font-size: 0.26rem;
+    line-height: 0.26rem;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+}
+
+.left,
+.right {
+    flex: 1;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.active h3 {
+    font-size: 0.26rem;
+    margin-bottom: 0.08rem;
+}
+
+.active .left {
+    color: #FF0C17;
+}
+
+.active .right .hot h3 {
+    color: #FEAB1D;
+}
+
+.active .right .rec h3 {
+    color: #0BACFD
+}
+
+.active .left .tag {
+    background-color: #FF0C17;
+    margin-top: 0.14rem;
+    color: #ffffff;
+    font-size: 0.18rem;
+    display: inline-block;
+    height: 0.32rem;
+    text-align: center;
+    line-height: 0.32rem;
+    padding: 0 0.05rem;
+}
+
+.active .right .hot .tag {
+    background-color: #FEAB1D;
+    margin-top: 0.14rem;
+    color: #ffffff;
+    font-size: 0.18rem;
+    display: inline-block;
+    height: 0.32rem;
+    text-align: center;
+    padding: 0 0.05rem;
+    line-height: 0.32rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.active .right .rec .tag {
+    background-color: #0BACFD;
+    margin-top: 0.14rem;
+    color: #ffffff;
+    font-size: 0.18rem;
+    display: inline-block;
+    height: 0.32rem;
+    text-align: center;
+    padding: 0 0.05rem;
+    line-height: 0.32rem;
+}
+
+.active p {
+    color: #848484;
+    font-size: 0.26rem;
+}
+
+.active .left {
+    padding: 0.24rem .27rem .24rem .24rem;
+    border-right: 1px solid #f6f6f6;
+}
+
+.active .left ul {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.18rem;
+}
+
+.active .left ul li {
+    width: 1.6rem;
+    height: 100%;
+}
+
+.active .left ul li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.active .left ul li a img {
+    width: 1.2rem;
+    height: 1.2rem;
+    display: block;
+    margin-bottom: 0.1rem;
+    background: url("https://oss-pub.scsj.net.cn/Image/default.png") no-repeat center center;
+    background-size: 1.2rem 1.2rem;
+}
+
+.active .left ul li a span {
+    font-size: 0.24rem;
+    color: #F7002A;
+    white-space: nowrap;
+}
+
+.right li {
+    width: 100%;
+    height: 1.62rem;
+}
+
+.right li a {
+    width: 100%;
+    height: 100%;
+    padding: 0 0.39rem 0 0.2rem;
+}
+
+.right li:nth-of-type(1) {
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.right li img {
+    width: 1.2rem;
+    height: 1.2rem;
+    background: url("https://oss-pub.scsj.net.cn/Image/default.png") no-repeat center center;
+    background-size: 1.2rem 1.2rem;
+}
+
+/*抢购*/
+.title .logo img {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.flash {
+    margin-bottom: 0.1rem;
+}
+
+.flashsale {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+}
+
+.flashsale a {
+    width: 100%;
+    height: 100%;
+    padding: 0.1rem 0.2rem;
+    position: relative;
+}
+
+.flashsale a img {
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.flashsale a .goodsDesc {
+    padding: 0.1rem;
+    height: 2rem;
+    width: 100%;
+}
+
+.flashsale .remainTime {
+    width: 100%;
+    font-size: 0.3rem;
+    color: #ff4040;
+    margin-bottom: 0.3rem;
+    font-weight: 700;
+}
+
+.flashsale a .goodsDesc p {
+    width: 4rem;
+    font-size: 0.3rem;
+    color: #343434;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0.2rem;
+}
+
+.flashsale .goodsPrice i {
+    font-size: 0.26rem;
+    line-height: 0.26rem;
+}
+
+.flashsale a i, .retail-content a i {
+    display: inline-block;
+    background-color: #E21417;
+    font-style: normal;
+    color: #ffffff;
+    padding: 0.02rem;
+}
+
+.flashsale a span:nth-of-type(1), .retail-content a span:nth-of-type(1) {
+    color: #E21417;
+}
+
+.flashsale a span:nth-of-type(2), .retail-content a span:nth-of-type(2) {
+    color: #8c8c8c;
+}
+
+.flashsale button {
+    position: absolute;
+    width: 1.3rem;
+    height: 0.6rem;
+    text-align: center;
+    line-height: 0.6rem;
+    bottom: 0.45rem;
+    right: 0.3rem;
+    background-color: #ff4040;
+    font-size: 0.28rem;
+    color: #fff;
+    border: 0;
+    border-radius: 0.12rem;
+}
+
+.title {
+    width: 100%;
+    height: 0.83rem;
+    background: #ffffff;
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.title .logo img {
+    vertical-align: middle;
+}
+
+.title .logo img:nth-of-type(1) {
+    margin-left: 0.24rem;
+    width: 0.26rem;
+    height: 0.32rem;
+}
+
+.title .logo img:nth-of-type(2) {
+    width: 1.27rem;
+    height: 0.31rem;
+}
+
+.title .more {
+    height: 100%;
+    padding: 0 0.21rem;
+    display: block;
+    overflow: hidden;
+}
+
+.title .more img {
+    width: 0.9rem;
+    height: 0.33rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+/*零售精选*/
+#swiper2 a {
+    background-color: #fff;
+}
+
+#swiper2 a .img {
+    width: 2.43rem;
+    height: 2.46rem;
+    background: #ffffff;
+    padding: 0.25rem;
+}
+
+#swiper2 a img {
+    height: 100%;
+    background: url("https://oss-pub.scsj.net.cn/Image/default.png") no-repeat center center;
+    background-size: 1.93rem 1.93rem;
+}
+
+#swiper2 a div, #swiper2 a p {
+    padding: 0 0.25rem;
+}
+
+#swiper2 a p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+}
+
+.flashSale_content a i,
+#swiper2 a i {
+    display: inline-block;
+    font-size: 0.2rem;
+    background-color: #E21417;
+    font-style: normal;
+    color: #ffffff;
+    padding: 0.02rem;
+    line-height: 0.2rem;
+}
+
+.flashSale_content .goodsPrice i {
+    font-size: 0.26rem;
+    line-height: 0.26rem;
+}
+
+.flashSale_content a span:nth-of-type(1),
+#swiper2 a span:nth-of-type(1) {
+    font-size: 0.24rem;
+    color: #E21417;
+    /*font-weight: bold;*/
+}
+
+.flashSale_content a span:nth-of-type(2),
+#swiper2 a span:nth-of-type(2) {
+    font-size: 0.2rem;
+    color: #8c8c8c;
+}
+
+/*广告2*/
+.banner2 {
+    width: 100%;
+    padding: 0.12rem 0.24rem;
+    background-color: #fff;
+    margin-top: 0.08rem;
+}
+
+.banner2 a {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.banner2 img {
+    width: 100%;
+    height: 100%;
+    background: url("https://oss-pub.scsj.net.cn/Image/bannerDefault.png") no-repeat center center;
+    background-size: contain;
+}
+
+/* 热门市场 */
+.hotMarket {
+    margin: 0.16rem 0;
+}
+
+.hotMarket .title {
+    width: 100%;
+    height: 0.85rem;
+    border-bottom: 1px solid #f6f6f6;
+}
+
+.hotMarket .title img {
+    width: 100%;
+    height: 100%;
+}
+
+.hotMarket-content,
+.hotMarket-content ul {
+    width: 100%;
+    background-color: #fff;
+}
+
+.hotMarket-content li {
+    width: 2.5rem;
+    height: 2.7rem;
+    border-right: 0.01rem solid #f6f6f6;
+    border-bottom: 0.01rem solid #f6f6f6;
+    float: left;
+}
+
+.hotMarket-content li:nth-of-type(3n) {
+    border-right: 0;
+}
+
+.hotMarket-content li a {
+    display: block;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.26rem 0;
+}
+
+.hotMarket-content li a h3 {
+    font-size: 0.28rem;
+    color: #202020;
+    margin-bottom: 0.17rem;
+    line-height: 0.28rem;
+    font-weight: bolder;
+}
+
+.hotMarket-content li a img {
+    width: 1.8rem;
+    height: 1.8rem;
+    background: url("https://oss-pub.scsj.net.cn/Image/default.png") no-repeat center center;
+    background-size: contain;
+}
+
+/* 猜你喜欢 */
+
+.recommend .title {
+    width: 100%;
+    height: 0.84rem;
+    border-bottom: 1px solid #f6f6f6;
+    background-color: #fff;
+    overflow: hidden;
+}
+
+.recommend .title img {
+    width: 2.69rem;
+    height: 0.39rem;
+    display: block;
+    margin: 0.22rem auto;
+}
+
+.recommend-content li {
+    width: 3.7rem;
+    height: 5.44rem;
+    margin-top: 0.08rem;
+}
+
+.recommend-content li:nth-child(2n+1) {
+    margin-right: 0.1rem;
+}
+
+.recommend-content li a {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: #fff;
+    padding: 0.15rem;
+    margin-bottom: 0.15rem;
+    background-image: url("https://oss-pub.scsj.net.cn/Image/default.png");
+    background-repeat: no-repeat;
+    background-position: center 0.15rem;
+    background-size: 3.4rem 3.4rem;
+}
+
+.recommend-content li a > img {
+    width: 100%;
+    height: 3.4rem;
+    display: block;
+    background: url("https://oss-pub.scsj.net.cn/Image/default.png") no-repeat center center;
+    background-size: contain;
+}
+
+.recommend-content a > p {
+    width: 100%;
+    font-size: 0.26rem;
+    color: #343434;
+    height: 0.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    line-height: 0.3rem;
+    padding-right: 0.2rem;
+    margin-top: 0.15rem;
+}
+
+.recommend-content .origin {
+    font-size: 0.26rem;
+    color: #838383;
+    line-height: 0.26rem;
+    margin: 0.1rem 0 0.2rem;
+}
+
+.sale p {
+    font-size: 0.22rem;
+    color: #838383;
+    white-space: nowrap;
+}
+
+.price {
+    white-space: nowrap;
+}
+
+.price i {
+    display: inline-block;
+    font-size: 0.23rem;
+    background-color: #E21417;
+    font-style: normal;
+    color: #ffffff;
+    padding: 0.02rem 0.03rem;
+    line-height: 0.23rem;
+}
+
+.price span:nth-of-type(1) {
+    font-size: 0.27rem;
+    color: #E21417;
+    font-weight: bold;
+}
+
+.price span:nth-of-type(2) {
+    font-size: 0.23rem;
+    color: #8c8c8c;
+}
+
+.relative {
+    position: relative;
+}
+
+.flex-wrap {
+    flex-wrap: wrap;
+}
+
+#login-icon {
+    width: 1rem;
+    height: 1rem;
+    position: fixed;
+    z-index: 998;
+    border-radius: 50%;
+    background-image: url(../image/certify.png);
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    bottom: .5rem;
+    right: .2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/*分类*/
+header {
+    background-color: #fff;
+    width: 100%;
+    height: 40px;
+    overflow: hidden;
+    text-align: center;
+    font-size: 20px;
+    line-height: 40px;
+    border-bottom: 1px solid #ccc;
+}
+
+.category {
+    margin-top: 41px;
+}
+
+.category img {
+    width: 100%;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.icon {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: currentColor;
+    overflow: hidden;
+}
+
+#gotop {
+    background-color: rgba(255, 255, 255, 0.5);
+    padding: 3px 4px;
+    position: fixed;
+    right: 0.5rem;
+    bottom: .5rem;
+    border: 1px solid #999;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    z-index: 99999;
+    color: #999;
+    display: none;
+}
+
+#gotop i {
+    font-size: .55rem;
+}
+
+/**
+去除分类列表 li边框
+ */
+.grids-item:before, .grids-item:after, .m-grids-3 .grids-item:not(:nth-child(3n)):before {
+    border: none;
+}
+
+/*商品goods*/
+#search {
+    width: 100%;
+    border: none;
+    line-height: 17px;
+    outline: none;
+    font-size: 17px;
+    color: #666;
+    display: block;
+    background: #e3e3e3;
+}
+
+.navbar-search {
+    height: .6rem;
+    border-radius: 5px;
+    background: #e3e3e3;
+    margin-top: .15rem;
+}
+
+.navbar-search input {
+    height: 32px;
+    font-size: .25rem;
+}
+
+.search-filter ul {
+    background-color: #fff;
+}
+
+.search-filter li {
+    text-align: center;
+    display: inline-block;
+    width: 19%;
+    font-size: .25rem;
+}
+
+.search-filter li .icon {
+    font-size: .4rem;
+    width: .5rem;
+    height: .5rem;
+}
+
+/**购物车**/
+.qb_tac {
+    text-align: center;
+    line-height: 40px;
+    color: #999;
+    font-size: 18px;
+    margin-top: 20px;
+}
+
+.qb_tac img {
+    margin: 0 auto;
+}
+
+.bold {
+    font-weight: bold
+}
+
+/**公共CSS**/
+.pull-left {
+    float: left;
+}
+
+.pull-right {
+    float: right;
+}
+.flex-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.comment {
+    padding: 0 0.2rem;
+    background: #fff;
+    margin-bottom: 0.2rem;
+}
+
+.comment .item {
+    border-bottom: 0.01rem solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    padding: .1rem;
+}
+
+.imgs img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.right {
+    margin-left: 0.16rem;
+}
+
+.right p {
+    margin-top: 0.2rem;
+    font-size: 0.28rem;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.price {
+    display: block;
+    float: left;
+    margin-top: 0.2rem;
+    font-size: 0.3rem;
+}
+
+.title {
+    font-size: 0.24rem;
+    height: 0.8rem;
+    line-height: 0.8rem;
+    border-bottom: 0.01rem solid #f0f0f0;
+}
+
+.order-time{
+    float:right;
+}
+.comment .content {
+    font-size: .2rem;
+    margin-top: 0.2rem;
+}
+
+.comment .content .comment-img {
+    display: flex;
+
+}
+
+.comment-img img {
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-right: .2rem;
+}
+
+.comment .foot {
+    padding: .2rem;
+    text-align: right;
+}
+
+.comment .foot .btn {
+    height: .5rem;
+    line-height: .5rem;
+    padding: 0 .1rem;
+}

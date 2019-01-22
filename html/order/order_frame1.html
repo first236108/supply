@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-待付款订单</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .content {
+            height: calc(100% - 0.88rem);
+            background: #fff;
+            margin-bottom: .2rem;
+        }
+
+        .content .title {
+            padding: 0 0.24rem;
+            height: 0.76rem;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .content .title span, .content .title i {
+            display: block;
+            height: 0.76rem;
+            line-height: 0.76rem;
+        }
+
+        .content .title span:nth-of-type(1) {
+            float: left;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .content .title i {
+            margin-right: 0.09rem;
+            font-size: 0.5rem;
+            float: left;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        .content .title span:nth-of-type(2) {
+            float: right;
+            color: rgba(51, 51, 51, 1);
+        }
+
+        .goods {
+            background: #fff;
+        }
+
+        .goods .item {
+            border-bottom: 0.01rem solid #f0f0f0
+        }
+
+        .goods .imgs {
+            float: left;
+            padding: 0.2rem 0;
+            margin: 0 0.4rem 0 0.2rem;
+        }
+
+        .goods img {
+            width: 1.86rem;
+            height: 1.86rem;
+            background: url(https://oss-pub.scsj.net.cn/Image/default.png) no-repeat center center;
+        }
+
+        .goods .right {
+            padding: 0.3rem 0.2rem 0 0;
+        }
+
+        .goods .right p {
+            line-height: 0.4rem;
+            font-size: 0.26rem;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .goods .spec {
+            color: #666;
+            margin-top: .2rem;
+        }
+
+        .goods .right .info {
+            margin-top: 0.2rem;
+        }
+
+        .goods .right .info span {
+            display: block;
+            line-height: 0.24rem;
+        }
+
+        .goods .right .info .num {
+            float: left;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .goods .right .info .price {
+            float: right;
+            font-weight: bold;
+            color: #666;
+        }
+
+        .amount .all {
+            padding-right: 0.2rem;
+            line-height: 0.52rem;
+            text-align: right;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .amount .all span {
+            font-size: 0.32rem;
+            color: #e41735;
+        }
+
+        .amount .all .order-amount {
+            color: #666;
+            font-weight: normal;
+        }
+
+        .amount .all:last-child {
+            /*border-bottom: 0.01rem solid #f0f0f0;*/
+        }
+
+        .oprate {
+            margin: .2rem;
+            text-align: right;
+            height: .5rem;
+        }
+
+        .oprate .btn {
+            height: .5rem;
+            line-height: .5rem;
+            padding: 0 .1rem;
+        }
+
+        .order-sumary {
+            margin: .1rem .2rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 内容 -->
+    <order-item v-for="vo in list" :order='vo' :store="store_list" :order_status="order_status"></order-item>
+
+</div>
+
+<script type="text/x-template" id="order-item">
+    <div class="content">
+        <!-- 店铺信息 -->
+        <div class="title open-win" data-name="store" data-url="../store/store.html" :data-storeid="order.store_id">
+            <i class="iconfont  icon-dianpu"></i>
+            <span>{{store[order.store_id].store_name}}</span>
+            <span><i class="iconfont icon-more"></i></span>
+        </div>
+        <div class="order-sumary">
+            <span class="left">订单编号:{{order.order_sn}}</span>
+            <span class="right">{{order_status[order.order_status]}}</span>
+
+        </div>
+        <!-- 商品 -->
+        <div class="goods" v-for="goods in order.goods_list">
+            <div class="item clearfix">
+                <div class="imgs open-win" data-name="goodsInfo" data-url="../goods/goodsInfo.html" :data-id="goods.goods_id">
+                    <img :src="goods.original_img">
+                </div>
+                <div class="right">
+                    <p>{{goods.goods_name}}</p>
+                    <div class="spec" v-if="goods.spec_key_name">
+                        {{goods.spec_key_name}}
+                    </div>
+                    <div class="info clearfix">
+                        <span class="num">×{{goods.goods_num}}</span>
+                        <span class="price">￥{{goods.goods_price}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 金额 -->
+        <div class="amount">
+            <p class="all">共{{order.goods_list.length}}件商品&nbsp;&nbsp;商品总价:<span class="order-amount">￥{{order.total_amount}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.coupon_price >0">优惠券抵扣: <span>￥{{order.coupon_price}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.integral_money>0">积分抵扣: <span>￥{{order.integral_money}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.user_money>0">余额支付: <span>￥{{order.user_money}}</span>&nbsp;元</p>
+            <p class="all" v-if="order.order_amount>0">实际支付: <span>￥{{order.order_amount}}</span>&nbsp;元</p>
+        </div>
+        <div class="oprate" :data-orderid="order.order_id">
+            <a class="btn btn-hollow" onclick="detail();">订单详情</a>
+            <a class="btn btn-primary" v-if="order.pay_btn>0" onclick="pay();">立即支付</a>
+            <a class="btn btn-hollow" v-if="order.cancel_btn>0" onclick="cancle();">取消订单</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [
+                {
+                    "order_id": 19,
+                    "order_sn": "201811291750464358",
+                    "master_order_sn": "201811291750461669",
+                    "user_id": 3410,
+                    "order_status": 2,
+                    "shipping_status": 1,
+                    "pay_status": 1,
+                    "consignee": "小志",
+                    "mobile": "13007686118",
+                    "pay_code": "balance",
+                    "pay_name": "余额支付",
+                    "user_money": "34.00",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "0.00",
+                    "total_amount": "34.00",
+                    "add_time": 1543485046,
+                    "pay_time": 1543485046,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "WAITCCOMMENT",
+                    "order_status_desc": "待评价",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 1,
+                    "shipping_btn": 1,
+                    "return_btn": 1,
+                    "goods_list": [
+                        {
+                            "rec_id": 27,
+                            "order_id": 19,
+                            "goods_id": 1648,
+                            "goods_name": "【中秋献礼】娃哈哈AD钙奶 220g*24瓶",
+                            "goods_sn": "SC0001648",
+                            "goods_num": 1,
+                            "market_price": "37.00",
+                            "goods_price": "34.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "34.00",
+                            "give_integral": 34,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 1,
+                            "delivery_id": 1,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com/test/upload/goods/20180508/rbsQ2n4srP.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 18,
+                    "order_sn": "201811291750154021",
+                    "master_order_sn": "201811291750159397",
+                    "user_id": 3410,
+                    "order_status": 0,
+                    "shipping_status": 0,
+                    "pay_status": 1,
+                    "consignee": "小志",
+                    "mobile": "13007686118",
+                    "pay_code": "balance",
+                    "pay_name": "余额支付",
+                    "user_money": "676.00",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "0.00",
+                    "total_amount": "676.00",
+                    "add_time": 1543485015,
+                    "pay_time": 1543485015,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "WAITSEND",
+                    "order_status_desc": "待发货",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 0,
+                    "return_btn": 1,
+                    "goods_list": [
+                        {
+                            "rec_id": 25,
+                            "order_id": 18,
+                            "goods_id": 9871,
+                            "goods_name": "劲牌 中国劲酒 35度 258ml*15瓶/箱",
+                            "goods_sn": "SC0009871",
+                            "goods_num": 1,
+                            "market_price": "23.00",
+                            "goods_price": "266.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "266.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 0,
+                            "delivery_id": 0,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180515/kmWcPd7pBz.jpg"
+                        },
+                        {
+                            "rec_id": 26,
+                            "order_id": 18,
+                            "goods_id": 1988,
+                            "goods_name": "浓香型酒祖杜康6窖区500mL*6瓶整箱",
+                            "goods_sn": "SC0001988",
+                            "goods_num": 1,
+                            "market_price": "188.00",
+                            "goods_price": "410.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "410.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 0,
+                            "delivery_id": 0,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180515/faAC2D3adM.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 17,
+                    "order_sn": "201811291131535515",
+                    "master_order_sn": "201811291131533143",
+                    "user_id": 3410,
+                    "order_status": 4,
+                    "shipping_status": 1,
+                    "pay_status": 1,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "balance",
+                    "pay_name": "余额支付",
+                    "user_money": "39.40",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "0.00",
+                    "total_amount": "39.40",
+                    "add_time": 1543462313,
+                    "pay_time": 1543462313,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "FINISH",
+                    "order_status_desc": "已完成",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 1,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 24,
+                            "order_id": 17,
+                            "goods_id": 10752,
+                            "goods_name": "李子园大瓶（共五种口味） 450ml*12瓶",
+                            "goods_sn": "SC0010752",
+                            "goods_num": 1,
+                            "market_price": "42.00",
+                            "goods_price": "39.40",
+                            "cost_price": "0.00",
+                            "member_goods_price": "39.40",
+                            "give_integral": 0,
+                            "spec_key": "1338",
+                            "spec_key_name": "糖果口味:荔枝",
+                            "bar_code": "",
+                            "is_comment": 1,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 1,
+                            "delivery_id": 1,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180828/X8appparJR.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 16,
+                    "order_sn": "201811291025002888",
+                    "master_order_sn": "201811291025003496",
+                    "user_id": 3410,
+                    "order_status": 4,
+                    "shipping_status": 1,
+                    "pay_status": 1,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "balance",
+                    "pay_name": "余额支付",
+                    "user_money": "557.50",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "0.00",
+                    "total_amount": "557.50",
+                    "add_time": 1543458300,
+                    "pay_time": 1543458300,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "FINISH",
+                    "order_status_desc": "已完成",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 1,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 22,
+                            "order_id": 16,
+                            "goods_id": 1998,
+                            "goods_name": "杜康酒9窖区窖藏30年窖龄50度浓香型500ml*6瓶/箱",
+                            "goods_sn": "6947329413507",
+                            "goods_num": 1,
+                            "market_price": "238.00",
+                            "goods_price": "518.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "518.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 1,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 1,
+                            "delivery_id": 1,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180508/Q4A7iQeKCK.png"
+                        },
+                        {
+                            "rec_id": 23,
+                            "order_id": 16,
+                            "goods_id": 2416,
+                            "goods_name": "达利园和其正 550ml*15瓶",
+                            "goods_sn": "SC0002416",
+                            "goods_num": 1,
+                            "market_price": "42.00",
+                            "goods_price": "39.50",
+                            "cost_price": "0.00",
+                            "member_goods_price": "39.50",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 1,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 1,
+                            "delivery_id": 1,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180509/k3xepEFA3G.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 13,
+                    "order_sn": "201811141804585960",
+                    "master_order_sn": "201811141804588712",
+                    "user_id": 3410,
+                    "order_status": 0,
+                    "shipping_status": 0,
+                    "pay_status": 0,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "",
+                    "pay_name": "",
+                    "user_money": "0.00",
+                    "coupon_price": null,
+                    "integral_money": "0.00",
+                    "order_amount": "52.00",
+                    "total_amount": "52.00",
+                    "add_time": 1542189898,
+                    "pay_time": 0,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "WAITPAY",
+                    "order_status_desc": "待支付",
+                    "pay_btn": 1,
+                    "cancel_btn": 1,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 0,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 19,
+                            "order_id": 13,
+                            "goods_id": 10711,
+                            "goods_name": "健力宝-妙泡 500ML*15瓶",
+                            "goods_sn": "SC0010711",
+                            "goods_num": 1,
+                            "market_price": "55.00",
+                            "goods_price": "52.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "52.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 0,
+                            "delivery_id": 0,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180709/bDRwQicnDy.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 12,
+                    "order_sn": "201811141753214826",
+                    "master_order_sn": "201811141753212518",
+                    "user_id": 3410,
+                    "order_status": 4,
+                    "shipping_status": 1,
+                    "pay_status": 1,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "balance",
+                    "pay_name": "余额支付",
+                    "user_money": "483.00",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "0.00",
+                    "total_amount": "483.00",
+                    "add_time": 1542189201,
+                    "pay_time": 1542189201,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "FINISH",
+                    "order_status_desc": "已完成",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 1,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 18,
+                            "order_id": 12,
+                            "goods_id": 11106,
+                            "goods_name": "10箱王老吉加1箱峨眉钰泉",
+                            "goods_sn": "SC0011106",
+                            "goods_num": 1,
+                            "market_price": "520.00",
+                            "goods_price": "483.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "483.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 1,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 1,
+                            "delivery_id": 1,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180915/zD76SGiAKD.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 11,
+                    "order_sn": "201811141752428186",
+                    "master_order_sn": "201811141752429598",
+                    "user_id": 3410,
+                    "order_status": 0,
+                    "shipping_status": 0,
+                    "pay_status": 0,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "",
+                    "pay_name": "",
+                    "user_money": "20.00",
+                    "coupon_price": "0.00",
+                    "integral_money": "0.00",
+                    "order_amount": "28.00",
+                    "total_amount": "48.00",
+                    "add_time": 1542189162,
+                    "pay_time": 0,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "WAITPAY",
+                    "order_status_desc": "待支付",
+                    "pay_btn": 1,
+                    "cancel_btn": 1,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 0,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 17,
+                            "order_id": 11,
+                            "goods_id": 10750,
+                            "goods_name": "名仁水蜜桃苏打水375ml*24瓶",
+                            "goods_sn": "SC0010750",
+                            "goods_num": 1,
+                            "market_price": "50.00",
+                            "goods_price": "48.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "48.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 0,
+                            "delivery_id": 0,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180802/XeCfKM8M26.jpg"
+                        }
+                    ]
+                },
+                {
+                    "order_id": 10,
+                    "order_sn": "201811141731552549",
+                    "master_order_sn": "201811141731556084",
+                    "user_id": 3410,
+                    "order_status": 3,
+                    "shipping_status": 0,
+                    "pay_status": 0,
+                    "consignee": "小志",
+                    "mobile": "13007686112",
+                    "pay_code": "",
+                    "pay_name": "",
+                    "user_money": "0.00",
+                    "coupon_price": null,
+                    "integral_money": "0.00",
+                    "order_amount": "48.00",
+                    "total_amount": "48.00",
+                    "add_time": 1542187915,
+                    "pay_time": 0,
+                    "order_prom_id": 0,
+                    "order_prom_amount": "0.00",
+                    "store_id": 12,
+                    "order_status_code": "CANCEL",
+                    "order_status_desc": "已取消",
+                    "pay_btn": 0,
+                    "cancel_btn": 0,
+                    "receive_btn": 0,
+                    "comment_btn": 0,
+                    "shipping_btn": 0,
+                    "return_btn": 0,
+                    "goods_list": [
+                        {
+                            "rec_id": 16,
+                            "order_id": 10,
+                            "goods_id": 10750,
+                            "goods_name": "名仁水蜜桃苏打水375ml*24瓶",
+                            "goods_sn": "SC0010750",
+                            "goods_num": 1,
+                            "market_price": "50.00",
+                            "goods_price": "48.00",
+                            "cost_price": "0.00",
+                            "member_goods_price": "48.00",
+                            "give_integral": 0,
+                            "spec_key": "",
+                            "spec_key_name": "",
+                            "bar_code": "",
+                            "is_comment": 0,
+                            "prom_type": 0,
+                            "prom_id": 0,
+                            "is_send": 0,
+                            "delivery_id": 0,
+                            "sku": "",
+                            "store_id": 12,
+                            "commission": 1,
+                            "is_checkout": 0,
+                            "deleted": 0,
+                            "distribut": "0.00",
+                            "give_coupon": 0,
+                            "is_give": 0,
+                            "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180802/XeCfKM8M26.jpg"
+                        }
+                    ]
+                }
+            ],
+            page: 1,
+            pay_status: [],
+            shipping_status: [],
+            order_status: [
+                "待确认",
+                "已确认",
+                "已收货",
+                "已取消",
+                "已完成",
+                "退款",
+                "作废"
+            ],
+            store_list: {
+                "12": {
+                    "store_id": 12,
+                    "store_name": "商超采购",
+                    "store_qq": "",
+                    "store_phone": "19937413017"
+                }
+            }
+        },
+        components: {
+            'order-item': {
+                props: ['order', 'store', 'order_status'],
+                template: '#order-item'
+            }
+        },
+        methods: {
+            getList: function (refreash) {
+
+                if (refreash) {
+                    vm.page = 1;
+                }
+                if (vm.page == false) {
+                    return;
+                }
+                if (!refreash) {
+                    api.showProgress({
+                        title: '加载中...',
+                        modal: false
+                    });
+                }
+                ajax_post('/user/orderList', {p: vm.page, type: 'WAITPAY'}, function (res) {
+                    if (refreash) {
+                        api.refreshHeaderLoadDone();
+                    } else {
+                        api.hideProgress();
+                    }
+                    if (res.list.length == 0) {
+                        toast('没有更多了');
+                        vm.page = false;
+                    } else {
+                        if (vm.page == 1) {
+                            vm.list = res.list;
+                            vm.store_list = res.store_list;
+                            vm.order_status = res.order_status;
+                        } else {
+                            vm.list = vm.list.concat(res);
+                            for (var store_id in res.store_list) {
+                                if (!vm.store_list.hasOwnProperty(store_id))
+                                    vm.store_list[store_id] = res.store_list[store_id];
+                            }
+                        }
+                        vm.page++;
+                    }
+                });
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.getList();
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.getList(true);
+        });
+
+        //上拉加载事件
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.getList();
+        });
+    };
+
+    function pay() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+    }
+
+    /**
+     * 取消订单
+     */
+    function cancle() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        api.confirm({
+            title: '订单操作',
+            msg: '要取消订单吗?',
+            buttons: ['确定', '取消']
+        }, function (ret, err) {
+            if (ret.buttonIndex == 1) {
+                ajax_post('/user/cancelOrder', {order_id: order_id}, function (res) {
+                    toast(res.msg);
+                    vm.getList(true);
+                });
+            }
+        });
+    }
+
+    /**
+     * 订单详情
+     */
+    function detail() {
+        var order_id = event.currentTarget.parentElement.dataset.orderid;
+        api.openWin({
+            name: 'order_detail',
+            url: './order_detail.html',
+            pageParam: {
+                order_id: order_id
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

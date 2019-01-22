@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-商品详情</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .index_floor {
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .index_floor h2 {
+            height: 35px;
+            line-height: 37px;
+            background: #ffffff;
+            position: relative;
+            font-size: 16px;
+            font-weight: normal;
+            text-indent: 15px;
+            color: #535353;
+        }
+
+        .index_floor h2 span {
+            height: 17px;
+            width: 3px;
+            background: #f23015;
+            position: absolute;
+            display: block;
+            margin-top: 10px;
+            margin-left: 6px;
+        }
+
+        .xiangq {
+            width: 90%;
+            overflow: hidden;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .xiangq li {
+            font-size: 14px;
+            line-height: 150%;
+            color: #666;
+        }
+
+        .xiangq li p {
+            display: inline-block;
+            text-indent: 10px;
+        }
+
+        .xiangq li span {
+            display: inline-block;
+            text-indent: 10px;
+        }
+
+        .product_main {
+            padding: 0 0.3rem;
+            overflow: scroll;
+        }
+
+        .product_main img {
+            width: 100% !important;
+            height: auto !important;
+        }
+        #app{height:100%;overflow-y: scroll;-webkit-overflow-scrolling: touch}
+    </style>
+</head>
+<body>
+<div id="app" v-cloak>
+
+    <div class="product_main" v-html="detail"></div>
+
+    <section class="index_floor">
+        <h2 style=" border-bottom:1px solid #ddd "><span></span> 商品信息 </h2>
+        <ul class="xiangq" v-if="Object.keys(attr).length">
+            <li v-for="attribute in attr"><p>{{attribute.attr_key}}</p><span>{{attribute.attr_value}}</span></li>
+        </ul>
+        <div v-else>无</div>
+    </section>
+</div>
+
+<div id="gotop" onclick="goTop('#app')">
+    <i class="iconfont icon-dingbu" style="font-size:30px;"></i>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<!--<script type="text/javascript" src="../../script/ydui.js"></script>-->
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            detail: '',
+            attr: []
+        }
+    });
+
+    apiready = function () {
+        vm.detail = api.pageParam.detail;
+        vm.attr = api.pageParam.goods_attr_list;
+
+        $('#app').scroll(function () {
+            if ($(this).scrollTop() > 200) {
+                $("#gotop").show();
+            } else {
+                $("#gotop").hide();
+            }
+        });
+
+    };
+
+
+</script>
+</body>
+</html>

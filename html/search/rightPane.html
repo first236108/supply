@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-搜索结果</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        body {
+            background-color: #fff;
+        }
+
+        #app {
+            padding: .5rem .5rem 1rem;
+        }
+
+        .clear {
+            clear: both
+        }
+
+        .filter {
+            margin-top: .5rem;
+        }
+
+        .filter-category {
+            color: #999;
+            margin-bottom: .2rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .filter-content li {
+            padding: 1px;
+            background-color: #f5f5f5;
+            float: left;
+            text-align: center;
+            margin: 0 6px 4px 0;
+            height: 35px;
+            line-height: 35px;
+            width: 75px;
+            overflow: hidden;
+            border-radius: 3px;
+            color: #666;
+        }
+
+        .filter-content li.active {
+            background-color: #ffdeb8;
+            color: #ff5000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div>筛选条件：</div>
+    <section class="filter" v-if="filter.hasOwnProperty('brand')">
+        <div class="filter-category">品牌</div>
+        <ul class="filter-content">
+            <li v-for="(brand,id) in filter.brand" :data-value="id" @click="filtor('brand')">{{brand}}</li>
+        </ul>
+    </section>
+    <div class="clear"></div>
+    <section class="filter" v-if="filter.hasOwnProperty('id')">
+        <div class="filter-category">分类</div>
+        <ul class="filter-content">
+            <li v-for="(category,cat_id) in filter.id" :data-value="cat_id" @click="filtor('id')">{{category}}</li>
+        </ul>
+    </section>
+    <div class="clear"></div>
+    <section class="filter" v-if="filter.hasOwnProperty('price')">
+        <div class="filter-category">价格</div>
+        <ul class="filter-content">
+            <li v-for="price in filter.price" :data-value="price" @click="filtor('price')">{{price}}</li>
+        </ul>
+    </section>
+    <div class="clear"></div>
+    <section class="filter" v-if="filter.hasOwnProperty('region')">
+        <div class="filter-category">地域</div>
+        <ul class="filter-content">
+            <li v-for="(region,id) in filter.region" :data-value="region.value" @click="filtor('region')">{{region.name}}</li>
+        </ul>
+    </section>
+    <div class="clear"></div>
+    <button type="button" class="btn-block btn-danger" @click="finish">确定</button>
+    <button type="button" class="btn-block btn-hollow" @click="finish(true)">重置</button>
+</div>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            filter: {
+                "price": [
+                    "13-26",
+                    "26-39",
+                    "39-52",
+                    "65元以上"
+                ],
+                "brand": {
+                    "58": "统一",
+                    "183": "统一"
+                },
+                "region": {
+                    "21388": {
+                        "name": "郑州市",
+                        "value": 2
+                    }
+                },
+                "category": {
+                    "2347": "茶饮",
+                    "2541": "方便面/粉"
+                }
+            },
+            filter_param: {
+                'brand': 0,
+                'id': 0,//按分类id筛选
+                'price': 0,
+                'region': 0
+            }
+        },
+        methods: {
+            filtor: function (key) {
+                var data = {};
+                if (vm.filter_param[key]) {
+                    vm.filter_param[key] = 0;
+                    event.currentTarget.classList.remove('active');
+                } else {
+                    vm.filter_param[key] = event.currentTarget.dataset.value;
+                    event.currentTarget.classList.add('active');
+                }
+                Object.keys(vm.filter_param).forEach(function (k) {
+                    if (vm.filter_param[k]) data[k] = vm.filter_param[k];
+                });
+
+                this.sendFiltorEvent(data);
+            },
+            finish: function (is_reset) {
+                if (is_reset) {
+                    vm.filter_param = {};
+                    vm.sendFiltorEvent({});
+                    var doms = document.querySelectorAll('li.active');
+                    for (var i = 0, l = doms.length; i < l; i++) {
+                        doms[i].classList.remove('active');
+                    }
+                    return;
+                }
+                api.closeDrawerPane();
+            },
+            sendFiltorEvent: function (data) {
+                api.sendEvent({
+                    name: 'filterFinish',
+                    extra: {
+                        filter_param: data
+                    }
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'changeFilter'
+        }, function (ret, err) {
+            vm.filter = ret.value.filter;
+            Object.keys(ret.value.filter_param).forEach(function (k) {
+                vm.filter_param[k] = ret.value.filter_param[k];
+            });
+        });
+    };
+
+</script>
+</body>
+</html>

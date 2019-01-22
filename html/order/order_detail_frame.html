@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-个人中心</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .order-item {
+            background: #fff;
+        }
+
+        .title {
+            padding: 0 0.24rem;
+            height: 0.9rem;
+            line-height: 0.9rem;
+            color: #333;
+            font-size: 0.3rem;
+            font-weight: 500;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .goods {
+            background: #fff;;
+        }
+
+        .goods .item {
+            border-bottom: 0.01rem solid #f0f0f0
+        }
+
+        .goods .imgs {
+            float: left;
+            padding: 0.2rem 0;
+            margin: 0 0.4rem 0 0.2rem;
+        }
+
+        .goods img {
+            width: 1.86rem;
+            height: 1.86rem;
+        }
+
+        .goods .right {
+            padding: 0.3rem 0.2rem 0 0;
+        }
+
+        .goods .right p {
+            line-height: 0.4rem;
+            font-size: 0.26rem;
+            color: rgba(85, 85, 85, 1);
+        }
+
+        .goods .right .info {
+            margin-top: 0.5rem;
+        }
+
+        .goods .right .info span {
+            display: block;
+            line-height: 0.24rem;
+        }
+
+        .goods .right .info .num {
+            float: left;
+            font-size: 0.26rem;
+            color: rgba(153, 153, 153, 1);
+        }
+
+        .goods .right .info .price {
+            float: right;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .goods .all {
+            padding-right: 0.2rem;
+            line-height: 0.9rem;
+            text-align: right;
+            font-size: 0.26rem;
+            color: #666;
+        }
+
+        .goods .all span {
+            font-size: 0.32rem;
+            color: #e41735;
+        }
+
+        .line {
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .line span {
+            display: block;
+            float: left;
+            font-size: 0.28rem;
+            height: 0.9rem;
+            line-height: 0.9rem;
+        }
+
+        .line .name {
+            margin-left: 0.24rem;
+            color: #8B8B8B;
+        }
+
+        .line .txt {
+            margin-left: 0.34rem;
+            color: #333;
+        }
+
+        .goods-info, .store, .send {
+            background: #fff;
+            margin-top: 0.2rem;
+        }
+    </style>
+</head>
+<body>
+
+
+<!-- 商品信息 -->
+<div class="goods-info">
+    <h3 class="title">商品信息</h3>
+    <!-- 商品 -->
+    <div class="goods">
+        <div class="item clearfix">
+            <div class="imgs">
+                <img src="http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg?x-oss-process=image/resize,w_200,h_200" alt="">
+            </div>
+            <div class="right">
+                <p>印尼进口 休闲零食 丽巧克（Richoco）纳宝帝巧克力味威化饼干 58g</p>
+                <div class="info clearfix">
+                    <span class="num">×3</span>
+                    <span class="price">￥10</span>
+                </div>
+            </div>
+        </div>
+        <div class="item clearfix">
+            <div class="imgs">
+                <img src="http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg?x-oss-process=image/resize,w_200,h_200" alt="">
+            </div>
+            <div class="right">
+                <p>印尼进口 休闲零食 丽巧克（Richoco）纳宝帝巧克力味威化饼干 58g</p>
+                <div class="info clearfix">
+                    <span class="num">×3</span>
+                    <span class="price">￥10</span>
+                </div>
+            </div>
+        </div>
+        <!-- 统计 -->
+        <p class="all">共6件商品&nbsp;&nbsp;应付金额<span>￥0.00</span>&nbsp;元</p>
+    </div>
+</div>
+
+<!-- 店铺信息 -->
+<div class="store">
+    <h3 class="title">店铺信息</h3>
+    <div class="line clearfix">
+        <span class="name">名称：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">地址：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">联系电话：</span>
+        <span class="txt">黑店</span>
+    </div>
+</div>
+
+<!-- 配送信息 -->
+<div class="send">
+    <h3 class="title">配送信息</h3>
+    <div class="line clearfix">
+        <span class="name">配送单号：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">收货人：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">联系电话：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">配送方式：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">配送费用：</span>
+        <span class="txt">￥0</span>
+    </div>
+</div>
+
+<!-- 订单信息 -->
+<div class="send">
+    <h3 class="title">订单信息</h3>
+    <div class="line clearfix">
+        <span class="name">订单号：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">支付方式：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">商品总价：</span>
+        <span class="txt">黑店</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">积分：</span>
+        <span class="txt">￥0</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">余额支付：</span>
+        <span class="txt">￥0</span>
+    </div>
+    <div class="line clearfix">
+        <span class="name">应付金额：</span>
+        <span class="txt">￥0</span>
+    </div>
+</div>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script>
+    apiready = function () {
+        var order_id = api.pageParam.order_id;
+        console.log(order_id);
+    };
+</script>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-个人中心</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/common.css"/>
+    <script type="text/javascript" src="../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        .top {
+            padding-top: 1.4rem;
+            margin-bottom: 0.35rem;
+            height: 4.5rem;
+            background: url(../image/center_bg.png) no-repeat center center;
+            background-size: cover;
+        }
+
+        .info {
+            height: 1.3rem;
+        }
+
+        .top .left, .top .left-2 {
+            float: left;
+            margin-left: 0.3rem;
+            height: 1.3rem;
+        }
+
+        .info .left img {
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 50%;
+        }
+
+        .info span {
+            display: block;
+            color: #fff;
+        }
+
+        .info .left-2 .name {
+            font-size: 0.34rem;
+            font-weight: bold;
+            font-family: PingFang-SC-Bold;
+        }
+
+        .info .left-2 .level {
+            margin-top: 0.17rem;
+            font-size: 0.26rem;
+        }
+
+        .items {
+            margin-top: 0.33rem;
+        }
+
+        .items .item {
+            width: 33%;
+            float: left;
+            text-align: center;
+            height: 1.4rem;
+            color: #fff;
+            font-size: 0.26rem;
+        }
+
+        .items .item span {
+            display: block;
+            margin-top: 0.3rem;
+        }
+
+        .items .item span:nth-of-type(2) {
+            margin-top: 0.2rem;
+        }
+
+        .right {
+            float: right;
+            padding-right: .24rem;
+            margin-top: .24rem;
+        }
+
+        .right:after {
+            color: #fff
+        }
+    </style>
+</head>
+<body>
+<div class="" id="app">
+    <div class="top clearfix">
+        <div class="info open-win" data-name="setting" data-url="./setting/setting.html" :data-head_pic="user_info.head_pic" :data-nickname="user_info.nickname" :data-mobile="user_info.mobile">
+            <div class="left">
+                <img :src="user_info.head_pic">
+            </div>
+            <div class="left-2">
+                <span class="name">{{user_info.nickname}}</span>
+                <span class="level">{{user_info.mobile}}</span>
+            </div>
+            <div class="right cell-arrow"></div>
+        </div>
+        <ul class="items clearfix">
+            <li class="item">
+                <span>￥11</span>
+                <span>我的钱包</span>
+            </li>
+            <li class="item">
+                <span>11</span>
+                <span>优惠券</span>
+            </li>
+            <li class="item">
+                <span>11</span>
+                <span>会员码</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="m-cell">
+        <a class="cell-item" v-if="user_info.salesman>0">
+            <div class="cell-left"><i class="cell-icon icon-order"></i>业务绩效管理</div>
+            <div class="cell-right cell-arrow">查看及审核店铺</div>
+        </a>
+        <a class="cell-item open-win" data-name="wallet" data-url="./wallet/wallet.html">
+            <div class="cell-left"><i class="cell-icon icon-feedback"></i>我的钱包</div>
+            <div class="cell-right cell-arrow">查看我的钱包</div>
+        </a>
+    </div>
+    <div class="m-cell">
+        <a class="cell-item open-win" data-name="check" data-url="./store/check.html">
+            <div class="cell-left"><i class="cell-icon icon-shield"></i>认证店铺</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+        <a class="cell-item open-win" data-name="order" data-url="./order/order.html">
+            <div class="cell-left"><i class="cell-icon icon-feedback"></i>全部订单</div>
+            <div class="cell-right cell-arrow">查看订单</div>
+        </a>
+        <a class="cell-item open-win" data-url="./center/coupon.html" data-name="coupon">
+            <div class="cell-left"><i class="cell-icon icon-compose"></i>我的优惠券</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+        <a class="cell-item open-win" data-url="./center/comment.html" data-name="comment" data-status="2">
+            <div class="cell-left"><i class="cell-icon icon-good"></i>我的评价</div>
+            <div class="cell-right cell-arrow">查看评价</div>
+        </a>
+        <a class="cell-item open-win" data-name="collect" data-url="./center/collect.html">
+            <div class="cell-left"><i class="cell-icon icon-like"></i>我的收藏</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+    </div>
+    <div class="m-cell">
+        <a class="cell-item open-win" data-url="./center/address.html" data-name="address">
+            <div class="cell-left"><i class="cell-icon icon-location"></i>地址管理</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+        <a class="cell-item open-win" data-name="server" data-url="./center/server.html">
+            <div class="cell-left"><i class="cell-icon icon-phone3"></i>售后服务</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+
+        <a class="cell-item open-win" data-name="login" data-url="./login/login.html">
+            <div class="cell-left"><i class="cell-icon icon-phone3"></i>login</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+        <a class="cell-item" @click="logout">
+            <div class="cell-left"><i class="cell-icon icon-phone3"></i>退出登录</div>
+            <div class="cell-right cell-arrow"></div>
+        </a>
+    </div>
+</div>
+
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../script/ydui.js"></script>
+<script type="text/javascript" src="../script/common.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            user_info: {
+                head_pic:''
+            }
+        },
+        methods: {
+            getInfo: function () {
+
+            },
+            logout: function () {
+                ajax_post('/login/logout', {}, function (res) {
+                    $api.rmStorage('token');
+                    $api.rmStorage('cart_count');
+                    $api.rmStorage('refreash');
+                    $api.rmStorage('certify');
+                    $api.rmStorage('user_info');
+                    var refreash = {
+                        'root_0': true,
+                        'root_2': true,
+                        'root_3': true
+                    };
+                    $api.setStorage('refreash', refreash);
+                    YDUI.dialog.toast(res.msg, 'success', 1200, function () {
+                        toIndex(0);
+                    });
+                });
+            }
+        },
+        created: function () {
+            this.user_info = $api.getStorage('user_info');
+            console.log($api.getStorage('token'));
+        },
+        mounted: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        api.addEventListener({
+            name: 'userinfo'
+        }, function (ret, err) {
+            Object.keys(ret.value).forEach(function (k) {
+                vm.user_info[k] = ret.value[k];
+            });
+            $api.setStorage('user_info', vm.user_info);
+        });
+    };
+
+</script>
+
+</body>
+</html>

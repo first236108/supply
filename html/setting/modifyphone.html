@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-修改手机号码</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .outer {
+            padding-right: .24rem
+        }
+
+        .btn-outer {
+            padding: 1rem .24rem;
+        }
+
+        .cell-code::after {
+            margin-left: .24rem;
+            position: absolute;
+            border-bottom: 1px solid #D9D9D9;
+            -webkit-transform: scaleY(.5);
+            transform: scaleY(.5);
+            -webkit-transform-origin: 0 100%;
+            transform-origin: 0 100%;
+            content: '';
+            z-index: 0;
+            left: 0;
+            height: 1px;
+            width: 100%;
+            bottom: 0;
+        }
+        .m-cell:after{
+            border-bottom:none;
+        }
+    </style>
+</head>
+<body>
+
+<header class="m-navbar" id="header">
+    <a class="navbar-item event-back" onclick="api.closeWin();">
+        <i class="back-ico"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">修改手机号码</span>
+    </div>
+</header>
+
+<div class="m-cell">
+    <div class="outer">
+        <div class="cell-item">
+            <div class="cell-left"><i class="cell-icon demo-icons-phone"></i></div>
+            <div class="cell-right">
+                <input type="number" pattern="[0-9]*" class="cell-input" placeholder="请输入手机号码" autocomplete="off" id="phone">
+                <a class="btn btn-warning" id="J_GetCode" style="pointer-events: auto;">获取验证码</a>
+            </div>
+        </div>
+        <div class="cell-item cell-code">
+            <div class="cell-right"><input type="number" pattern="[0-9]*" class="cell-input" placeholder="请输入验证码" autocomplete="off" id="code"></div>
+        </div>
+    </div>
+    <div class="btn-outer">
+        <button type="button" class="btn-block btn-disabled" id="btn">确认修改</button>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/ydui.js"></script>
+<script>
+    var $getCode = $('#J_GetCode');
+
+    /* 定义参数 */
+    $getCode.sendCode({
+        disClass: 'btn-disabled',
+        secs: 15,
+        run: false,
+        runStr: '{%s}秒后重新获取',
+        resetStr: '重新获取验证码'
+    });
+
+    apiready = function () {
+        $getCode.on('click', function () {
+            var phone = document.getElementById('phone').value;
+            if (!checkMobile(phone)) {
+                YDUI.dialog.toast('手机号码错误', 'error', 1500);
+                return;
+            }
+            YDUI.dialog.loading.open('发送中');
+            ajax_post('/user/sendVerificationCode', {phone: phone}, function () {
+                YDUI.dialog.loading.close();
+                $('#btn').removeClass('btn-disabled').addClass('btn-primary');
+            });
+        });
+
+        document.getElementById('btn').onclick = function () {
+            if ($('#btn').hasClass('btn-disabled')) return;
+
+            var code = document.getElementById('code').value;
+            if (isNaN(code) || code.length != 6) {
+                YDUI.dialog.toast('验证码错误', 'error', 1500);
+                return;
+            }
+            var phone = document.getElementById('phone').value;
+            if (!checkMobile(phone)) {
+                YDUI.dialog.toast('手机号码错误', 'error', 1500);
+                return;
+            }
+            ajax_post('/user/bindPhone', {phone: phone, code: code, type: 1}, function (res) {
+                api.sendEvent({
+                    name: 'usermodile',
+                    extra: {
+                        mobile: res.mobile
+                    }
+                });
+
+                api.closeWin();
+            });
+        };
+    };
+</script>
+
+</body>
+</html>

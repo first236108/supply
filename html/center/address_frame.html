@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-订单列表</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+        }
+
+        .content {
+            height: calc(100% - 1.7rem);
+            overflow-y: auto;
+        }
+
+        .content .item {
+            height: 1.6rem;
+            color: #666;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .select {
+            float: left;
+            width: 0.9rem;
+            height: 1.6rem;
+        }
+
+        .selected {
+            background: url(../../image/c_checkbox_on.png) no-repeat center center;
+            background-size: 0.36rem 0.36rem;
+        }
+
+        .unselected {
+            background: url(../../image/c_checkbox_off.png) no-repeat center center;
+            background-size: 0.36rem 0.36rem;
+        }
+
+        .edit {
+            float: right;
+            display: block;
+            margin: 0 0.2rem;
+            width: 0.34rem;
+            height: 1.6rem;
+            background: url(../../image/edit.png) no-repeat center center;
+            background-size: contain;
+        }
+
+        .center {
+            float: left;
+            width: 5.5rem;
+            height: 1.6rem;
+        }
+
+        .name {
+            margin-top: 0.2rem;
+            font-size: 0.28rem;
+        }
+
+        .store,
+        .address {
+            margin-top: 0.1rem;
+            font-size: 0.24rem;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
+        }
+
+        .btn {
+            display: block;
+            margin: 0.4rem auto;
+            width: 6.9rem;
+            height: 0.9rem;
+            color: #fff;
+            text-align: center;
+            line-height: 0.9rem;
+            font-size: 0.32rem;
+            background: rgba(255, 49, 74, 1);
+            border-radius: 0.1rem;
+        }
+
+        .box-shadow {
+            box-shadow: #0BEAEB 0 0 5px inset;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <div class="content">
+        <div class="item clearfix" v-for="(item,index) in list">
+            <div class="select unselected" @click="setAddress(index,$event)" v-if="indexs!=index" data-action="default" :data-id="item.address_id"></div>
+            <div class="select selected" v-if="indexs==index"></div>
+            <div :class="['center',from_cart?'box-shadow':'']" @click="select(index)">
+                <p class="name">{{item.consignee}}&nbsp;&nbsp;&nbsp;电话：{{item.mobile}}</p>
+                <p class="store">店铺名称：{{item.store_name}}</p>
+                <p class="address">{{region[item.province]}}&nbsp;&nbsp;{{region[item.city]}}&nbsp;&nbsp;{{region[item.district]}}&nbsp;&nbsp;{{item.address}}</p>
+            </div>
+            <a class="edit open-win" :data-id="item.address_id" data-name="address_tpl" data-url="./address_tpl.html" data-froms="edit"></a>
+        </div>
+        <div class="empty" v-if="list.length == 0">
+            <img src="../../image/goodsEmpty.png">
+        </div>
+    </div>
+    <a class="btn open-win" data-url="./address_tpl.html" data-name="address_tpl" data-froms="add"> 新增收货地址</a>
+</div>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            list: [],
+            region: {},
+            indexs: 'a',
+            from_cart: false
+        },
+        methods: {
+            //获取地址
+            getAddress: function () {
+                var self = this;
+                loading();
+                ajax_get('/user/address', function (res) {
+                    api.hideProgress();
+                    self.list = res.list;
+                    self.region = res.region;
+                    //is_default下标
+                    var length = self.list.length;
+                    for (var i = 0; i < length; i++) {
+                        if (self.list[i].is_default == 1) {
+                            self.indexs = i;
+                        }
+                    }
+                });
+            },
+            //设置默认地址
+            setAddress: function (indexs, e) {
+                var data = e.currentTarget.dataset;
+                var self = this;
+                api.confirm({
+                    title: '提示',
+                    msg: '确定要设置为默认地址吗',
+                    buttons: ['确定', '取消']
+                }, function (ret, err) {
+                    var index = ret.buttonIndex;
+                    if (index == 1) {
+                        ajax_post('/user/setAddress', {
+                            address_id: data.id,
+                            action: data.action
+                        }, function (res) {
+                            // log(res);
+                            toast('操作成功');
+                            self.indexs = indexs;
+                        });
+                    }
+                });
+
+            },
+            select: function (index) {
+                if (!this.from_cart) {
+                    return false;
+                }
+                api.sendEvent({
+                    name: 'address_car2',
+                    extra: vm.list[index]
+                });
+                api.closeWin();
+            }
+        },
+        updated: function () {
+            openWin();
+        }
+    });
+
+    apiready = function () {
+        vm.getAddress();
+        api.addEventListener({
+            name: 'refreshAddress'
+        }, function (ret, err) {
+            if (ret) {
+                vm.getAddress();
+            }
+        });
+        if (api.pageParam.origin == 'cart2') {
+            vm.from_cart = true;
+        }
+    };
+</script>
+
+</body>
+
+</html>

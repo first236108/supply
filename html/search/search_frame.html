@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-搜索</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
+    <style>
+        .search-wrap {
+            padding: 20px 10px;
+        }
+
+        .search-wrap ul li {
+            cursor: pointer;
+            float: left;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            width: 70px;
+            font-size: 14px;
+            color: #333;
+            background-color: #eee;
+        }
+
+        .search-wrap ul .cur {
+            background: #E31939;
+            color: #fff;
+        }
+
+        .box {
+            width: 100%;
+            border: 2px solid #E31939;
+            height: 40px;
+        }
+
+        .box input {
+            display: block;
+            height: 40px;
+            border: 0;
+        }
+
+        .box .left {
+            width: calc(100% - 50px);
+            padding-left: 10px;
+        }
+
+        .box .right {
+            width: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .box .right i {
+            font-size: 1.5rem;
+            color: #999;
+        }
+
+        .history, .hot {
+            padding-top: 40px;
+        }
+
+        .history h3, .hot h3 {
+            padding-left: 10px;
+            height: 15px;
+            font-size: 15px;
+            line-height: 15px;
+            font-weight: 500;
+            color: rgba(34, 34, 34, 1);
+        }
+
+        .item {
+            float: left;
+            padding: 0 15px;
+            margin: 20px 0 0 10px;
+            display: block;
+            font-size: 14px;
+            line-height: 40px;
+            background: rgba(247, 247, 247, 1);
+            border-radius: 3px;
+        }
+
+        .history {
+            position: relative;
+        }
+
+        .del {
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 40px;
+            width: 19px;
+            height: 18px;
+            background: url(../../image/del.png) no-repeat center center;
+            background-size: cover;
+        }
+
+        .flex-center {
+            margin: 1rem;
+            font-size: .5rem;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- 搜索框 -->
+    <div class="search-wrap">
+        <ul class="clearfix">
+            <li class="cur">宝贝</li>
+        </ul>
+        <div class="box clearfix">
+            <input type="text" class="left pull-left" placeholder="请输入关键词" v-model="keywords" id="keywords" @keyup.enter="checkWords">
+            <div class="right pull-right"><i class="iconfont icon-sousuo" @click="checkWords"></i></div>
+        </div>
+    </div>
+    <!-- 历史记录 -->
+    <div class="history">
+        <h3>历史记录</h3>
+        <div class="items clearfix" v-if="history.length">
+            <a class="item" v-for="(vo,index) in history" @click="lunch(index,true)" :data-keywords="vo">{{vo}}</a>
+        </div>
+        <div class="items clearfix" v-else>
+            <div class="flex-center">
+                <div>暂无搜索记录</div>
+            </div>
+        </div>
+
+        <span class="del" v-show="history.length" @click="del"></span>
+    </div>
+    <!-- 热门搜索 -->
+    <div class="hot">
+        <h3>热门搜索</h3>
+        <div class="items clearfix">
+            <a class="item" v-for="vh in hot" @click="lunch(vh)" data-types='a' :data-keywords='vh'>{{vh}}</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/ydui.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            history: [],
+            hot: [],
+            keywords: ''
+        },
+        methods: {
+            lunch: function (index, flag) {
+                var words = index;
+                if (flag) {
+                    //历史记录
+                    words = vm.history[index];
+                }
+                var isHas = vm.history.indexOf(words);
+                if (isHas >= 0) {
+                    vm.history.splice(isHas, 1);
+                }
+                vm.history.splice(0, 0, words);
+                $api.setStorage('search_history', vm.history);
+                this.openSearchWin(words);
+            },
+            checkWords: function () {
+                var words = vm.keywords.replace(/\s+/g, "");
+                if (!words) {
+                    YDUI.dialog.toast('请输入关键词', 'error', 1500);
+                    return false;
+                }
+                var index = vm.history.indexOf(words);
+                if (index >= 0) {
+                    vm.history.splice(index, 1);
+                }
+                vm.history.splice(0, 0, words);
+                $api.setStorage('search_history', vm.history);
+                this.openSearchWin(words);
+            },
+            del: function () {
+                api.confirm({
+                    msg: '确认要删除全部历史记录?',
+                    buttons: ['确定', '取消']
+                }, function (ret, err) {
+                    if (ret.buttonIndex == 1) {
+                        vm.history = [];
+                        $api.rmStorage('search_history');
+                    }
+                });
+            },
+            openSearchWin: function (keywords) {
+                api.openDrawerLayout({
+                    name: 'search_result',
+                    url: 'widget://html/search/search_result.html',
+                    pageParam: {
+                        keywords: keywords
+                    },
+                    slidBackType: 'edge',
+                    rightPane: {
+                        edge: 180,
+                        name: 'searchPane',
+                        url: 'widget://html/search/rightPane.html'
+                    },
+                    animation: {
+                        type: 'push'
+                    },
+                    slidToOpenPane: false,
+                    overScrollMode: 'scrolls',
+                    slidToClosePane: false
+                });
+            },
+            init: function () {
+                ajax_post('/index/siteConfig', {name: 'hot_keywords'}, function (res) {
+                    vm.hot = res.result;
+                });
+            }
+        },
+        created: function () {
+            var history = $api.getStorage('search_history');
+            if (history && history.length) {
+                this.history = history;
+            }
+        },
+        mounted: function () {
+            setTimeout(function () {
+                document.getElementById("keywords").focus();
+            }, 200);
+        }
+    });
+
+    apiready = function () {
+        vm.init();
+    };
+
+</script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+
+        .remind {
+            height: .8rem;
+            font-size: .27rem;
+            color: #333333;
+            padding-left: .24rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cell-right input {
+            padding-left: .2rem;
+        }
+
+        .btn-container {
+            padding: 0 .3rem;
+        }
+
+        .m-cell:after {
+            border-bottom: none;
+        }
+
+        #red {
+            color: #FC586C;
+            text-align: right;
+            padding: 0 .3rem;
+            font-size: .23rem;
+        }
+
+        .layui-m-layerbtn span[yes] {
+            color: #FC586C !important;
+        }
+
+        .layui-m-layercont #title {
+            font-size: .28rem !important;
+            margin-bottom: .3rem;
+        }
+
+        .layui-m-layercont p {
+            color: #999;
+            text-align: left;
+            font-size: .23rem !important;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+
+    <div class="remind">
+        请输入手机{{mobile}}收到的短信验证码
+    </div>
+
+    <div class="m-cell">
+        <div class="cell-item">
+            <div class="cell-left">验证码</div>
+            <div class="cell-right">
+                <input type="number" pattern="[0-9]*" class="cell-input" placeholder="短信验证码" autocomplete="off" maxlength="6" id="code">
+                <a href="javascript:;" class="btn btn-warning btn-disabled" id="get-code" @click="getCode">重新获取</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="red" @click="remind">收不到验证码?</div>
+
+    <div class="btn-container">
+        <button type="button" class="btn btn-block btn-danger" @click="confirmBind">验证信息</button>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/layer.js"></script>
+
+<script>
+    function countDown(time) {
+        if (time < 0) {
+            var getcode = document.getElementById('get-code');
+            getcode.classList.remove('btn-disabled');
+            getcode.innerHTML = '重新获取';
+            return;
+        }
+        setTimeout(function () {
+            document.getElementById('get-code').innerHTML = time + '秒后重新获取';
+            time--;
+            countDown(time);
+        }, 1000);
+    }
+
+    countDown(60);
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            tranceNum: "",
+            transDate: "",
+            mobile: ""
+        },
+        methods: {
+            confirmBind: function () {
+                var code = document.getElementById('code').value;
+                if (isNaN(code) || code.length != 6) {
+                    api.toast({
+                        msg: '验证码错误',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+                    return;
+                }
+
+                ajax_post('/user/confirmBindBankCard', {tranceNum: vm.tranceNum, transDate: vm.transDate, phone: vm.mobile, code: code}, function (res) {
+                    api.toast({
+                        msg: '添加银行卡成功',
+                        duration: 1500,
+                        location: 'middle'
+                    });
+
+                    api.sendEvent({name: 'reFreashCard'});
+
+                    setTimeout(function () {
+                        api.closeToWin({
+                            name: 'card'
+                        });
+                    }, 1500);
+                });
+            },
+            remind: function () {
+                layer.open({
+                    content: '<div id="title">收不到验证码?</div><p>1.请确认手机号码是否是您填写的银行卡的预留手机号码</p><p>2.请检查短信是否被手机安全软件拦截</p><p>3.若手机号已停用，建议换一张卡绑定，或联系发卡银行处理</p><p>4.由于运营网络原因，可能存在延迟，请耐心等待或重新获取</p>'
+                    , btn: '知道了'
+                });
+            },
+            getCode: function () {
+                document.getElementById('get-code').classList.add('btn-disabled');
+                api.sendEvent({
+                    name: 'reSendCode'
+                });
+                countDown(60);
+            }
+        }
+    });
+
+    apiready = function () {
+        vm.tranceNum = api.pageParam.tranceNum;
+        vm.transDate = api.pageParam.transDate;
+        vm.mobile = api.pageParam.mobile.replace(api.pageParam.mobile.substring(3, 7), "****");
+    };
+</script>
+
+</html>

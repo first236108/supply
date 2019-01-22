@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>充值</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        #app {
+            /*height: 100%;*/
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
+            background-color: #f4f4f4;
+            overflow-y: scroll;
+            position: relative;
+        }
+
+        body .bodys {
+            padding-top: 0.2rem;
+        }
+
+        body .bodys .money {
+            background-color: #fff;
+            padding: .3rem .2rem;
+            margin-bottom: .26rem;
+        }
+
+        body .bodys .money h2 {
+            font-weight: 400;
+            font-size: .28rem;
+            color: #383938;
+        }
+
+        body .bodys .money span {
+            color: #383938;
+            font-size: .38rem;
+        }
+
+        body .bodys .money input {
+            display: inline-block;
+            border: 0;
+            border-bottom: 1px solid #e9e9e9;
+            height: 1.08rem;
+            color: #383938;
+            width: 85%;
+            font-size: .28rem;
+        }
+
+        body .bodys .pay {
+            background-color: #fff;
+        }
+
+        body .bodys .pay ul li {
+            height: 1.08rem;
+            border-bottom: 1px solid #eee;
+            padding: 0rem .2rem;
+            overflow: hidden;
+            /*display: none;*/
+        }
+
+        body .bodys .pay ul li a {
+            padding-top: .16rem;
+            display: block;
+            height: 1.08rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body .bodys .pay ul li a span {
+            font-size: 0.26rem;
+            color: #282828;
+            margin-left: 0.8rem;
+        }
+
+        body .bodys .pay ul li a i {
+            font-style: normal;
+            font-size: 0.26rem;
+            color: #ccc;
+            margin-left: 0.8rem;
+        }
+
+        body .bodys .pay ul li a img {
+            position: absolute;
+            top: .38rem;
+            right: 0;
+            width: .2rem;
+        }
+
+        body .bodys .pay ul li .wx {
+            background: url(../../image/wx.png) no-repeat left center;
+            background-size: .57rem .54rem;
+        }
+
+        body .bodys .pay ul li .ali {
+            background: url(../../image/ali.png) no-repeat left center;
+            background-size: .57rem .58rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="m-navbar" id="header">
+    <a href="#" class="navbar-item event-back">
+        <i class="back-ico" style="color:#fff;"></i>
+    </a>
+    <div class="navbar-center">
+        <span class="navbar-title">充值</span>
+    </div>
+</header>
+
+<div id="app">
+    <div class="bodys">
+        <div class="money">
+            <h2>充值金额</h2>
+            <span>￥</span>
+            <input type="number" placeholder="最小充值金额为0.01" v-model.number="money">
+        </div>
+        <div class="pay">
+            <ul>
+                <li>
+                    <a class="ali" @click='alipay'>
+                        <span>支付宝</span></br>
+                        <i>快捷支付</i>
+                        <img src="../../image/arrow_down_off.png">
+                    </a>
+                </li>
+                <li class="wxpay" @click="wxpay">
+                    <a class="wx">
+                        <span>微信支付</span></br>
+                        <i>微信钱包</i>
+                        <img src="../../image/arrow_down_off.png">
+                    </a>
+                </li>
+                <li class="wxpay">
+                    <a class="wx">
+                        <span>银行卡支付</span></br>
+                        <i>银行卡</i>
+                        <img src="../../image/arrow_down_off.png">
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    apiready = function () {
+        fnReady();
+        new Vue({
+            el: '#app',
+            data: {
+                money: 0
+            },
+            methods: {
+                //微信支付
+                wxpay: function () {
+                    var self = this;
+                    ajax_post('/cart/recharge', {
+                        pay_code: 'weixin',
+                        amount: self.money
+                    }, function (res) {
+                        console.log(JSON.stringify(res));
+                        var wxPay = api.require('wxPay');
+                        wxPay.payOrder({
+                            apiKey: res.appid,
+                            orderId: res.prepayid,
+                            mchId: res.partnerid,
+                            nonceStr: res.noncestr,
+                            timeStamp: res.timestamp,
+                            package: res.package,
+                            sign: res.sign
+                        }, function (ret, err) {
+                            if (ret.status) {
+                                //支付成功
+                                console.log(JSON.stringify(ret));
+                            } else {
+                                if (err.code == -2) {
+                                    toast('已取消支付');
+                                }
+                            }
+                        });
+                    });
+                },
+                //支付宝支付
+                alipay: function () {
+                    var self = this;
+                    ajax_post('/cart/recharge', {
+                        pay_code: 'alipayMobile',
+                        amount: self.money
+                    }, function (res) {
+                        var aliPayPlus = api.require('aliPayPlus');
+                        console.log(JSON.stringify(res.param));
+                        aliPayPlus.payOrder({
+                            orderInfo: res.param
+                        }, function (ret, err) {
+
+                            api.alert({
+                                title: '支付结果',
+                                msg: ret.code,
+                                buttons: ['确定']
+                            });
+                        });
+
+                    });
+                }
+            }
+        });
+    };
+</script>
+
+</html>

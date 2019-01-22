@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>采购商城-店铺首页</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        #app {
+            padding-top: 0.2rem;
+        }
+
+        .inputs {
+            padding: 0 0.24rem;
+            height: 1.04rem;
+            background: #fff;
+            border-bottom: 0.01rem solid #f0f0f0;
+        }
+
+        .inputs label {
+            float: left;
+            display: block;
+            margin-top: 0.3rem;
+            height: 0.44rem;
+            line-height: 0.44rem;
+            text-align: left;
+            width: 25%;
+            font-size: 0.28rem;
+            color: #737373;
+        }
+
+        input::-webkit-input-placeholder {
+            line-height: 0.44rem;
+            font-size: 0.28rem;
+            color: #adadad;
+        }
+
+        .inputs input {
+            display: block;
+            float: left;
+            padding: 0.3rem 0;
+            border-box: content-box;
+            height: 0.44rem;
+            width: 60%;
+            font-size: 0.28rem;
+            color: #333;
+            border: none;
+            line-height: 0.44rem;
+            outline: none;
+        }
+
+        .checks input {
+            width: 0.6rem;
+            height: 0.4rem;
+            margin-top: 0.32rem;
+        }
+
+        .checks span,
+        .checks a {
+            float: left;
+            margin-left: 0.15rem;
+            display: block;
+            height: 1.04rem;
+            font-size: 0.24rem;
+            line-height: 1.04rem;
+        }
+
+        .checks a {
+            color: red;
+        }
+
+        .btn {
+            display: block;
+            margin: 0.4rem auto;
+            width: 6.9rem;
+            height: 0.9rem;
+            color: #fff;
+            text-align: center;
+            line-height: 0.9rem;
+            font-size: 0.32rem;
+            background: rgba(255, 49, 74, 1);
+            border-radius: 0.1rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    店铺首页frame...
+
+</div>
+
+
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/jquery2.1.4.min.js"></script>
+<script type="text/javascript" src="../../script/lrz.all.bundle.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            store_id: 0
+        },
+        methods: {}
+    });
+
+    apiready = function () {
+        vm.store_id = api.pageParam.storeid;
+        console.log(vm.store_id);
+    };
+
+</script>
+
+</body>
+
+</html>

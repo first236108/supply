@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <!-- 对不识别viewport设备优化 -->
+    <meta name="HandheldFriendly" content="true">
+    <!-- windows phone 点击无高光 -->
+    <meta name="msapplication-tap-highlight" content="no">
+    <title>我的钱包 | 商超世界</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+    <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+        }
+
+        #app {
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #app .item {
+            position: relative;
+            margin-top: 0.2rem;
+            padding: 0.28rem 0.2rem 0 0.2rem;
+            height: 1.2rem;
+            background: #fff;
+        }
+
+        #app .item:first-of-type {
+            margin-top: 0;
+        }
+
+        #app .item:last-of-type {
+            margin-bottom: 0.2rem;
+        }
+
+        #app .item span {
+            display: block;
+        }
+
+        #app .item .name {
+            font-size: 0.29rem;
+            height: 0.29rem;
+            color: #3b3b3b;
+        }
+
+        #app .item .time {
+            margin-top: 0.15rem;
+            font-size: 0.2rem;
+            color: #a9a9a9;
+        }
+
+        #app .item .num {
+            position: absolute;
+            top: 0.49rem;
+            right: 0.2rem;
+            font-size: 0.32rem;
+            color: #3b3b3b;
+        }
+
+        .empty-list {
+            margin-top: 1rem;
+            height: 1rem;
+            text-align: center;
+            display: flex;
+            font-size: .4rem;
+        }
+
+        .empty-list .in {
+            width: 100%;
+            align-self: center;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+
+    <div v-if="totalNum > 0">
+        <div class="item" v-for="(vo,index) in inExpDetail">
+            <span class="name">{{vo.remark}}</span>
+            <span class="time">{{vo.changeTime}}</span>
+            <span class="num">{{vo.chgAmount}}</span>
+        </div>
+    </div>
+
+    <div class="empty-list" v-else>
+        <div class="in">
+            暂时没有明细记录哦~
+        </div>
+    </div>
+
+</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            totalNum: 0,
+            inExpDetail: [],
+            page: 1
+        },
+        methods: {
+            init: function () {
+                api.showProgress({
+                    title: '正在查询中...',
+                    text: '请稍候'
+                });
+                var time = (new Date().getTime()).toString().substr(0, 10);
+                var param = {
+                    start: parseInt(time) - 864000,//默认查询10天数据
+                    end: time,
+                    page: vm.page
+                };
+                ajax_post('/user/queryInExpDetail', param, function (res) {
+                    api.hideProgress();
+                    vm.totalNum = res.totalNum;
+                    vm.inExpDetail = res.inExpDetail;
+                });
+            }
+        }
+    });
+
+    apiready = function () {
+        vm.init();
+    };
+</script>
+
+</html>
