@@ -68,7 +68,7 @@
                 loadFrame('activity_frame', './activity_frame.html', data, true);
             }, function (err) {
                 api.alert({
-                    msg: err.responseJSON.msg
+                    msg: err.body.msg
                 }, function (ret, err) {
                     api.closeWin();
                 });

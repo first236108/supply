@@ -596,9 +596,9 @@
                     <li style=" border-bottom:1px solid #eee">
                         <div class="item1 clearfix">
                             <span class="ui-number" style="display:block; float: right;">
-                                <img src="../../image/-.png" height="100%" width="30%" style="float:left" @click="cutNum"/>
+                                <img src="../../image/minus.png" height="100%" width="30%" style="float:left" @click="cutNum"/>
                                 <input type="number" class="num" id="number" value="1" min="1" v-model="goodsNum">
-                                <img src="../../image/+.png" height="100%" width="30%" style="float:left" @click="addNum"/>
+                                <img src="../../image/plus.png" height="100%" width="30%" style="float:left" @click="addNum"/>
                             </span>
                             <span id="store_count" style="display:block;float: right;margin-right: 20px;">库存：{{store_count}}</span>
                         </div>
@@ -630,7 +630,7 @@
                 </ul>
             </div>
             <div class="s_dianpu"><span><a @click="callphone(store.store_phone)" style=" margin-left:7%;"><i class="icon-phone2"></i> 联系客服</a></span>
-                <span><a class="open-win" data-name="store" data-url="../store/store_index" :data-id="store.store_id" style="margin-left:3%;"><i class="icon-home-outline"></i> 进入店铺</a></span></div>
+                <span><a class="open-win" data-name="store" data-url="../store/store.html" :data-id="store.store_id" style="margin-left:3%;"><i class="icon-home-outline"></i> 进入店铺</a></span></div>
         </section>
     </div>
 
