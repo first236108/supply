@@ -96,7 +96,7 @@
 <body>
 <div id="app">
     <div class="top clearfix">
-        <div class="info open-win" v-if="user_info.head_pic" data-name="setting" data-url="./setting/setting.html" :data-head_pic="user_info.head_pic" :data-nickname="user_info.nickname" :data-mobile="user_info.mobile">
+        <div class="info open-win" v-if="user_info user_info.hasOwnProperty('head_pic')" data-name="setting" data-url="./setting/setting.html" :data-head_pic="user_info.head_pic" :data-nickname="user_info.nickname" :data-mobile="user_info.mobile">
             <div class="left">
                 <img :src="user_info.head_pic">
             </div>
@@ -223,7 +223,8 @@
             }
         },
         created: function () {
-            this.user_info = $api.getStorage('user_info');
+            var info = $api.getStorage('user_info');
+            if (info) this.user_info = info;
             console.log($api.getStorage('token'));
         },
         mounted: function () {
