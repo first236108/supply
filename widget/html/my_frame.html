@@ -96,23 +96,13 @@
 <body>
 <div id="app">
     <div class="top clearfix">
-        <div class="info open-win" v-if="user_info user_info.hasOwnProperty('head_pic')" data-name="setting" data-url="./setting/setting.html" :data-head_pic="user_info.head_pic" :data-nickname="user_info.nickname" :data-mobile="user_info.mobile">
+        <div class="info open-win" data-name="setting" data-url="./setting/setting.html" :data-head_pic="user_info.head_pic" :data-nickname="user_info.nickname" :data-mobile="user_info.mobile">
             <div class="left">
                 <img :src="user_info.head_pic">
             </div>
             <div class="left-2">
                 <span class="name">{{user_info.nickname}}</span>
                 <span class="level">{{user_info.mobile}}</span>
-            </div>
-            <div class="right cell-arrow"></div>
-        </div>
-        <div class="info" v-else>
-            <div class="left">
-                <img src="http://scsj-v2-bos.bj.bcebos.com/headImg/default.jpg">
-            </div>
-            <div class="left-2">
-                <span class="name">游客</span>
-                <span class="level">手机号码</span>
             </div>
             <div class="right cell-arrow"></div>
         </div>
@@ -192,45 +182,7 @@
 <script type="text/javascript" src="../script/vue.min.js"></script>
 
 <script>
-    var vm = new Vue({
-        el: '#app',
-        data: {
-            user_info: {
-                head_pic: 'http://scsj-v2-bos.bj.bcebos.com/headImg/default.jpg'
-            }
-        },
-        methods: {
-            logout: function () {
-                ajax_post('/login/logout', {}, function (res) {
-                    $api.rmStorage('token');
-                    $api.rmStorage('cart_count');
-                    $api.rmStorage('refreash');
-                    $api.rmStorage('certify');
-                    $api.rmStorage('user_info');
-                    var refreash = {
-                        'home_frame': true,
-                        'cart_frame': true,
-                        'my_frame': true
-                    };
-                    $api.setStorage('refreash', refreash);
-                    YDUI.dialog.toast(res.msg, 'success', 1200, function () {
-                        toIndex(0);
-                    });
-                });
-            },
-            remind: function () {
-                api.alert({msg: '业务员相关功能待开发'});
-            }
-        },
-        created: function () {
-            var info = $api.getStorage('user_info');
-            if (info) this.user_info = info;
-            console.log($api.getStorage('token'));
-        },
-        mounted: function () {
-            openWin();
-        }
-    });
+
 
     apiready = function () {
         api.addEventListener({
@@ -240,6 +192,50 @@
                 vm.user_info[k] = ret.value[k];
             });
             $api.setStorage('user_info', vm.user_info);
+        });
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                user_info: {
+                    head_pic: 'http://scsj-v2-bos.bj.bcebos.com/headImg/default.jpg',
+                    nickname: '游客',
+                    mobile: '电话号码'
+                }
+            },
+            methods: {
+                logout: function () {
+                    ajax_post('/login/logout', {}, function (res) {
+                        $api.rmStorage('token');
+                        $api.rmStorage('cart_count');
+                        $api.rmStorage('refreash');
+                        $api.rmStorage('certify');
+                        $api.rmStorage('user_info');
+                        var refreash = {
+                            'home_frame': true,
+                            'cart_frame': true,
+                            'my_frame': true
+                        };
+                        $api.setStorage('refreash', refreash);
+                        YDUI.dialog.toast(res.msg, 'success', 1200, function () {
+                            toIndex(0);
+                        });
+                    });
+                },
+                remind: function () {
+                    api.alert({msg: '业务员相关功能待开发'});
+                }
+            },
+            created: function () {
+                var _this = this;
+                var info = $api.getStorage('user_info');
+                if (info) _this.user_info = Object.assign({}, _this.user_info, info);
+                else openLogin();
+                console.log($api.getStorage('token'));
+            },
+            mounted: function () {
+                openWin();
+            }
         });
     };
 
