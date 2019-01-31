@@ -483,6 +483,10 @@
                 param.pageParam[data.key] = data.value;
                 param.pageParam.api = data.api;
                 switch (data.api) {
+                    case 'goodsList':
+                        param.name = 'search_result';
+                        param.url = 'widget://html/search/search_result.html';
+                        break;
                     case 'goodsInfo':
                         param.name = 'goodsInfo';
                         param.url = './goods/goodsInfo.html';
