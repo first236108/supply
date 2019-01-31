@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<head lang="en">
+<head lang="zh-CN">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <!-- 对不识别viewport设备优化 -->
@@ -37,7 +37,7 @@
                 w: api.frameWidth,
                 h: api.frameHeight
             },
-            resource: 'http://192.168.1.186/city.json',
+            resource: root_host + 'city.json',
             styles: {
                 searchBar: {
                     bgColor: '#696969',
@@ -77,10 +77,10 @@
                         $api.setStorage('current_city', ret.cityInfo);
                         var refreash = $api.getStorage('refreash');
                         refreash = refreash ? refreash : {};
-                        refreash.root_0 = true;
+                        refreash.home_frame = true;
                         $api.setStorage('refreash', refreash);
                     }
-//                    UICityList.close();
+                    UICityList.close();
 //                    api.closeWin();
                     toIndex(0);
                 }

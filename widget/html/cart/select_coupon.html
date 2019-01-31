@@ -12,7 +12,8 @@
     <style>
         #app {
             width: 94%;
-            margin: .2rem 3%;
+            margin: 0 3%;
+            padding-top: .24rem;
         }
 
         .info {
@@ -82,23 +83,37 @@
         .m-cell:after {
             border-bottom: none;
         }
+
+        #header {
+            height: auto;
+        }
+
+        #head-cover {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, .2);
+            z-index: 3;
+        }
     </style>
 </head>
 <body>
+
 <section class="g-flexview">
+    <div id="head-cover"></div>
     <header class="m-navbar" id="header">
-        <a href="#" class="navbar-item event-back">
+        <a class="navbar-item event-back" tapmode>
             <i class="back-ico"></i>
         </a>
         <div class="navbar-center">
             <span class="navbar-title">选择优惠券</span>
         </div>
     </header>
-    <div id="app">
+    <div id="app" class="g-scrollview">
         <div class="m-cell">
             <div class="cell-item">
                 <span class="cell-left text">不使用优惠券</span>
-                <div class="cell-right" @click="select(0)">
+                <div class="cell-right" @click="select(0)" tapmode>
                     <input type="radio" value="0" name="coupon" v-model="selected">
                     <i class="cell-checkbox-icon"></i>
                 </div>
@@ -111,7 +126,7 @@
                         <div class="condition">满{{parseFloat(coupon.condition)}}元可用</div>
                     </div>
                 </div>
-                <div class="cell-right" @click="select(coupon.id)">
+                <div class="cell-right" @click="select(coupon.id)" tapmode>
                     <span class="body">
                         <span class="name">{{storename}}&nbsp;{{coupon.name}}</span>
                         <span class="time">{{moment.unix(coupon.use_start_time).format('YYYY-MM-DD')}} - {{moment.unix(coupon.use_end_time).format('YYYY-MM-DD')}}</span>
@@ -189,12 +204,15 @@
         }
     });
     apiready = function () {
+        $api.byId('header').style.paddingTop = api.safeArea.top + 'px';
+        $api.byId('head-cover').style.height = api.safeArea.top + 'px';
         vm.store_id = api.pageParam.store;
         vm.amount = api.pageParam.amount;
         vm.storename = api.pageParam.storename;
         vm.selected = api.pageParam.coupon;
         vm.init();
         openWin();
+        fnReadyKeyback();
     };
 </script>
 

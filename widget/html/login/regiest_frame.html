@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html>
-
-<head lang="en">
+<head lang="zh-CN">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <!-- 对不识别viewport设备优化 -->
     <meta name="HandheldFriendly" content="true">
-    <!-- windows phone 点击无高光 -->
     <meta name="msapplication-tap-highlight" content="no">
     <title>我的钱包 | 商超世界</title>
-    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
         [v-cloak] {
@@ -47,9 +44,6 @@
             border: 0;
             border-bottom: 1px solid #D1D1D1;
             outline: none;
-            /* 使用webkit内核的浏览器 */
-            /* Firefox版本4-18 */
-            /* Firefox版本19+ */
         }
 
         body .container .form .form-item input::-webkit-input-placeholder {
@@ -229,63 +223,64 @@
 </head>
 
 <body>
-    <div class="container" id="app">
-        <!-- 注册表单 -->
-        <div class="form">
-            <!-- 手机号 -->
-            <div class="form-item">
-                <input type="text" id="telephone" placeholder="请输入手机号" v-model="mobile">
-            </div>
+<div class="container" id="app">
+    <!-- 注册表单 -->
+    <div class="form">
+        <!-- 手机号 -->
+        <div class="form-item">
+            <input type="text" id="telephone" placeholder="请输入手机号" v-model="mobile">
+        </div>
 
-            <!-- 短信验证码 -->
-            <div class="form-item">
-                <input type="text" id="captaha" placeholder="请输入验证码" v-model="code">
-                <input type="button" value="发送验证码" id="codeBtn" @click="getCode">
-            </div>
+        <!-- 短信验证码 -->
+        <div class="form-item">
+            <input type="text" id="captaha" placeholder="请输入验证码" v-model="code">
+            <input type="button" value="发送验证码" id="codeBtn" @click="getCode">
+        </div>
 
-            <!-- 密码-->
-            <div class="form-item">
-                <input type="password" id="password" placeholder="请输入密码" v-model="password">
-            </div>
+        <!-- 密码-->
+        <div class="form-item">
+            <input type="password" id="password" placeholder="请输入密码" v-model="password">
+        </div>
 
-            <!-- 密码-->
-            <div class="form-item">
-                <input type="password" id="password" placeholder="请确认密码" v-model="surepassword">
-            </div>
+        <!-- 密码-->
+        <div class="form-item">
+            <input type="password" id="surepassword" placeholder="请确认密码" v-model="surepassword">
+        </div>
 
-            <!-- 邀请码 -->
-            <!-- <div class="form-item">
-                <input type="number" name="" id="inviteCode" placeholder="请输入邀请码(选填)">
-            </div> -->
+        <!-- 邀请码 -->
+        <!-- <div class="form-item">
+            <input type="number" name="" id="inviteCode" placeholder="请输入邀请码(选填)">
+        </div> -->
 
-            <!-- 条款约定 -->
-            <!-- <div class="item">
-                <label for="check" class="checked">
-                       <input type="checkbox" name="" checked="checked" id="check">
-                   </label>
-                <span>是否同意
-                       <a id="item">《商超世界服务条款》</a>
-                   </span>
-            </div> -->
+        <!-- 条款约定 -->
+        <!-- <div class="item">
+            <label for="check" class="checked">
+                   <input type="checkbox" name="" checked="checked" id="check">
+               </label>
+            <span>是否同意
+                   <a id="item">《商超世界服务条款》</a>
+               </span>
+        </div> -->
 
-            <!-- 注册按钮 -->
-            <div class="submit">
-                <input type="button" value="注册" id="btn" @click="registerEvent">
-            </div>
+        <!-- 注册按钮 -->
+        <div class="submit">
+            <input type="button" value="注册" id="btn" @click="registerEvent">
+        </div>
 
-            <div class="links">
-                <span>已有账号？</span>
-                <a href="../login/login.html">立即登录</a>
-            </div>
+        <div class="links">
+            <span>已有账号？</span>
+            <a href="../login/login.html">立即登录</a>
         </div>
     </div>
+</div>
 </body>
 <script type="text/javascript" src="../../script/api.js"></script>
 <script type="text/javascript" src="../../script/common.js"></script>
 <script type="text/javascript" src="../../script/vue.min.js"></script>
 
 <script>
-    apiready = function() {}
+    apiready = function () {
+    };
     new Vue({
         el: '#app',
         data: {
@@ -296,13 +291,12 @@
         },
         methods: {
             //获取验证码
-            getCode: function() {
-                var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+            getCode: function () {
                 if (!this.mobile) {
                     toast('请填写电话号码');
                     return false;
                 }
-                if (!rules.test(this.mobile)) {
+                if (!checkMobile(this.mobile)) {
                     toast('手机号码格式不正确');
                     return false;
                 }
@@ -324,7 +318,7 @@
                     data: {
                         values: postData
                     }
-                }, function(ret, err) {
+                }, function (ret, err) {
                     if (ret) {
                         toast('消息已发送');
                     } else {
@@ -341,13 +335,12 @@
 
             },
             //登录
-            registerEvent: function() {
-                var rules = /^1[3|4|5|7|8][0-9]{9}$/;
+            registerEvent: function () {
                 if (!this.mobile) {
                     toast('请填写电话号码');
                     return false;
                 }
-                if (!rules.test(this.mobile)) {
+                if (!checkMobile(this.mobile)) {
                     toast('手机号码格式不正确');
                     return false;
                 }
@@ -376,7 +369,7 @@
                     mobile: this.mobile,
                     password: this.password
                 };
-                ajax_post('/user/reg', postData, function(res) {
+                ajax_post('/user/reg', postData, function (res) {
                     $api.setStorage('token', res.token);
                     $api.setStorage('cart_count', res.cart_count);
                     toast('注册成功');
@@ -387,7 +380,7 @@
 
             }
         }
-    })
+    });
 </script>
 
 </html>

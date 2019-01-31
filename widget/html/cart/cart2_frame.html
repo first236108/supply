@@ -11,6 +11,7 @@
     <link rel="stylesheet" type="text/css" href="../../css/animate.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
+        [v-cloak]{display: none;}
         html, #app {
             background-color: #f5f5f5;
         }
@@ -251,7 +252,7 @@
 </head>
 <body>
 
-<div id="app">
+<div id="app" v-cloak>
     <div class="cell-item address">
         <div class="cell-left"><i class="icon-location"></i></div>
         <div class="cell-right cell-arrow open-win" data-name="address" data-url="../center/address.html" data-origin="cart2">
@@ -346,210 +347,13 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            cartList: {
-                "12": [
-                    {
-                        "id": 19,
-                        "user_id": 3410,
-                        "session_id": "3410",
-                        "goods_id": 10606,
-                        "goods_sn": "SC0010606",
-                        "goods_name": "康师傅 绿茶1L*8瓶",
-                        "market_price": "25.00",
-                        "goods_price": "23.50",
-                        "member_goods_price": "23.50",
-                        "goods_num": 1,
-                        "spec_key": "",
-                        "spec_key_name": "",
-                        "bar_code": "",
-                        "selected": 1,
-                        "add_time": 1547543366,
-                        "prom_type": 0,
-                        "prom_id": 0,
-                        "sku": "",
-                        "store_id": 12,
-                        "remind": "",
-                        "status": 0,
-                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180621/yrQDMXRSB4.jpg",
-                        "min_num": 1,
-                        "cart_prom_type": 0,
-                        "house_id": 2,
-                        "goods_fee": 23.5,
-                        "store_count": 55,
-                        "region_remind": 0
-                    },
-                    {
-                        "id": 12,
-                        "user_id": 3410,
-                        "session_id": "3410",
-                        "goods_id": 10983,
-                        "goods_sn": "SC0010983",
-                        "goods_name": "峨眉钰泉天然矿泉水整箱520ml*24瓶",
-                        "market_price": "50.00",
-                        "goods_price": "0.02",
-                        "member_goods_price": "0.02",
-                        "goods_num": 1,
-                        "spec_key": "",
-                        "spec_key_name": "",
-                        "bar_code": "",
-                        "selected": 1,
-                        "add_time": 1547519093,
-                        "prom_type": 0,
-                        "prom_id": 0,
-                        "sku": "",
-                        "store_id": 12,
-                        "remind": "",
-                        "status": 0,
-                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg",
-                        "min_num": 1,
-                        "cart_prom_type": 0,
-                        "house_id": 2,
-                        "goods_fee": 0.02,
-                        "store_count": 1412,
-                        "region_remind": 0
-                    }
-                ],
-                "14": [
-                    {
-                        "id": 21,
-                        "user_id": 3410,
-                        "session_id": "3410",
-                        "goods_id": 1314,
-                        "goods_sn": "SC0001314",
-                        "goods_name": "东鹏特饮  500ml*24瓶",
-                        "market_price": "4.00",
-                        "goods_price": "60.00",
-                        "member_goods_price": "60.00",
-                        "goods_num": 1,
-                        "spec_key": "",
-                        "spec_key_name": "",
-                        "bar_code": "",
-                        "selected": 1,
-                        "add_time": 1547545021,
-                        "prom_type": 0,
-                        "prom_id": 0,
-                        "sku": "",
-                        "store_id": 14,
-                        "remind": "",
-                        "status": 0,
-                        "original_img": "http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180518/JXCY75hQQw.jpg",
-                        "min_num": 1,
-                        "cart_prom_type": 0,
-                        "house_id": 22,
-                        "goods_fee": 60,
-                        "store_count": 8000,
-                        "region_remind": 0
-                    }
-                ]
-            },
-            storeList: {
-                "12": {
-                    "store_id": 12,
-                    "store_name": "商超采购",
-                    "store_phone": "19937413017",
-                    "store_min_price": "0.00",
-                    "stock_type": 1
-                },
-                "14": {
-                    "store_id": 14,
-                    "store_name": "商超供应链",
-                    "store_phone": "19937413017",
-                    "store_min_price": "0.00",
-                    "stock_type": 0
-                }
-            },
-            prom: {
-                "12": [
-                    {
-                        "id": 1,
-                        "title": "满2019减30元",
-                        "description": "<p>订单活动简介内容填充，本店满2019立减30元哦，大力促销优惠活动中。</p>",
-                        "money": 2019,
-                        "expression": "30",
-                        "type": 1,
-                        "start_time": 1546012800,
-                        "end_time": 1551196800,
-                        "store_id": 12,
-                        "status": 1
-                    },
-                    {
-                        "id": 2,
-                        "title": "2999元，天天9折采购",
-                        "description": "<p>这里是2999活动海报，图文内容填充；</p><p><img src=\"http://mallscsj.oss-cn-beijing.aliyuncs.com/public/upload/goods/f336f0366fa40518271afa9a5379721b.png\" alt=\"f336f0366fa40518271afa9a5379721b.png\"/></p>",
-                        "money": 2999,
-                        "expression": "90",
-                        "type": 0,
-                        "start_time": 1547654400,
-                        "end_time": 1552838400,
-                        "store_id": 12,
-                        "status": 1
-                    }
-                ]
-            },
-            couponList: {
-                "12": [
-                    {
-                        "name": "20元",
-                        "money": "20.00",
-                        "condition": "30.00",
-                        "id": 291,
-                        "cid": 23,
-                        "type": 1,
-                        "uid": 3410,
-                        "order_id": 0,
-                        "use_time": 0,
-                        "code": "",
-                        "send_time": 1542161882,
-                        "store_id": 12,
-                        "status": 1,
-                        "is_delete": 0
-                    },
-                    {
-                        "name": "20元",
-                        "money": "20.00",
-                        "condition": "30.00",
-                        "id": 293,
-                        "cid": 23,
-                        "type": 1,
-                        "uid": 3410,
-                        "order_id": 0,
-                        "use_time": 0,
-                        "code": "",
-                        "send_time": 1543390475,
-                        "store_id": 12,
-                        "status": 0,
-                        "is_delete": 0
-                    }
-                ]
-            },
-            shippingList: {
-                "12": "scsjexpress",
-                "14": "scsjexpress"
-            },
-            total_price: {
-                "total_fee": 83.52,
-                "cut_fee": -4.52,
-                "num": 3
-            },
-            address: {
-                "address_id": 693,
-                "user_id": 3410,
-                "consignee": "小志",
-                "email": "",
-                "lng": 113.724453,
-                "lat": 34.768959,
-                "country": 0,
-                "province": 21387,
-                "city": 21388,
-                "district": 21435,
-                "twon": 0,
-                "address": "景峰国际",
-                "zipcode": "",
-                "mobile": "13007686118",
-                "is_default": 1,
-                "store_name": "圣菲超市",
-                "is_delete": 0
-            },
+            cartList: {},
+            storeList: {},
+            prom: {},
+            couponList: {},
+            shippingList: {},
+            total_price: {},
+            address: {},
             result: {
                 store_order_prom_id: {},
                 store_order_prom_amount: {},
@@ -583,6 +387,7 @@
         methods: {
             init: function () {
                 ajax_post('/cart/cart2', {}, function (res) {
+//                    console.log(JSON.stringify(res));
                     vm.cartList = res.cartList;
                     vm.storeList = res.storeList;
                     vm.prom = res.prom;
@@ -620,7 +425,7 @@
                 var param = {
                     pay_points: vm.use_point,
                     address_id: vm.address.address_id,
-                    shipping_code:vm.shippingList
+                    shipping_code: vm.shippingList
                 };
                 if (Object.keys(vm.result.coupon_id).length) {
                     param.coupon_id = vm.result.coupon_id;
@@ -635,12 +440,13 @@
                 ajax_post('/cart/cart3', param, function (res) {
                     api.hideProgress();
                     if (act) {
+                        api.sendEvent({name: 'refreash_cart'});
                         api.openWin({
-                            name:'order_pay',
-                            url:'./order_pay.html',
-                            pageParam:{
-                                master_order_sn:res.master_order_sn,
-                                name:'cart2'
+                            name: 'order_pay',
+                            url: './order_pay.html',
+                            pageParam: {
+                                master_order_sn: res.master_order_sn,
+                                name: 'cart2'
                             }
                         });
                     } else {
@@ -673,8 +479,8 @@
                 return Math.round(amount * Math.pow(10, 2)) / Math.pow(10, 2);
             }
         },
-        mounted: function () {
-            openWin();//
+        updated: function () {
+            openWin();
         }
     });
 
@@ -698,7 +504,7 @@
         api.addEventListener({
             name: 'cart2'
         }, function (ret, err) {
-            api.closeWin()//进入支付后关闭本窗口
+            api.closeWin();//进入支付后关闭本窗口
         });
     };
 </script>

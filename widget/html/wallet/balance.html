@@ -7,17 +7,13 @@
     <title>采购商城-我的钱包</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/statusbar.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #f0f0f0;
-        }
-    </style>
 </head>
 <body>
-
+<div id="status-bar">
+    <div id="cover"></div>
+</div>
 <header class="m-navbar" id="header">
     <a href="#" class="navbar-item event-back">
         <i class="back-ico" style="color:#fff;"></i>
@@ -25,19 +21,38 @@
     <div class="navbar-center">
         <span class="navbar-title">全部明细</span>
     </div>
+    <a class="navbar-item" onclick="select();">选择时间</a>
 </header>
 
 
 <script type="text/javascript" src="../../script/api.js"></script>
 <script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/moment.min.js"></script>
 <script>
     apiready = function () {
         fnReady();
         if (api.pageParam.bounces)
             fnReadyFrame(true);
         fnReadyFrame(true);
-
     };
+
+    function select() {
+        api.openPicker({
+            type: 'date',
+            title: '选择截止时间(单次只能查询截止时间之前6天数据)'
+        }, function (ret, err) {
+            if (ret) {
+                api.sendEvent({
+                    name: 'balance_datepicker',
+                    extra: {
+                        time: moment(ret.year + '-' + ret.month + '-' + ret.day, 'YYYY-M-D').unix()
+                    }
+                });
+            } else {
+                alert(JSON.stringify(err));
+            }
+        });
+    }
 </script>
 
 </body>

@@ -123,11 +123,11 @@
     </div>
 
     <div class="m-cell">
-        <a class="cell-item" v-if="user_info.salesman>0">
+        <a class="cell-item" v-if="user_info.salesman>0" @click="remind" tapmode>
             <div class="cell-left"><i class="cell-icon icon-order"></i>业务绩效管理</div>
             <div class="cell-right cell-arrow">查看及审核店铺</div>
         </a>
-        <a class="cell-item open-win" data-name="wallet" data-url="./wallet/wallet.html">
+        <a class="cell-item open-win" data-name="wallet" data-url="./wallet/wallet.html" tapmode>
             <div class="cell-left"><i class="cell-icon icon-feedback"></i>我的钱包</div>
             <div class="cell-right cell-arrow">查看我的钱包</div>
         </a>
@@ -137,38 +137,38 @@
             <div class="cell-left"><i class="cell-icon icon-shield"></i>认证店铺</div>
             <div class="cell-right cell-arrow"></div>
         </a>
-        <a class="cell-item open-win" data-name="order" data-url="./order/order.html">
+        <a class="cell-item open-win" data-name="order" data-url="./order/order.html" tapmode>
             <div class="cell-left"><i class="cell-icon icon-feedback"></i>全部订单</div>
             <div class="cell-right cell-arrow">查看订单</div>
         </a>
-        <a class="cell-item open-win" data-url="./center/coupon.html" data-name="coupon">
+        <a class="cell-item open-win" data-url="./center/coupon.html" data-name="coupon" tapmode>
             <div class="cell-left"><i class="cell-icon icon-compose"></i>我的优惠券</div>
             <div class="cell-right cell-arrow"></div>
         </a>
-        <a class="cell-item open-win" data-url="./center/comment.html" data-name="comment" data-status="2">
+        <a class="cell-item open-win" data-url="./center/comment.html" data-name="comment" data-status="2" tapmode>
             <div class="cell-left"><i class="cell-icon icon-good"></i>我的评价</div>
             <div class="cell-right cell-arrow">查看评价</div>
         </a>
-        <a class="cell-item open-win" data-name="collect" data-url="./center/collect.html">
+        <a class="cell-item open-win" data-name="collect" data-url="./center/collect.html" tapmode>
             <div class="cell-left"><i class="cell-icon icon-like"></i>我的收藏</div>
             <div class="cell-right cell-arrow"></div>
         </a>
     </div>
     <div class="m-cell">
-        <a class="cell-item open-win" data-url="./center/address.html" data-name="address">
+        <a class="cell-item open-win" data-url="./center/address.html" data-name="address" tapmode>
             <div class="cell-left"><i class="cell-icon icon-location"></i>地址管理</div>
             <div class="cell-right cell-arrow"></div>
         </a>
-        <a class="cell-item open-win" data-name="server" data-url="./center/server.html">
+        <a class="cell-item open-win" data-name="server" data-url="./center/server.html" tapmode>
             <div class="cell-left"><i class="cell-icon icon-phone3"></i>售后服务</div>
             <div class="cell-right cell-arrow"></div>
         </a>
 
-        <a class="cell-item open-win" data-name="login" data-url="./login/login.html">
+        <a class="cell-item open-win" data-name="login" data-url="./login/login.html" tapmode>
             <div class="cell-left"><i class="cell-icon icon-phone3"></i>login</div>
             <div class="cell-right cell-arrow"></div>
         </a>
-        <a class="cell-item" @click="logout">
+        <a class="cell-item" @click="logout" tapmode>
             <div class="cell-left"><i class="cell-icon icon-phone3"></i>退出登录</div>
             <div class="cell-right cell-arrow"></div>
         </a>
@@ -186,13 +186,10 @@
         el: '#app',
         data: {
             user_info: {
-                head_pic:''
+                head_pic: ''
             }
         },
         methods: {
-            getInfo: function () {
-
-            },
             logout: function () {
                 ajax_post('/login/logout', {}, function (res) {
                     $api.rmStorage('token');
@@ -201,15 +198,18 @@
                     $api.rmStorage('certify');
                     $api.rmStorage('user_info');
                     var refreash = {
-                        'root_0': true,
-                        'root_2': true,
-                        'root_3': true
+                        'home_frame': true,
+                        'cart_frame': true,
+                        'my_frame': true
                     };
                     $api.setStorage('refreash', refreash);
                     YDUI.dialog.toast(res.msg, 'success', 1200, function () {
                         toIndex(0);
                     });
                 });
+            },
+            remind: function () {
+                api.alert({msg: '业务员相关功能待开发'});
             }
         },
         created: function () {

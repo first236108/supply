@@ -196,10 +196,24 @@
             font-family: 'YDUI-INLAY';
             font-size: .44rem;
         }
+
+        #wrap {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+
+        #cover {
+            background: rgba(192, 192, 192, 1);
+        }
     </style>
 </head>
 <body>
-<section class="g-flexview">
+<div id="wrap">
+    <div id="status-bar">
+        <div id="cover"></div>
+    </div>
     <header class="m-navbar" id="header">
         <a class="navbar-item event-back">
             <i class="back-ico"></i>
@@ -211,14 +225,15 @@
             <span>一键好评&nbsp;<i class="iconfont icon-zantongfill"></i></span>
         </div>
     </header>
-
+</div>
+<section class="g-flexview" id="flexview">
     <div id="app" class="g-scrollview">
         <div id="goods">
             <section class="goods-block" v-for="(vo,index) in goods">
                 <div class="flexdiv rank">
-                    <label :class="[goods_camera[vo.goods_id]['rank']==5?'active':'']"><i class="iconfont icon-haoping"></i><input type="radio" @click="rankscore(vo.goods_id,5)">好评</label>
-                    <label :class="[goods_camera[vo.goods_id]['rank']==3?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.goods_id,3)">中评</label>
-                    <label :class="[goods_camera[vo.goods_id]['rank']==1?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.goods_id,1)">差评</label>
+                    <label :class="[goods_camera[vo.rec_id]['rank']==5?'active':'']"><i class="iconfont icon-haoping"></i><input type="radio" @click="rankscore(vo.rec_id,5)">好评</label>
+                    <label :class="[goods_camera[vo.rec_id]['rank']==3?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.rec_id,3)">中评</label>
+                    <label :class="[goods_camera[vo.rec_id]['rank']==1?'active':'']"><i class="iconfont icon-chaping"></i><input type="radio" @click="rankscore(vo.rec_id,1)">差评</label>
                 </div>
                 <div class="goods-info">
                     <img :src="vo.original_img">
@@ -228,10 +243,10 @@
                     </div>
                 </div>
                 <div class="goods-comment">
-                    <textarea v-model="goods_camera[vo.goods_id]['content']" placeholder="购买有一段时间了，品质和服务如何？分享给想买的他们吧"></textarea>
+                    <textarea v-model="goods_camera[vo.rec_id]['content']" placeholder="购买有一段时间了，品质和服务如何？分享给想买的他们吧"></textarea>
                 </div>
                 <div class="goods-pic-comment">
-                    <goods-camera v-for="(vs,idx) in goods_camera[vo.goods_id]['img']" :src="vs.src" :active="vs.active" :goodsid="vo.goods_id" :index="idx" @click.native="chooseImg(vo.goods_id)"></goods-camera>
+                    <goods-camera v-for="(vs,idx) in goods_camera[vo.rec_id]['img']" :src="vs.src" :active="vs.active" :recid="vo.rec_id" :index="idx" @click.native="chooseImg(vo.rec_id)"></goods-camera>
                 </div>
             </section>
         </div>
@@ -272,7 +287,7 @@
 <script type="text-x-template" id="goods-camera">
     <div class="camera">
         <img :src="src">
-        <span :class="{del:active}" @click="del(goodsid,index)"><img src="../../image/close_white.png"></span>
+        <span :class="{del:active}" @click="del(recid,idx)"><img src="../../image/close_white.png"></span>
     </div>
 </script>
 
@@ -304,20 +319,24 @@
         props: ['src', 'active', 'goodsid', 'index'],
         template: '#goods-camera',
         methods: {
-            del: function (goods_id, index) {
+            del: function (recid, index) {
                 event.stopPropagation();
-                console.log(goods_id);
-                if (vm.goods_camera[goods_id]['img'].length > 1)
-                    Vue.delete(vm.goods_camera[goods_id]['img'], index);
+                console.log(recid);
+                if (vm.goods_camera[recid]['img'].length > 1)
+                    Vue.delete(vm.goods_camera[recid]['img'], index);
                 else {
-                    Vue.set(vm.goods_camera[goods_id]['img'], 0, xiangji);
+                    Vue.set(vm.goods_camera[recid]['img'], 0, xiangji);
                 }
             }
         }
     });
 
     apiready = function () {
+        $api.byId('cover').style.height = api.safeArea.top + 'px';
+        console.log($api.offset($api.byId('wrap')).h + 'px');
+        document.getElementById('flexview').style.marginTop = $api.offset($api.byId('wrap')).h + 'px';
         var res = api.pageParam.res;
+//        console.log(JSON.stringify(res.goods));
         vm = new Vue({
             el: '#app',
             data: {
@@ -331,8 +350,8 @@
                 goods_camera: {}
             },
             methods: {
-                rankscore: function (goods_id, score) {
-                    vm.goods_camera[goods_id]['rank'] = score;
+                rankscore: function (rec_id, score) {
+                    vm.goods_camera[rec_id]['rank'] = score;
                 },
                 great: function () {
                     vm.describe_score = 5;
@@ -405,6 +424,7 @@
                             if (len < 6) {
                                 vm.$set(vm.goods_camera[goods_id]['img'], len, {src: '', active: false});
                             }
+                            console.log(JSON.stringify(vm.goods_camera));
                         } else {
                             console.log(parseXML(ret).querySelector('Message').innerHTML);
                             api.toast({
@@ -474,7 +494,7 @@
                 var param = {};
                 _this.goods.forEach(function (v) {
                     obj.spec_key_name = v.spec_key_name;
-                    param[v.goods_id] = obj;
+                    param[v.rec_id] = obj;
                 });
                 _this.goods_camera = Object.assign({}, _this.goods_camera, param);
             }

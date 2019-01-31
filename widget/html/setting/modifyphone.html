@@ -7,14 +7,9 @@
     <title>采购商城-修改手机号码</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/statusbar.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #fff;
-        }
-
         .outer {
             padding-right: .24rem
         }
@@ -44,9 +39,11 @@
     </style>
 </head>
 <body>
-
+<div id="status-bar">
+    <div id="cover"></div>
+</div>
 <header class="m-navbar" id="header">
-    <a class="navbar-item event-back" onclick="api.closeWin();">
+    <a class="navbar-item event-back">
         <i class="back-ico"></i>
     </a>
     <div class="navbar-center">
@@ -89,6 +86,7 @@
     });
 
     apiready = function () {
+        fnReady();
         $getCode.on('click', function () {
             var phone = document.getElementById('phone').value;
             if (!checkMobile(phone)) {

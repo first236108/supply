@@ -1,24 +1,14 @@
 <!DOCTYPE html>
 <html>
-
-<head lang="en">
+<head lang="zh-CN">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <!-- 对不识别viewport设备优化 -->
     <meta name="HandheldFriendly" content="true">
-    <!-- windows phone 点击无高光 -->
     <meta name="msapplication-tap-highlight" content="no">
     <title>我的钱包 | 商超世界</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
-        html,
-        body {
-            width: 100%;
-            height: 100%;
-            background: #f0f0f0;
-        }
-
         #app {
             height: 100%;
             overflow-y: auto;
@@ -31,14 +21,12 @@
             padding: 0.28rem 0.2rem 0 0.2rem;
             height: 1.2rem;
             background: #fff;
-        }
-
-        #app .item:first-of-type {
-            margin-top: 0;
+            border-bottom: 1px solid #ccc;
         }
 
         #app .item:last-of-type {
             margin-bottom: 0.2rem;
+            border-bottom: none;
         }
 
         #app .item span {
@@ -46,7 +34,7 @@
         }
 
         #app .item .name {
-            font-size: 0.29rem;
+            font-size: 0.25rem;
             height: 0.29rem;
             color: #3b3b3b;
         }
@@ -61,7 +49,7 @@
             position: absolute;
             top: 0.49rem;
             right: 0.2rem;
-            font-size: 0.32rem;
+            font-size: 0.33rem;
             color: #3b3b3b;
         }
 
@@ -84,10 +72,10 @@
 <div id="app">
 
     <div v-if="totalNum > 0">
-        <div class="item" v-for="(vo,index) in inExpDetail">
-            <span class="name">{{vo.remark}}</span>
+        <div class="item open-win" v-for="(vo,index) in inExpDetail" data-name="order_detail" data-url="../order/order_detail.html" :data-master_order_sn="vo.bizOrderNo">
+            <span class="name">支付编号：{{vo.bizOrderNo}}</span>
             <span class="time">{{vo.changeTime}}</span>
-            <span class="num">{{vo.chgAmount}}</span>
+            <span class="num">{{parseFloat(vo.chgAmount/100)}}</span>
         </div>
     </div>
 
@@ -103,37 +91,98 @@
 <script type="text/javascript" src="../../script/common.js"></script>
 <script type="text/javascript" src="../../script/vue.min.js"></script>
 <script>
+    var time = (new Date().getTime()).toString().substr(0, 10);
     var vm = new Vue({
         el: '#app',
         data: {
-            totalNum: 0,
+            totalNum: 11,
             inExpDetail: [],
-            page: 1
+            page: 1,
+            pageSize: 10
         },
         methods: {
-            init: function () {
-                api.showProgress({
-                    title: '正在查询中...',
-                    text: '请稍候'
-                });
-                var time = (new Date().getTime()).toString().substr(0, 10);
+            init: function (refreash, showloading) {
+                if (refreash) {
+                    vm.page = 1;
+                    addscrolltobottom();
+                }
+                if (!vm.page) {
+                    //最后一页不再请求数据
+                    toast('没有数据啦');
+                    api.removeEventListener({
+                        name: 'scrolltobottom'
+                    });
+                    return;
+                }
+                if (!refreash || showloading) {
+                    api.showProgress({
+                        title: '正在查询中...',
+                        text: '请稍候'
+                    });
+                }
                 var param = {
-                    start: parseInt(time) - 864000,//默认查询10天数据
                     end: time,
                     page: vm.page
                 };
                 ajax_post('/user/queryInExpDetail', param, function (res) {
-                    api.hideProgress();
-                    vm.totalNum = res.totalNum;
-                    vm.inExpDetail = res.inExpDetail;
+                    if (refreash) api.refreshHeaderLoadDone();
+                    else api.hideProgress();
+                    if (vm.page == 1) {
+                        vm.totalNum = res.totalNum;
+                        vm.inExpDetail = res.inExpDetail;
+                    } else {
+                        vm.inExpDetail = vm.inExpDetail.concat(res.inExpDetail);
+                    }
+
+                    if (vm.page * vm.pageSize > vm.totalNum) {
+                        vm.page = false;
+                    } else {
+                        vm.page++;
+                    }
                 });
             }
-        }
+        },
+//        updated: function () {
+//            openWin();//TODO 查看对应的支付订单，存在多个订单合并支付的情况
+//        }
     });
 
     apiready = function () {
-        vm.init();
+        vm.init(false, true);
+
+        api.addEventListener({
+            name: 'balance_datepicker'
+        }, function (ret, err) {
+            console.log(ret.value.time);
+            time = ret.value.time;
+            vm.init(true);
+        });
+
+        //下拉刷新
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            vm.init(true);
+        });
+
+        //上拉加载事件
+        addscrolltobottom();
     };
+
+    function addscrolltobottom() {
+        api.addEventListener({
+            name: 'scrolltobottom',
+            extra: {
+                threshold: 0
+            }
+        }, function (ret, err) {
+            vm.init();
+        });
+    }
 </script>
 
 </html>

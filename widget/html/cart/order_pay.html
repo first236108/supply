@@ -7,6 +7,7 @@
     <title>采购商城-确认订单</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/statusbar.css"/>
     <link rel="stylesheet" type="text/css" href="../../font/iconfont.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <script type="text/javascript" src="../../font/iconfont.js"></script>
@@ -69,17 +70,18 @@
             padding: 0 .2rem;
         }
 
-        #money-input {
+        #money-input[disabled] {
             margin: .2rem .3rem;
-            border-bottom: 1px solid #999999;
+            border-bottom: 1px solid #ccc;
             height: .6rem;
             width: 2rem;
             padding: 0 .1rem;
+            color: #ccc;
         }
 
-        #money-input[disabled] {
-            background-color: #eeeeee;
-            border-bottom: none;
+        i.icon-error-outline {
+            color: #ccc;
+            font-size: .44rem;
         }
 
         .cell-left {
@@ -89,7 +91,9 @@
 </head>
 
 <body>
-
+<div id="status-bar">
+    <div id="cover"></div>
+</div>
 <header class="m-navbar" id="header">
     <a class="navbar-item" onclick="goback();">
         <i class="back-ico" style="color:#fff;"></i>
@@ -108,7 +112,7 @@
         <div>
             <span>需&nbsp;&nbsp;付&nbsp;&nbsp;款：</span>
             <span class="symbol">￥ </span>
-            <span class="price">{{parseFloat(order.order_amount) + parseFloat(order.money) - (parseFloat(money)?parseFloat(money):0)}}</span>
+            <span class="price">{{parseFloat(order.order_amount)}}</span>
             <span class="symbol">元</span>
         </div>
 
@@ -146,11 +150,11 @@
                     <use xlink:href="#icon-jinbi"></use>
                     </svg>
                 使用余额
-                <input type="number" class="cell-input" id="money-input" placeholder="0.00" v-model="money" :disabled="!money">
+                <input type="number" class="cell-input" id="money-input" placeholder="0.00" v-model="money" :disabled="true">
             </span>
             <label class="cell-right">
-                <input type="radio" value="BALANCE" name="radio" v-model="paymethod">
-                <i class="cell-checkbox-icon"></i>
+                <input type="radio" value="BALANCE" name="radio" v-model="paymethod" :disabled="user_money<order.order_amount">
+                <i :class="user_money<order.order_amount?'icon-error-outline':'cell-checkbox-icon'"></i>
             </label>
         </div>
     </div>
@@ -168,18 +172,26 @@
     var vm = new Vue({
         el: '#app',
         data: {
-            money: 0.01,//使用多少余额
-            order: {"order_amount":"0.01","money":"0.01","master_order_sn":"201901181749094683"},
+            money: 0,//使用多少余额
+            order: {},
             user_money: 0.25,//用户余额
             paymethod: ''
+        },
+        watch: {
+            paymethod: function () {
+                if (this.paymethod == 'BALANCE') {
+                    vm.money = vm.order.order_amount;
+                } else {
+                    vm.money = 0;
+                }
+            }
         },
         methods: {
             init: function (data) {
                 ajax_post('/cart/cart4', data, function (res) {
-                    console.log(JSON.stringify(res));
+//                    console.log(JSON.stringify(res));
                     vm.order = res.order;
                     vm.user_money = res.user_money;
-                    vm.money = res.order.money;
                 }, function (err) {
                     if (err.statusCode == 402) {
                         //未实名认证，不可支付
@@ -201,64 +213,6 @@
                         toast(msg);
                     }
                 });
-            },
-            //微信支付
-            wxpay: function () {
-                var self = this;
-                ajax_post('/cart/recharge', {
-                    pay_code: 'weixin',
-                    amount: self.money
-                }, function (res) {
-                    console.log(JSON.stringify(res));
-                    var wxPay = api.require('wxPay');
-                    wxPay.payOrder({
-                        apiKey: res.appid,
-                        orderId: res.prepayid,
-                        mchId: res.partnerid,
-                        nonceStr: res.noncestr,
-                        timeStamp: res.timestamp,
-                        package: res.package,
-                        sign: res.sign
-                    }, function (ret, err) {
-                        if (ret.status) {
-                            //支付成功
-                            console.log(JSON.stringify(ret));
-                        } else {
-                            if (err.code == -2) {
-                                toast('已取消支付');
-                            }
-                        }
-                    });
-                });
-            },
-            //支付宝支付
-            alipay: function () {
-                var self = this;
-                ajax_post('/cart/recharge', {
-                    pay_code: 'alipayMobile',
-                    amount: self.money
-                }, function (res) {
-                    var aliPayPlus = api.require('aliPayPlus');
-                    log(res.param);
-                    aliPayPlus.payOrder({
-                        orderInfo: res.param
-                    }, function (ret, err) {
-
-                        api.alert({
-                            title: '支付结果',
-                            msg: ret.code,
-                            buttons: ['确定']
-                        });
-                    });
-
-                });
-            },
-            use_balance: function () {
-                if (event.currentTarget.firstChild.checked) {
-                    vm.money = Math.min(vm.order.order_amount, vm.user_money);
-                } else {
-                    vm.money = '';
-                }
             },
             paycheck: function () {
                 if (!vm.paymethod && vm.money < vm.order.order_amount) {
@@ -285,13 +239,13 @@
                             sign: res.weChatAPPInfo.sign
                         }, function (ret, err) {
                             console.log(JSON.stringify(ret));
+                            console.log(JSON.stringify(err));
                             if (ret.status) {
                                 toast('支付成功');
                                 setTimeout(function () {
                                     goback();
                                 }, 1500);
                             } else {
-                                console.log(JSON.stringify(err));
                                 if (err.code == -2) {
                                     toast('已取消支付');
                                 }
@@ -328,6 +282,26 @@
                                 });
                             }
                         });
+                    } else if (vm.paymethod == 'BALANCE') {
+                        api.showProgress({text: '支付中...'});
+                        api.addEventListener({
+                            name: 'balance_pay_result'
+                        }, function (ret, err) {
+                            api.hideProgress();
+                            if (ret.value.payStatus == 'success') {
+                                toast('支付成功');
+                                setTimeout(function () {
+                                    goback(true);
+                                }, 1500);
+                            }
+                        });
+                        api.openWin({
+                            name: 'confirm_pay',
+                            url: './confirm_pay.html',
+                            pageParam: {
+                                url: res.url
+                            }
+                        });
                     } else {
                         toast('支付方式错误..');
                     }
@@ -338,6 +312,7 @@
 
     var name = '';
     apiready = function () {
+        $api.byId('cover').style.height = api.safeArea.top + 'px';
         vm.init(api.pageParam);
         name = api.pageParam.name;
         if (name == 'cart2') {
@@ -351,22 +326,21 @@
         });
     };
 
-    function goback() {
-        if (name == 'order_pay') {
-            api.closeWin();
-        }
-        if (name == 'cart2') {
+    function goback(jump) {
+        if (name == 'cart2' || jump) {
             api.openWin({
-                name: 'order_detail',
-                url: '../order/order_detail.html',
+                name: 'order',
+                url: '../order/order.html',
                 animation: {
                     subType: 'from_left'
                 },
                 pageParam: {
-                    master_order_sn: vm.order.master_order_sn,
-                    from: 'order_pay'
+                    from: 'order_pay',
+                    index: 1
                 }
             });
+        } else {
+            api.closeWin();
         }
     }
 </script>

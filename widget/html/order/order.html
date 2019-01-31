@@ -7,6 +7,7 @@
     <title>采购商城-个人中心</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/statusbar.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
         html, body {
@@ -40,7 +41,9 @@
     </style>
 </head>
 <body>
-
+<div id="status-bar">
+    <div id="cover"></div>
+</div>
 <header class="m-navbar" id="header">
     <a class="navbar-item" onclick="goback();">
         <i class="back-ico"></i>
@@ -93,17 +96,17 @@
         }
     });
 
-    function openFrames() {
+    function openFrames(index) {
         api.openFrameGroup({
             name: 'orderlistgroup',
             scrollEnabled: false,
             rect: {
                 x: 0,
-                y: $api.dom('#app').offsetHeight + $api.dom('header').offsetHeight,
+                y: $api.byId('cover').offsetHeight + $api.byId('app').offsetHeight + $api.byId('header').offsetHeight,
                 w: 'auto',
                 h: 'auto'
             },
-            index: 0,
+            index: index,
             preload: 0,
             frames: [
                 {
@@ -138,18 +141,23 @@
 
     var from;
     apiready = function () {
+        $api.byId('cover').style.height = api.safeArea.top + 'px';
         from = api.pageParam.from;
-        openFrames();
+        var index = api.pageParam.index ? api.pageParam.index : 0;
+        vm.types = index;
+        openFrames(index);
     };
 
     function goback() {
-        if (from = 'order_detail') {
-            api.closeWin({
+        if (from = 'order_pay') {
+            api.closeToWin({
+                name: 'root',
                 animation: {
                     subType: 'from_left'
                 }
             });
-            toIndex(3);
+        } else {
+            api.closeWin();
         }
     }
 </script>

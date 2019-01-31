@@ -9,232 +9,226 @@
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
-        html, body {
-            width: 100%;
+        #app {
+            position: relative;
+        }
+
+        .address {
+            background: #5e6b85;
+            height: 1.4rem;
+            margin-bottom: .2rem;
+        }
+
+        .address .cell-left, .address .cell-right, .address .cell-arrow:after {
+            color: #fff;
+            position: relative;
+        }
+
+        .cell-right {
+            font-size: .28rem;
+        }
+
+        .icon-location {
+            font-size: .4rem;
+        }
+
+        .address .info {
             height: 100%;
-            background: #f0f0f0;
+            position: absolute;
+            left: .3rem;
+            text-align: left;
         }
 
-        .order-item {
-            background: #fff;
+        .address .info div {
+            height: 50%;
+            display: flex;
+            align-items: center;
         }
 
-        .title {
-            padding: 0 0.24rem;
-            height: 0.9rem;
-            line-height: 0.9rem;
-            color: #333;
-            font-size: 0.3rem;
-            font-weight: 500;
-            border-bottom: 0.01rem solid #f0f0f0;
+        section:not(:last-of-type) {
+            margin-bottom: .2rem;
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, .2), 0 0.5px 0 0 rgba(0, 0, 0, .3);
         }
 
-        .goods {
-            background: #fff;;
+        section:last-of-type {
+            margin-bottom: 1.4rem;
         }
 
-        .goods .item {
-            border-bottom: 0.01rem solid #f0f0f0
+        section .store, .foot, .user-note, .prom, .coupon {
+            padding: .2rem;
+            background-color: #fff;
         }
 
-        .goods .imgs {
-            float: left;
-            padding: 0.2rem 0;
-            margin: 0 0.4rem 0 0.2rem;
+        section .goods {
+            padding: .1rem .2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F5F5F5;
         }
 
-        .goods img {
-            width: 1.86rem;
-            height: 1.86rem;
+        section .pic {
+            width: 20%;
         }
 
-        .goods .right {
-            padding: 0.3rem 0.2rem 0 0;
+        section .pic img {
+            width: 100%;
         }
 
-        .goods .right p {
-            line-height: 0.4rem;
-            font-size: 0.26rem;
-            color: rgba(85, 85, 85, 1);
+        section .goods-info {
+            width: 60%;
+            padding-left: .2rem;
         }
 
-        .goods .right .info {
-            margin-top: 0.5rem;
-        }
-
-        .goods .right .info span {
-            display: block;
-            line-height: 0.24rem;
-        }
-
-        .goods .right .info .num {
-            float: left;
-            font-size: 0.26rem;
-            color: rgba(153, 153, 153, 1);
-        }
-
-        .goods .right .info .price {
-            float: right;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .goods .all {
-            padding-right: 0.2rem;
-            line-height: 0.9rem;
+        section .price-num {
+            width: 20%;
             text-align: right;
-            font-size: 0.26rem;
-            color: #666;
         }
 
-        .goods .all span {
-            font-size: 0.32rem;
-            color: #e41735;
+        .goods-name {
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            display: -webkit-box;
         }
 
-        .line {
-            border-bottom: 0.01rem solid #f0f0f0;
+        .price {
+            font-size: .28rem;
+            color: #f50;
+            font-weight: bold;
         }
 
-        .line span {
-            display: block;
-            float: left;
-            font-size: 0.28rem;
-            height: 0.9rem;
-            line-height: 0.9rem;
+        .red {
+            color: #f50;
+            font-size: .2rem;
         }
 
-        .line .name {
-            margin-left: 0.24rem;
-            color: #8B8B8B;
+        .price-num .price, .price-num .red, .point .red, .point .price {
+            color: #000;
+            font-weight: normal;
         }
 
-        .line .txt {
-            margin-left: 0.34rem;
+        .price-num .num {
+            margin-top: .1rem;
+        }
+
+        section > .foot {
+            text-align: right;
+        }
+
+        .foot .store-sum, .total-price .sum, .point .cell-right, .tag {
+            font-size: .28rem;
+        }
+
+        .foot .price-block {
+            min-width: 25%;
+        }
+
+        .black {
             color: #333;
         }
 
-        .goods-info, .store, .send {
-            background: #fff;
-            margin-top: 0.2rem;
+        .order-status {
+            background-color: #fff;
+            margin-bottom: .2rem;
+            padding: .2rem;
         }
     </style>
 </head>
 <body>
-
-
-<!-- 商品信息 -->
-<div class="goods-info">
-    <h3 class="title">商品信息</h3>
-    <!-- 商品 -->
-    <div class="goods">
-        <div class="item clearfix">
-            <div class="imgs">
-                <img src="http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg?x-oss-process=image/resize,w_200,h_200" alt="">
+<div id="app">
+    <div class="cell-item address">
+        <div class="cell-left"><i class="icon-location"></i></div>
+        <div class="cell-right">
+            <div class="info">
+                <div>收&nbsp;货&nbsp;人：<span>{{order.consignee}}</span></div>
+                <div>收货地址：<span>{{order.address}}</span></div>
             </div>
-            <div class="right">
-                <p>印尼进口 休闲零食 丽巧克（Richoco）纳宝帝巧克力味威化饼干 58g</p>
-                <div class="info clearfix">
-                    <span class="num">×3</span>
-                    <span class="price">￥10</span>
-                </div>
+            <div><span>{{order.mobile}}</span></div>
+        </div>
+    </div>
+
+    <div class="order-status">
+        <div>订单状态：{{order_status[order.order_status]}}</div>
+        <div>支付状态：{{pay_status[order.pay_status]}}</div>
+        <div>发货状态：{{shipping_status[order.shipping_status]}}</div>
+    </div>
+
+    <section>
+        <div class="store"><i class="iconfont icon-dianpu"></i>&nbsp;{{order.store_name}}</div>
+        <div class="goods open-win" v-for="(vo,index) in goods" data-name="goodsInfo" data-url="../goods/goodsInfo.html" data-goods_id="vm.goods_id">
+            <div class="pic"><img :src="vo.original_img"></div>
+            <div class="goods-info">
+                <div class="goods-name">{{vo.goods_name}}</div>
+                <div>{{vo.spec_key_name}}</div>
+            </div>
+            <div class="price-num">
+                <div><span class="red">￥</span><span class="price">{{parseFloat(vo.goods_price)}}</span></div>
+                <div class="num">x {{vo.goods_num}}</div>
             </div>
         </div>
-        <div class="item clearfix">
-            <div class="imgs">
-                <img src="http://mallscsj.oss-cn-beijing.aliyuncs.com//test/upload/goods/20180822/Wh5MkfM27P.jpg?x-oss-process=image/resize,w_200,h_200" alt="">
+
+        <div class="foot">
+            <span class="store-sum">共{{goods.length}}件商品&nbsp;&nbsp;&nbsp;&nbsp;订单总价：</span>
+            <span class="price-block">
+                <span class="red black">￥</span>
+                <span class="price black">{{parseFloat(order.total_amount)}} 元</span>
+            </span>
+            <div class="order-prom" v-if="order.order_prom_amount>0">
+                <span class="tag">订单优惠：</span>
+                <span class="price-block">
+                    <span class="red">-￥</span>
+                    <span class="price">{{parseFloat(order.order_prom_amount)}} 元</span>
+                </span>
             </div>
-            <div class="right">
-                <p>印尼进口 休闲零食 丽巧克（Richoco）纳宝帝巧克力味威化饼干 58g</p>
-                <div class="info clearfix">
-                    <span class="num">×3</span>
-                    <span class="price">￥10</span>
-                </div>
+            <div v-if="order.user_money>0">
+                <span class="tag">使用余额：</span>
+                <span class="price-block">
+                    <span class="red">￥</span>
+                    <span class="price">{{parseFloat(order.user_money)}} 元</span>
+                </span>
+            </div>
+            <div>
+                <span class="tag">应付金额：</span>
+                <span class="price-block">
+                    <span class="red">￥</span>
+                    <span class="price">{{parseFloat(order.order_amount)}} 元</span>
+                </span>
             </div>
         </div>
-        <!-- 统计 -->
-        <p class="all">共6件商品&nbsp;&nbsp;应付金额<span>￥0.00</span>&nbsp;元</p>
-    </div>
-</div>
 
-<!-- 店铺信息 -->
-<div class="store">
-    <h3 class="title">店铺信息</h3>
-    <div class="line clearfix">
-        <span class="name">名称：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">地址：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">联系电话：</span>
-        <span class="txt">黑店</span>
-    </div>
+    </section>
 </div>
-
-<!-- 配送信息 -->
-<div class="send">
-    <h3 class="title">配送信息</h3>
-    <div class="line clearfix">
-        <span class="name">配送单号：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">收货人：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">联系电话：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">配送方式：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">配送费用：</span>
-        <span class="txt">￥0</span>
-    </div>
-</div>
-
-<!-- 订单信息 -->
-<div class="send">
-    <h3 class="title">订单信息</h3>
-    <div class="line clearfix">
-        <span class="name">订单号：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">支付方式：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">商品总价：</span>
-        <span class="txt">黑店</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">积分：</span>
-        <span class="txt">￥0</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">余额支付：</span>
-        <span class="txt">￥0</span>
-    </div>
-    <div class="line clearfix">
-        <span class="name">应付金额：</span>
-        <span class="txt">￥0</span>
-    </div>
-</div>
-
 
 <script type="text/javascript" src="../../script/api.js"></script>
 <script type="text/javascript" src="../../script/common.js"></script>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
 <script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            order: {},
+            goods: [],
+            pay_status: [],
+            shipping_status: [],
+            order_status: []
+        },
+        methods: {
+            init: function (param) {
+                ajax_post('/user/masterOrderDetail', param, function (res) {
+                    log(res);
+                    vm.order = res.order;
+                    vm.goods = res.goods;
+                    vm.pay_status = res.pay_status;
+                    vm.shipping_status = res.shipping_status;
+                    vm.order_status = res.order_status;
+                });
+            }
+        }
+    });
+
     apiready = function () {
-        var order_id = api.pageParam.order_id;
-        console.log(order_id);
+        vm.init(api.pageParam);
     };
 </script>
 

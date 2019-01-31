@@ -7,6 +7,7 @@
     <title>采购商城-我的收藏</title>
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../css/statusbar.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
     <style>
         html, body {
@@ -41,9 +42,11 @@
     </style>
 </head>
 <body>
-
+<div id="status-bar">
+    <div id="cover"></div>
+</div>
 <header class="m-navbar" id="header">
-    <a href="#" class="navbar-item event-back">
+    <a class="navbar-item event-back" tapmode>
         <i class="back-ico"></i>
     </a>
     <div class="navbar-center">
@@ -86,7 +89,7 @@
             scrollEnabled: false,
             rect: {
                 x: 0,
-                y: $api.dom('#app').offsetHeight + $api.dom('header').offsetHeight,
+                y: $api.byId('cover').offsetHeight + $api.byId('app').offsetHeight + $api.byId('header').offsetHeight,
                 w: 'auto',
                 h: 'auto'
             },
@@ -112,6 +115,7 @@
     }
 
     apiready = function () {
+        $api.byId('cover').style.height = api.safeArea.top + 'px';
         fnReadyKeyback();
         openCommentFrames();
     };

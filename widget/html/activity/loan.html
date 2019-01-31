@@ -8,11 +8,25 @@
     <link rel="stylesheet" type="text/css" href="../../css/api.css"/>
     <link rel="stylesheet" type="text/css" href="../../css/ydui.css"/>
     <script type="text/javascript" src="../../script/ydui.flexible.js"></script>
+    <style>
+        #header {
+            height: auto;
+            background-color: #f23;
+        }
+
+        #header:after {
+            display: none;
+        }
+
+        #header i:before, #title {
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
 
 <header class="m-navbar" id="header">
-    <a href="#" class="navbar-item event-back">
+    <a class="navbar-item event-back">
         <i class="back-ico"></i>
     </a>
     <div class="navbar-center">
@@ -40,7 +54,9 @@
         api.openFrame(json);
     }
 
+    var header = $api.dom('#header');
     apiready = function () {
+
         fnReady();
         var param = api.pageParam, data;
 

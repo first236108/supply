@@ -1,44 +1,92 @@
 <!doctype html>
-<html>
-
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
-    <title>Hello APP</title>
-    <title>商购商城启动画面</title>
+    <title>商购商城</title>
     <link rel="stylesheet" type="text/css" href="./css/api.css"/>
     <link rel="stylesheet" type="text/css" href="./css/ydui.css"/>
     <script type="text/javascript" src="script/ydui.flexible.js"></script>
+    <style>
+        header:after {
+            display: none !important;
+        }
+
+        .m-navbar {
+            height: auto;
+            background-color: #f23;
+        }
+
+        .m-navbar span {
+            color: #fff !important;
+        }
+
+        #nav-home {
+            height: 0;
+        }
+
+        #nav-cart {
+            display: flex;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            height: .9rem;
+            width: 100%;
+        }
+
+        #nav-cart .navbar-title {
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            display: block;
+            text-overflow: ellipsis;
+            font-size: .4rem;
+        }
+
+        #nav-cart .manage {
+            position: absolute;
+            right: 0;
+            padding: .2rem .4rem .2rem;
+            font-size: .26rem;
+        }
+    </style>
 </head>
 
 <body>
+
 <div id="wrap" class="flex-wrap flex-vertical">
-    <!-- <div id="main" class="flex-con">
-
-    </div> -->
-
-
+    <header class="m-navbar">
+        <div class="navbar-item" id="nav-home"></div>
+        <div class="navbar-center">
+            <span class="navbar-title">商超世界-采购商城</span>
+        </div>
+        <div id="nav-cart">
+            <span class="navbar-title">进货单</span>
+            <span class="manage" onclick="manager();">管理</span>
+        </div>
+        <div></div>
+    </header>
     <footer class="m-tabbar tabbar-fixed">
-        <a class="tabbar-item tabbar-active" onclick="randomSwitchBtn(this);">
+        <a class="tabbar-item tabbar-active" tapmode="tabbar-active" onclick="randomSwitchBtn('home_frame');">
             <span class="tabbar-icon">
                 <i class="icon-home-outline"></i>
             </span>
             <span class="tabbar-txt">首页</span>
         </a>
-        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+        <a class="tabbar-item" tapmode="tabbar-active" onclick="randomSwitchBtn('category_frame');">
             <span class="tabbar-icon">
                 <i class="icon-type"></i>
             </span>
             <span class="tabbar-txt">分类</span>
         </a>
-        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+        <a class="tabbar-item" tapmode="tabbar-active" onclick="randomSwitchBtn('cart_frame');">
             <span class="tabbar-icon">
                 <i class="icon-shopcart-outline"></i>
             </span>
             <span class="tabbar-txt">进货单</span>
         </a>
-        <a class="tabbar-item" onclick="randomSwitchBtn(this);">
+        <a class="tabbar-item" tapmode="tabbar-active" onclick="randomSwitchBtn('my_frame');">
             <span class="tabbar-icon">
                 <i class="icon-ucenter-outline"></i>
             </span>
@@ -55,97 +103,73 @@
 <script type="text/javascript" src="script/ydui.js"></script>
 
 <script type="text/javascript">
+    var group = ['home_frame', 'category_frame', 'cart_frame', 'my_frame'], manager_status = true;
+    var footerH = $api.offset($api.dom('footer')).h, curPage;
 
-    function funIniGroup() {
-        api.openFrameGroup({
-            name: 'group',
-            scrollEnabled: false,
+    function randomSwitchBtn(name) {
+        var index, reload = false;
+        if (!isNaN(name)) {
+            name = group[name];
+        }
+        index = group.indexOf(name);
+        $('header div').hide().eq(index).show();
+        $('footer a').removeClass('tabbar-active').eq(index).addClass('tabbar-active');
+
+        if (curPage == name) return;
+
+        curPage = name;
+        var header = $api.dom('header');
+        //首页、我的，不需要电池栏
+        if ([0, 3].indexOf(index) >= 0) {
+            header.style.paddingTop = 0;
+        } else {
+            header.style.paddingTop = api.safeArea.top + 'px';
+        }
+
+        var h = header.offsetHeight;
+        //判断是否刷新页面
+        if (needRefreash(name)) {
+            reload = true;
+        }
+        api.openFrame({
+            name: curPage,
+            url: './html/' + curPage + '.html',
             rect: {
                 x: 0,
-                y: 0,
-                w: api.winWidth,
-                h: api.winHeight - $api.dom('footer').offsetHeight
+                y: h,
+                w: 'auto',
+                h: api.winHeight - footerH - h
             },
-            index: 0,
-            preload: 0,
-            frames: [
-                {
-                    name: 'index',
-                    url: './html/home_frame.html',
-                    bgcolor: 'rgba(0,0,0,.2)',
-                    bounces: true,
-                    overScrollMode:'scrolls'
-                },
-                {
-                    name: 'category',
-                    url: './html/category_frame.html',
-                    bgcolor: 'rgba(0,0,0,.2)',
-                    bounces: false
-                },
-                {
-                    name: 'cart',
-                    url: './html/cart_frame.html',
-                    bgcolor: 'rgba(0,0,0,.2)',
-                    bounces: false
-                },
-                {
-                    name: 'my',
-                    url: './html/my_frame.html',
-                    bgcolor: 'rgba(0,0,0,.2)',
-                    bounces: false
-                }
-            ]
-        }, function (ret, err) {
-            var index = ret.index;
+            reload: reload
+        });
+        api.setFrameAttr({
+            name: curPage,
+            hidden: false
+        });
+        for (var i = 0, l = group.length; i < l; i++) {
+            if (group[i] != curPage) {
+                api.setFrameAttr({
+                    name: group[i],
+                    hidden: true
+                });
+            }
+        }
+    }
+
+    function manager() {
+        manager_status = !manager_status;
+        if (manager_status)
+            event.target.innerHTML = '管理';
+        else
+            event.target.innerHTML = '完成';
+        api.execScript({
+            frameName: 'cart_frame',
+            script: 'manager()'
         });
     }
 
-    // 随意切换按钮
-    function randomSwitchBtn(tag, idx) {
-        var current_active = $api.dom('footer a.tabbar-active');
-        if (tag == current_active) {
-            if (idx != 0) return;
-
-            var refreash = $api.getStorage('refreash');
-            if (!refreash || !refreash['root_' + idx]) return;
-        }
-        var eFootLis = $api.domAll('footer a'),
-            index = 0;
-        for (var i = 0, len = eFootLis.length; i < len; i++) {
-            if (tag == eFootLis[i]) {
-                index = i;
-            } else {
-                $api.removeCls(eFootLis[i], 'tabbar-active');
-            }
-        }
-
-        //购物车、我的页面检测是否登录
-        if (!$api.getStorage('token') && (index == 2 || index == 3)) {
-            $api.addCls(current_active, 'tabbar-active');
-            openLogin(true, true, index);
-            return;
-        }
-
-        $api.addCls(eFootLis[index], 'tabbar-active');
-        var param = {
-            name: 'group',
-            index: index
-        };
-
-        //登录、退出后需要刷新重载的页面
-        if (index != 1 && needRefreash('root_' + index)) {
-            param.reload = true;
-        }
-        api.setFrameGroupIndex(param);
-    }
-
-    function home(index) {
-        var dom = $api.domAll('footer a.tabbar-item')[index];
-        randomSwitchBtn(dom, index);
-    }
-
     apiready = function () {
-        funIniGroup();
+        randomSwitchBtn('home_frame');
     };
 
 </script>

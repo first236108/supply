@@ -58,10 +58,11 @@
 
     <permission name="hardware"/>
 
-    <feature name="bMap">
-        <param name="android_api_key" value="f7Is0dWLom2q6rV3ZfFPZ1aa"/>
-        <param name="ios_api_key" value="81qz3dBYB5q2nGji4IYrawr1"/>
+    <preference name="urlScheme" value="scsjcgsj"/>
 
+    <feature name="bMap">
+        <param name="android_api_key" value="hR5FfzHYPRb17TRn15mrrkRbzOs2Flbx"/>
+        <param name="ios_api_key" value="RziBnaeg6reKbdv7ckoNInnpGXWrakpH"/>
     </feature>
 
     <feature name="ajpush">
@@ -70,9 +71,9 @@
     </feature>
 
     <feature name="wxPay">
-        <param name="urlScheme" value="wx06c6d01602e4abb0"/>
-        <param name="apiKey" value="wx06c6d01602e4abb0"/>
-        <param name="apiSecret" value="8602440d06c80c96e034197b054185e1"/>
+        <param name="urlScheme" value="wx2c86a37f960d25d5"/>
+        <param name="apiKey" value="wx2c86a37f960d25d5"/>
+        <param name="apiSecret" value="9d4f0ba7de05c537d46b24ffa600e922"/>
     </feature>
     <feature name="aliPayPlus">
         <param name="urlScheme" value="AliPayPlusA6095417521805"/>

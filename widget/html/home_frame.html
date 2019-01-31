@@ -16,9 +16,9 @@
             display: none;
         }
 
-        header {
-            height: .8rem;
-            position: absolute;
+        #header {
+            height: 47px;
+            position: fixed;
             background: rgba(0, 0, 0, 0);
             z-index: 9999;
             top: 0;
@@ -28,40 +28,40 @@
             justify-content: center;
         }
 
-        header .iconfont {
+        #header .iconfont {
             font-size: 15px;
         }
 
-        header .scan-qrcode {
+        #header .scan-qrcode {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 20%;
         }
 
-        header .icon-iconfontsaoyisao {
+        #header .icon-iconfontsaoyisao {
             font-size: .45rem;
             color: #fff;
         }
 
-        header .input-wrap {
+        #header .input-wrap {
             width: 60%;
             display: flex;
             align-items: center;
         }
 
-        header .input-wrap input {
+        #header .input-wrap input {
             display: block;
             padding: 5px 0 5px 10px;
             width: 100%;
-            height: .6rem;
-            line-height: .6rem;
+            height: 32px;
+            line-height: 32px;
             font-size: .244rem;
             background-color: rgba(255, 255, 255, .5);
             border-radius: .6rem;
         }
 
-        header .city {
+        #header .city {
             display: flex;
             width: 20%;
             font-size: 14px;
@@ -70,12 +70,12 @@
             align-items: center;
         }
 
-        header .city span,
-        header .city img {
+        #header .city span,
+        #header .city img {
             display: inline-block;
         }
 
-        header .city img {
+        #header .city img {
             width: 10px;
             height: 10px;
         }
@@ -99,23 +99,28 @@
         #loading img {
             max-width: 1rem;
         }
+
+        #bar {
+            background-color: rgba(0, 0, 0, .5);
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
+<header id="header">
+    <div class="city open-win" data-name="city" data-url="./city/city.html">
+        <span class="cityname" id="cityname">郑州市</span><i class="iconfont icon-xiangxia1"></i>
+    </div>
+    <div class="input-wrap open-win" data-name="search" data-url="widget://html/search/search.html">
+        <input type="text" placeholder="请输入要搜索的商品" disabled/>
+    </div>
+    <div class="scan-qrcode" onclick="scanQrcode();">
+        <i class="iconfont icon-iconfontsaoyisao"></i>
+    </div>
+</header>
 <div id="wrap" v-cloak>
-
-    <header class="clearfix">
-        <div class="city open-win" data-name="city" data-url="./city/city.html">
-            <span class="cityname" id="cityname">郑州市</span><i class="iconfont icon-xiangxia1"></i>
-        </div>
-        <div class="input-wrap open-win" data-name="search" data-url="widget://html/search/search.html">
-            <input type="text" placeholder="请输入要搜索的商品" disabled/>
-        </div>
-        <div class="scan-qrcode" onclick="scanQrcode();">
-            <i class="iconfont icon-iconfontsaoyisao"></i>
-        </div>
-    </header>
+    <div id="bar"></div>
 
     <!--轮播图-->
     <div class="swiper-container" id="carousel">
@@ -219,7 +224,7 @@
         <div class="swiper-container" id="swiper2">
             <div class="swiper-wrapper">
                 <div class="swiper-slide" v-for="(goods,index) in retail">
-                    <a :data-goods_id="goods.goods_id" class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
+                    <a :data-id="goods.goods_id" class="open-win" data-name="goodsInfo" data-url="./goods/goodsInfo.html">
                         <div class="img">
                             <img :src="goods.goods_image">
                         </div>
@@ -283,9 +288,11 @@
 </div>
 
 <div id="login-icon"></div>
+
 <div id="gotop" onclick="goTop('#wrap');">
     <i class="iconfont icon-dingbu"></i>
 </div>
+
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript" src="../script/jquery2.1.4.min.js"></script>
 <script type="text/javascript" src="../script/swiper.min.js"></script>
@@ -295,16 +302,16 @@
 
 <script type="text/javascript">
     var index_param = {};
-    var FNScanner;
-    var clipBoard;
+    var FNScanner, clipBoard;
+    var header = $api.dom('#header'), headerBgHeight;
     var vm = new Vue({
         el: '#wrap',
         data: {
             slider: [],
             category: [],
             adv: {},
-            newGoods: [],
-            hotGoods: [],
+            newGoods: [ ],
+            hotGoods: {},
             recGoods: {},
             flash_sale: [],
             banner2: {},
@@ -528,6 +535,10 @@
     }
 
     apiready = function () {
+        headerBgHeight = header.offsetHeight + api.safeArea.top;
+        header.style.height = headerBgHeight + 'px';
+        header.style.paddingTop = api.safeArea.top + 'px';
+        headerBgHeight = headerBgHeight << 1;
         if ($api.getStorage('current_city')) {
             vm.init();
         } else {
@@ -586,18 +597,23 @@
         });
         FNScanner = api.require('FNScanner');
         clipBoard = api.require('clipBoard');
-
-//        document.querySelector('header').style.marginTop = api.safeArea.top;
-//        document.querySelector('#wrap').style.paddingTop = api.safeArea.top;
     };
 
-    window.onscroll = function () {
-        if (window.scrollY > 200) {
-            document.getElementById('gotop').style.display = 'block';
-        } else {
-            document.getElementById('gotop').style.display = 'none';
-        }
-    };
+    $(function () {
+        window.onscroll = function () {
+            var y = window.scrollY;
+            if (y > 200) {
+                document.getElementById('gotop').style.display = 'block';
+            } else {
+                document.getElementById('gotop').style.display = 'none';
+            }
+            if (y > headerBgHeight) {
+                y = headerBgHeight;
+            }
+            $api.dom('#header').style.backgroundColor = 'rgba(255, 32, 48,' + y / headerBgHeight + ')';
+        };
+    });
+
 
     function scanQrcode() {
         if (!FNScanner) {

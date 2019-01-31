@@ -4,8 +4,8 @@
  * NickName: 柏宇娜
  * Date: 2018/10/31 17:30
  */
-// var root_host = 'http://t.scsj.net.cn/';
-var root_host = 'http://192.168.1.186/';
+var root_host = 'http://t.scsj.net.cn/';
+// var root_host = 'http://192.168.1.186/';
 var host = root_host + 'api';
 
 function goTop(obj) {
@@ -38,8 +38,13 @@ var header, headerHeight = 0;
 function fnReadyHeader() {
     header = $api.byId('header');
     if (header) {
-        // $api.fixIos7Bar(header);
-        headerHeight = $api.offset(header).h;
+        if (header.previousElementSibling && header.previousElementSibling.id == 'status-bar') {
+            $api.byId('cover').style.height = api.safeArea.top + 'px';
+            headerHeight = $api.offset($api.byId('status-bar')).h + $api.offset(header).h;
+        } else {
+            $api.fixStatusBar(header);
+            headerHeight = $api.offset(header).h;
+        }
     }
 }
 
@@ -279,14 +284,15 @@ function openLogin(redirect, is_root, index, url, setter, param) {
  */
 function toIndex(index) {
     if (!index) index = 0;
+    var type = ['from_left', 'from_left', 'from_right', 'from_right'];
     api.execScript({
         name: 'root',
-        script: 'home(' + index + ');'
+        script: 'randomSwitchBtn(' + index + ');'
     });
     api.closeToWin({
         name: 'root',
         animation: {
-            subType: 'from_right'
+            subType: type[index]
         }
     });
 }
@@ -331,7 +337,7 @@ function getFileName(str) {
  * @returns {boolean}
  */
 function checkMobile(mobile) {
-    var pattern = /^1[3|4|5|6|7|8][0-9]{9}$/;
+    var pattern = /^1[3|4|5|6|7|8|9][0-9]{9}$/;
     return pattern.test(mobile);
 }
 

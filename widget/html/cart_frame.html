@@ -218,7 +218,7 @@
             width: 1.66rem;
             color: #fff;
             text-align: center;
-            background: #EF4F4F;
+            background: #FF314A;
             font-size: 16px;
         }
 
@@ -284,13 +284,6 @@
     </style>
 </head>
 <body>
-<header class="m-navbar">
-
-    <div class="navbar-center">
-        <span class="navbar-title">进货单</span>
-    </div>
-    <span class="navbar-item" onclick="manager();">管理</span>
-</header>
 
 <div id="app" v-cloak>
 
@@ -689,6 +682,11 @@
     apiready = function () {
         init = true;
         vm.cartlist(true);
+        api.addEventListener({
+            name: 'refreash_cart'
+        }, function(ret, err) {
+            vm.cartlist(true);
+        });
     };
 
     function manager() {
@@ -697,10 +695,6 @@
             return false;
         }
         vm.manager_status = !vm.manager_status;
-        if (vm.manager_status)
-            event.target.innerHTML = '管理';
-        else
-            event.target.innerHTML = '完成';
     }
 </script>
 
